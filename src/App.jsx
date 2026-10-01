@@ -88,12 +88,18 @@ function App() {
   const safeStep = Math.min(stepIndex, Math.max(0, steps.length - 1));
   const step = steps[safeStep];
 
-  /* ---------- effects ---------- */
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 900);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    const checkMobile = () => {
+      const mobile = window.innerWidth <= 900;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setMobileSidebarOpen(false);
+        setMobilePanelOpen(false);
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
@@ -235,9 +241,13 @@ function App() {
           />
 
           {isMobile && (
-            <button className="mobile-panel-toggle" onClick={() => setMobilePanelOpen((o) => !o)}>
+            <button
+              className="mobile-panel-toggle"
+              onClick={() => setMobilePanelOpen((o) => !o)}
+              title={mobilePanelOpen ? 'Collapse step details' : 'Expand step details'}
+            >
               {mobilePanelOpen ? <X size={16} /> : <ChevronUp size={16} />}
-              <span>{t(step?.title, lang) || 'Details'}</span>
+              <span>{t(step?.title, lang) || (lang === 'bn' ? 'বিবরণ' : 'Details')}</span>
             </button>
           )}
         </div>
@@ -252,7 +262,7 @@ function App() {
               lang={lang}
               width={panelWidth}
               onWidthChange={setPanelWidth}
-              isMobile
+              isMobile={isMobile}
               isDone={completed.includes(activeId)}
               onToggleDone={toggleDone}
               codeLang={codeLang}
@@ -268,7 +278,7 @@ function App() {
             lang={lang}
             width={panelWidth}
             onWidthChange={setPanelWidth}
-            isMobile={false}
+            isMobile={isMobile}
             isDone={completed.includes(activeId)}
             onToggleDone={toggleDone}
             codeLang={codeLang}
