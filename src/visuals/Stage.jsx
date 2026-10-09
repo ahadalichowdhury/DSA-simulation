@@ -1,12 +1,44 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
-import { Plus, Minus, Maximize2, RotateCcw, Calculator } from 'lucide-react';
+import { Plus, Minus, Maximize2, Calculator, HelpCircle, X } from 'lucide-react';
 import ArrayVisual from './ArrayVisual.jsx';
 import TreeGraphVisual from './TreeGraphVisual.jsx';
 import TreeMemoryVisual from './TreeMemoryVisual.jsx';
 import MultiwayVisual from './MultiwayVisual.jsx';
 import ForestVisual from './ForestVisual.jsx';
+import BstAnimVisual from './BstAnimVisual.jsx';
 import CatalanCalculator from './CatalanCalculator.jsx';
-import { HashVisual, CardsVisual, ChartVisual, IdleVisual } from './MiscVisuals.jsx';
+import { HashVisual, ChartVisual, IdleVisual } from './MiscVisuals.jsx';
+import { LinkedListVisual, StackVisual, QueueVisual } from './LinearVisuals.jsx';
+import { t, rich, HL_MEANING, usedHighlightKeys, READ_GUIDE } from './utils.js';
+
+const SWATCH_COLOR = {
+  'k-yellow': 'yellow', 'k-yellow-o': 'yellow', 'k-cyan': 'cyan', 'k-cyan-d': 'cyan', 'k-amber': 'amber',
+  'k-purple': 'purple', 'k-red': 'red', 'k-red-x': 'red', 'k-red-d': 'red', 'k-green': 'green', 'k-green-o': 'green', 'k-dim': 'dim', 'k-orange-ring': 'orange'
+};
+
+/** Lesson-authored legend first, then the automatic meaning of every other colour on screen. */
+function buildKey(scene, lang) {
+  const authored = (scene.legend || []).map((l) => ({ label: t(l.label, lang), color: l.color }));
+  const covered = new Set(authored.map((l) => (String(l.color).match(/--([a-z]+)/) || [])[1]).filter(Boolean));
+  const seen = new Set();
+  const auto = [];
+  for (const k of usedHighlightKeys(scene)) {
+    const m = HL_MEANING[k];
+    const label = t(m, lang);
+    if (covered.has(SWATCH_COLOR[m.swatch]) || seen.has(label)) continue;
+    seen.add(label);
+    auto.push({ label, swatch: m.swatch });
+  }
+  return [...authored, ...auto];
+}
+
+function readGuideOpen() {
+  try {
+    return localStorage.getItem('algosim-read-guide') === 'open';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Interactive Zoomable & Pannable Stage for Tree and Algorithm Visualizations.
@@ -17,9 +49,12 @@ import { HashVisual, CardsVisual, ChartVisual, IdleVisual } from './MiscVisuals.
  * - Auto-fit scaling to viewport
  * - Iteration HUD and variable chips
  */
-export default function Stage({ scene, stageKey, step, lang }) {
+export default function Stage({ scene, stageKey, step, lang, speed = 1 }) {
   const wrapRef = useRef(null);
   const measureRef = useRef(null);
+  const legendRef = useRef(null);
+  // Height taken by the overlays at the top, so the drawing is pushed below them instead of hidden.
+  const [topInset, setTopInset] = useState(0);
 
   // Auto-fit base scale
   const [baseScale, setBaseScale] = useState(1);
@@ -30,6 +65,18 @@ export default function Stage({ scene, stageKey, step, lang }) {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [showCatalanCalc, setShowCatalanCalc] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+  useEffect(() => setGuideOpen(readGuideOpen()), []);
+  const toggleGuide = () => {
+    setGuideOpen((o) => {
+      try {
+        localStorage.setItem('algosim-read-guide', o ? 'closed' : 'open');
+      } catch {
+        /* storage blocked: the toggle still works for this visit */
+      }
+      return !o;
+    });
+  };
   const dragStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
 
   // Reset pan and user zoom when changing topics
@@ -51,19 +98,32 @@ export default function Stage({ scene, stageKey, step, lang }) {
     return () => ro.disconnect();
   }, []);
 
+  // Track how tall the top overlays (colour key, reading guide, HUD) are
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return;
+    const measure = () => {
+      const lh = legendRef.current ? legendRef.current.offsetHeight + 14 : 0;
+      setTopInset(lh);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (legendRef.current) ro.observe(legendRef.current);
+    return () => ro.disconnect();
+  }, [scene, step, guideOpen, lang]);
+
   // Compute base fit scale
   useLayoutEffect(() => {
     const el = measureRef.current;
     if (!el) return;
     const availW = size.w - 48;
-    const availH = size.h - 56;
+    const availH = size.h - 56 - topInset;
     if (availW <= 60 || availH <= 60) return;
     const w = el.offsetWidth;
     const h = el.offsetHeight;
     if (!w || !h) return;
     const s = Math.max(0.2, Math.min(1.15, availW / w, availH / h));
     setBaseScale((prev) => (Math.abs(prev - s) > 0.01 ? s : prev));
-  }, [scene, stageKey, size]);
+  }, [scene, stageKey, size, topInset]);
 
   // Mouse wheel zoom handler (non-passive to prevent outer scrolling)
   useEffect(() => {
@@ -87,7 +147,7 @@ export default function Stage({ scene, stageKey, step, lang }) {
   const handleMouseDown = useCallback((e) => {
     if (e.button !== 0) return;
     // Don't drag if user clicked an interactive control or button
-    if (e.target.closest('button, input, select, .stage-hud, .stage-legend, .stage-zoom-bar, .tree-output-wrap')) {
+    if (e.target.closest('button, input, select, .stage-legend, .stage-zoom-bar, .tree-output-wrap')) {
       return;
     }
     setIsDragging(true);
@@ -116,7 +176,7 @@ export default function Stage({ scene, stageKey, step, lang }) {
   // Drag-to-pan handlers (Touch for Mobile)
   const handleTouchStart = useCallback((e) => {
     if (e.touches.length !== 1) return;
-    if (e.target.closest('button, input, select, .stage-hud, .stage-legend, .stage-zoom-bar, .tree-output-wrap')) {
+    if (e.target.closest('button, input, select, .stage-legend, .stage-zoom-bar, .tree-output-wrap')) {
       return;
     }
     const touch = e.touches[0];
@@ -162,49 +222,44 @@ export default function Stage({ scene, stageKey, step, lang }) {
     switch (s.kind) {
       case 'tree':
       case 'graph':
-        body = <TreeGraphVisual scene={s} />;
+        body = <TreeGraphVisual scene={s} lang={lang} />;
+        break;
+      case 'bst':
+        body = <BstAnimVisual scene={s} lang={lang} speed={speed} />;
         break;
       case 'multiway':
-        body = <MultiwayVisual scene={s} />;
+        body = <MultiwayVisual scene={s} lang={lang} />;
         break;
       case 'forest':
-        body = <ForestVisual scene={s} />;
+        body = <ForestVisual scene={s} lang={lang} />;
         break;
       case 'array':
       case 'bars':
-        body = <ArrayVisual scene={s} />;
+        body = <ArrayVisual scene={s} lang={lang} />;
         break;
-      case 'cards':
-        body = <CardsVisual scene={s} />;
+      case 'linkedlist':
+        body = <LinkedListVisual scene={s} lang={lang} />;
+        break;
+      case 'stack':
+        body = <StackVisual scene={s} lang={lang} />;
+        break;
+      case 'queue':
+        body = <QueueVisual scene={s} lang={lang} />;
         break;
       case 'chart':
-        body = <ChartVisual scene={s} />;
+        body = <ChartVisual scene={s} lang={lang} />;
         break;
       case 'hash':
-        body = <HashVisual scene={s} />;
+        body = <HashVisual scene={s} lang={lang} />;
         break;
       default:
-        body = <IdleVisual scene={s} />;
+        body = <IdleVisual scene={s} lang={lang} />;
     }
   }
 
-  const legend = s.legend || [];
-  const iteration = step?.iteration;
-  const stateVars = step?.state && Object.keys(step.state).length ? Object.entries(step.state) : [];
-  const iterLabel = iteration
-    ? (typeof iteration.label === 'string'
-        ? iteration.label
-        : (iteration.label && iteration.label[lang]) || (lang === 'bn' ? 'ইটারেশন' : 'Iteration'))
-    : null;
-
-  const fmtVal = (v) => {
-    if (v == null) return '';
-    if (Array.isArray(v)) return `[${v.join(', ')}]`;
-    if (typeof v === 'object') return String(v.val ?? v.value ?? '');
-    if (typeof v === 'boolean') return v ? (lang === 'bn' ? 'হ্যাঁ' : 'yes') : (lang === 'bn' ? 'না' : 'no');
-    return String(v);
-  };
-
+  const colorKey = buildKey(s, lang);
+  const guide = READ_GUIDE[s.memoryMode ? 'tree-memory' : s.kind];
+  const bn = lang === 'bn';
   const currentScale = baseScale * userZoom;
 
   return (
@@ -223,15 +278,34 @@ export default function Stage({ scene, stageKey, step, lang }) {
         userSelect: isDragging ? 'none' : 'auto'
       }}
     >
-      {/* Legend */}
-      {legend.length > 0 && (
-        <div className="stage-legend">
-          {legend.map((l, i) => (
-            <span className="legend-chip" key={i}>
-              <span className="legend-dot" style={{ background: l.color }} />
-              {l.label}
-            </span>
-          ))}
+      {/* One quiet Guide button: the colour key and reading tips open only on demand */}
+      {(colorKey.length > 0 || guide) && (
+        <div className="stage-legend" ref={legendRef}>
+          <button className={`canvas-guide-btn${guideOpen ? ' on' : ''}`} onClick={toggleGuide} aria-expanded={guideOpen}>
+            {guideOpen ? <X size={13} /> : <HelpCircle size={13} />}
+            <span>{bn ? 'গাইড' : 'Guide'}</span>
+          </button>
+          {guideOpen && (
+            <div className="canvas-guide">
+              {guide && (
+                <ul className="canvas-guide-tips">
+                  {t(guide, lang).map((line, i) => (
+                    <li key={i} dangerouslySetInnerHTML={{ __html: rich(line, lang) }} />
+                  ))}
+                </ul>
+              )}
+              {colorKey.length > 0 && (
+                <ul className="canvas-guide-key" aria-label={bn ? 'রঙের মানে' : 'What the colours mean'}>
+                  {colorKey.map((l, i) => (
+                    <li key={i}>
+                      {l.swatch ? <span className={`key-swatch ${l.swatch}`} /> : <span className="legend-dot" style={{ background: l.color }} />}
+                      {l.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -256,31 +330,6 @@ export default function Stage({ scene, stageKey, step, lang }) {
             <Calculator size={15} />
             <span>{lang === 'bn' ? 'ক্যাটালান ক্যালকুলেটর' : 'Catalan Calculator'}</span>
           </button>
-        </div>
-      )}
-
-      {/* Per-step iteration HUD and live state variable chips */}
-      {(iteration || stateVars.length > 0) && (
-        <div className="stage-hud">
-          {iteration && (
-            <div className="iter-badge" key={`i-${iteration.i}-${stageKey}`}>
-              <span className="iter-spin" />
-              <b>{iterLabel} {iteration.i}</b>
-              {iteration.of != null && iteration.of > 0 && <span className="iter-of">/ {iteration.of}</span>}
-            </div>
-          )}
-          {stateVars.length > 0 && (
-            <div className="state-chips" key={`s-${stageKey}`}>
-              {stateVars.slice(0, 7).map(([k, v]) => (
-                <span
-                  className={`state-chip${v && typeof v === 'object' && v.changed ? ' changed' : ''}`}
-                  key={k}
-                >
-                  <i>{k}</i>=<b>{fmtVal(v)}</b>
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       )}
 
@@ -321,7 +370,7 @@ export default function Stage({ scene, stageKey, step, lang }) {
         className="stage-measure"
         ref={measureRef}
         style={{
-          transform: `translate(${pan.x}px, ${pan.y}px) scale(${currentScale})`,
+          transform: `translate(${pan.x}px, ${pan.y + topInset / 2}px) scale(${currentScale})`,
           transition: isDragging ? 'none' : 'transform 0.18s cubic-bezier(0.2, 0, 0, 1)'
         }}
       >
@@ -330,7 +379,7 @@ export default function Stage({ scene, stageKey, step, lang }) {
         </div>
       </div>
 
-      {s.caption && <div className="stage-caption" dangerouslySetInnerHTML={{ __html: s.caption }} />}
+      {s.caption && <div className="stage-caption" dangerouslySetInnerHTML={{ __html: rich(s.caption, lang) }} />}
     </div>
   );
 }

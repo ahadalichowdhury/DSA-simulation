@@ -290,15 +290,16 @@ export const avlTopics = [
         iteration: { i: 4, of: 4, label: { en: '4 Patterns', bn: '৪টি প্যাটার্ন' } },
         state: { LL: 'BF = +2, left child BF >= 0', RR: 'BF = -2, right child BF <= 0', LR: 'BF = +2, left child BF < 0', RL: 'BF = -2, right child BF > 0' },
         scene: {
-          kind: 'cards',
-          label: 'The 4 AVL Imbalance Patterns & Solutions',
-          cards: [
-            { icon: '🔄', title: 'LL Imbalance', desc: 'Heavy on left-of-left. Fixed by 1 Right Rotation.', state: 'active', tag: 'Single Right', accent: 'var(--yellow)' },
-            { icon: '🔁', title: 'RR Imbalance', desc: 'Heavy on right-of-right. Fixed by 1 Left Rotation.', state: 'active', tag: 'Single Left', accent: 'var(--cyan)' },
-            { icon: '🔀', title: 'LR Imbalance', desc: 'Zig-zag (left then right). Fixed by Left-Right Double Rotation.', state: 'ok', tag: 'Double LR', accent: 'var(--green)' },
-            { icon: '🔀', title: 'RL Imbalance', desc: 'Zig-zag (right then left). Fixed by Right-Left Double Rotation.', state: 'ok', tag: 'Double RL', accent: 'var(--purple)' }
+          kind: 'forest',
+          label: { en: 'The 4 imbalance patterns (red ring = the node with |BF| = 2)', bn: '৪টি ভারসাম্যহীনতার প্যাটার্ন (লাল = যে নোডের |BF| = 2)' },
+          trees: [
+            { root: { v: 30, sub: 'BF +2', l: { v: 20, l: { v: 10 } } }, caption: 'LL → 1 right rotation' },
+            { root: { v: 10, sub: 'BF −2', r: { v: 20, r: { v: 30 } } }, caption: 'RR → 1 left rotation' },
+            { root: { v: 30, sub: 'BF +2', l: { v: 10, r: { v: 20 } } }, caption: 'LR → left, then right' },
+            { root: { v: 10, sub: 'BF −2', r: { v: 30, l: { v: 20 } } }, caption: 'RL → right, then left' }
           ],
-          caption: 'Every possible imbalance maps to one of these 4 rotation remedies.'
+          highlights: { reject: ['root'] },
+          caption: { en: 'straight line → single rotation · zig-zag → double rotation', bn: 'সোজা লাইন → একবার রোটেশন · আঁকাবাঁকা → দুবার রোটেশন' }
         }
       }
     ]
@@ -999,14 +1000,14 @@ export const avlTopics = [
         iteration: { i: 4, of: 4, label: { en: 'Deletion Cascade', bn: 'ডিলিট ক্যাসকেড' } },
         state: { maxInsertRotations: 1, maxDeleteRotations: 'O(log N) cascades', overallTime: 'O(log N)' },
         scene: {
-          kind: 'cards',
-          label: 'Insertion vs Deletion Rebalancing Properties',
-          cards: [
-            { icon: '➕', title: 'AVL Insert', desc: 'At most 1 rotation restores entire tree. O(1) rebalance.', state: 'ok', tag: 'Max 1 Rotation', accent: 'var(--green)' },
-            { icon: '✂️', title: 'AVL Delete', desc: 'Height loss can cascade up the call stack to root.', state: 'active', tag: 'Cascade O(log N)', accent: 'var(--yellow)' },
-            { icon: '⚡', title: 'Total Time', desc: 'Both Insert and Delete run in strictly guaranteed O(log N).', state: 'ok', tag: 'Guaranteed', accent: 'var(--cyan)' }
+          kind: 'chart',
+          label: { en: 'Most rotations one operation can need (N = 1,000,000 keys)', bn: 'একটা অপারেশনে সর্বোচ্চ কতগুলো রোটেশন লাগতে পারে (N = 1,000,000)' },
+          max: 20,
+          items: [
+            { label: 'Insert', v: 1, color: 'var(--green)', note: { en: 'one fix is enough', bn: 'একবার ঠিক করলেই হয়' } },
+            { label: 'Delete', v: 20, color: 'var(--amber)', note: { en: 'can repeat up to the root (≈ log₂ N)', bn: 'রুট পর্যন্ত বারবার হতে পারে (≈ log₂ N)' } }
           ],
-          caption: 'AVL guarantees logarithmic efficiency in all cases without exceptions.'
+          caption: { en: 'both still finish in O(log N) time', bn: 'দুটোই O(log N) সময়ে শেষ হয়' }
         }
       }
     ]
@@ -1240,14 +1241,15 @@ export const avlTopics = [
         iteration: { i: 2, of: 4, label: { en: 'Height Bound', bn: 'উচ্চতার সীমা' } },
         state: { maxLongestPath: '2 * shortest path', boundFormula: '2 log2(N + 1)', searchGuarantee: 'O(log N)' },
         scene: {
-          kind: 'cards',
-          label: 'Red-Black Height Guarantee Mechanics',
-          cards: [
-            { icon: '⚫', title: 'Black Height bh', desc: 'Every root-to-leaf path has identical number of black nodes.', state: 'ok', tag: 'Invariant 5', accent: 'var(--cyan)' },
-            { icon: '🔴', title: 'No Red-Red', desc: 'At most one red node between any two black nodes.', state: 'active', tag: 'Invariant 4', accent: 'var(--red)' },
-            { icon: '📏', title: 'Max Height ≤ 2·log₂(N+1)', desc: 'Longest path can never exceed twice the shortest path.', state: 'ok', tag: 'Theorem', accent: 'var(--green)' }
+          kind: 'chart',
+          label: { en: 'Tallest possible tree with N = 1,000 keys', bn: 'N = 1,000 কী দিয়ে সবচেয়ে উঁচু সম্ভাব্য ট্রি' },
+          max: 40,
+          items: [
+            { label: 'Perfect', v: 10, color: 'var(--green)', note: { en: 'log₂(N+1)', bn: 'log₂(N+1)' } },
+            { label: 'Red-Black', v: 20, color: 'var(--red)', note: { en: '≤ 2·log₂(N+1)', bn: '≤ 2·log₂(N+1)' } },
+            { label: 'Plain BST', v: 40, color: 'var(--text-muted)', note: { en: 'up to 999 (bar cut off)', bn: '999 পর্যন্ত (বার কাটা)' } }
           ],
-          caption: 'No leaf path can ever be more than twice as long as any other path.'
+          caption: { en: 'a Red-Black tree is at most twice as tall as a perfect tree', bn: 'রেড-ব্ল্যাক ট্রি পারফেক্ট ট্রির সর্বোচ্চ দ্বিগুণ উঁচু' }
         }
       },
       {
@@ -1283,14 +1285,9 @@ export const avlTopics = [
         iteration: { i: 4, of: 4, label: { en: 'Applications', bn: 'প্রয়োগ' } },
         state: { cppSTL: 'std::map', java: 'java.util.TreeMap', linuxKernel: 'CFS Process Scheduler' },
         scene: {
-          kind: 'cards',
-          label: 'Production Systems Powered by Red-Black Trees',
-          cards: [
-            { icon: '⚙️', title: 'C++ std::map', desc: 'Guaranteed O(log N) key-value lookup and insertion.', state: 'ok', tag: 'STL', accent: 'var(--cyan)' },
-            { icon: '☕', title: 'Java TreeMap', desc: 'Standard Red-Black tree implementation in the JDK.', state: 'ok', tag: 'Java', accent: 'var(--yellow)' },
-            { icon: '🐧', title: 'Linux CFS', desc: 'Schedules CPU runtime across all active OS processes.', state: 'active', tag: 'Kernel', accent: 'var(--red)' }
-          ],
-          caption: 'Red-Black trees power the foundational software infrastructure of the world.'
+          kind: 'none',
+          title: { en: 'Where Red-Black trees are used', bn: 'রেড-ব্ল্যাক ট্রি কোথায় ব্যবহার হয়' },
+          desc: { en: '`std::map` / `std::set` in C++, `TreeMap` / `TreeSet` in Java, and the Linux CPU scheduler.', bn: 'C++-এর `std::map` / `std::set`, Java-র `TreeMap` / `TreeSet`, আর Linux-এর CPU শিডিউলার।' }
         }
       }
     ]

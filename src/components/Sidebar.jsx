@@ -35,6 +35,23 @@ const Sidebar = ({
     if (expanded) localStorage.setItem('algosim-sidebar-expanded', JSON.stringify(expanded));
   }, [expanded]);
 
+  // Sub-topics (Tree Basics, Traversals, BST …): only the one you are studying starts open.
+  const activeGroup = topics.find((tp) => tp.id === activeId)?.subgroup?.key;
+  const [openGroups, setOpenGroups] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('algosim-sidebar-groups') || 'null');
+      if (Array.isArray(saved)) return saved;
+    } catch {}
+    return [];
+  });
+  useEffect(() => {
+    if (activeGroup) setOpenGroups((g) => (g.includes(activeGroup) ? g : [...g, activeGroup]));
+  }, [activeGroup]);
+  useEffect(() => {
+    try { localStorage.setItem('algosim-sidebar-groups', JSON.stringify(openGroups)); } catch {}
+  }, [openGroups]);
+  const toggleGroup = (key) => setOpenGroups((g) => (g.includes(key) ? g.filter((k) => k !== key) : [...g, key]));
+
   // Group topics by category (flat list per category, no nested subtopics)
   const grouped = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -68,16 +85,36 @@ const Sidebar = ({
     return () => clearTimeout(timer);
   }, [activeId]);
 
+  /** Split a category's lessons into its sub-topics, numbered 1, 2, 3 … in course order. */
+  const allGroupKeys = useMemo(() => {
+    const keys = [];
+    for (const tp of topics) if (tp.subgroup && !keys.includes(tp.subgroup.key)) keys.push(tp.subgroup.key);
+    return keys;
+  }, [topics]);
+  const subgroupsOf = (items) => {
+    const out = [];
+    for (const s of items) {
+      const key = s.subgroup?.key ?? null;
+      let g = out.find((x) => (x.info?.key ?? null) === key);
+      if (!g) {
+        g = { info: s.subgroup || null, number: allGroupKeys.indexOf(key) + 1, items: [] };
+        out.push(g);
+      }
+      g.items.push(s);
+    }
+    return out;
+  };
+
   const total = topics.length;
   const done = completed.length;
   const pct = total ? Math.round((done / total) * 100) : 0;
 
-  const renderItem = (s) => {
+  const renderItem = (s, num) => {
     const isActive = activeId === s.id;
     const isDone = completed.includes(s.id);
     return (
       <button key={s.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onClick={() => onSelect(s.id)}>
-        <div className="sidebar-item-num">{String(s.order).padStart(2, '0')}</div>
+        <div className="sidebar-item-num">{num ?? String(s.order).padStart(2, '0')}</div>
         <div className="sidebar-item-content">
           <div className="sidebar-item-name">
             {t(s.name, lang)}
@@ -146,7 +183,35 @@ const Sidebar = ({
 
               {open && !collapsed && (
                 <div className="sidebar-category-items">
-                  {group.items.map((s) => renderItem(s))}
+                  {subgroupsOf(group.items).map((sg, gi) => {
+                    if (!sg.info) return sg.items.map((s) => renderItem(s));
+                    const searching = query.trim().length > 0;
+                    const gOpen = searching || openGroups.includes(sg.info.key);
+                    const gDone = sg.items.filter((s) => completed.includes(s.id)).length;
+                    const hasActive = sg.items.some((s) => s.id === activeId);
+                    const allDone = gDone === sg.items.length;
+                    return (
+                      <div key={sg.info.key} className={`sidebar-subgroup${hasActive ? ' has-active' : ''}${allDone ? ' all-done' : ''}`}>
+                        <button className="sidebar-subgroup-header" onClick={() => toggleGroup(sg.info.key)} aria-expanded={gOpen}>
+                          <span className="sidebar-subgroup-badge">{allDone ? '✓' : sg.number}</span>
+                          <span className="sidebar-subgroup-text">
+                            <span className="sidebar-subgroup-name">{t(sg.info.label, lang)}</span>
+                            {sg.info.desc && <span className="sidebar-subgroup-desc">{t(sg.info.desc, lang)}</span>}
+                            <span className="sidebar-subgroup-meta">
+                              <span className="sidebar-subgroup-bar"><i style={{ width: `${(gDone / sg.items.length) * 100}%` }} /></span>
+                              <span className="sidebar-subgroup-count">{gDone}/{sg.items.length}</span>
+                            </span>
+                          </span>
+                          <span className="sidebar-subgroup-caret">{gOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}</span>
+                        </button>
+                        {gOpen && (
+                          <div className="sidebar-subgroup-items">
+                            {sg.items.map((s, i) => renderItem(s, `${sg.number}.${i + 1}`))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -276,14 +276,21 @@ export const multiwayTopics = [
         iteration: { i: 4, of: 4, label: { en: 'Tree Growth', bn: 'ট্রির বৃদ্ধি' } },
         state: { growthDirection: 'Upward from root', leafBalance: '100% equal depth', time: 'O(log N)' },
         scene: {
-          kind: 'cards',
-          label: '2-3 Tree Upward Growth Invariants',
-          cards: [
-            { icon: '🚀', title: 'Grows Upward', desc: 'When the root splits, a new root is born. Height increases by 1 for all nodes simultaneously.', state: 'active', tag: 'Upward Growth', accent: 'var(--yellow)' },
-            { icon: '⚖️', title: 'Perfect Balance', desc: 'No leaf can ever be deeper than any other leaf. Zero skewing possible.', state: 'ok', tag: 'Equal Depth', accent: 'var(--green)' },
-            { icon: '🗄️', title: 'Foundation of B-Trees', desc: '2-3 tree is simply a B-Tree of order m = 3.', state: 'ok', tag: 'B-Tree Order 3', accent: 'var(--cyan)' }
+          kind: 'multiway',
+          order: 3,
+          label: { en: 'The root split → a new root [40] appeared on top', bn: 'রুট ভাগ হয়েছে → ওপরে নতুন রুট [40] তৈরি' },
+          root: 'r',
+          nodes: [
+            { id: 'r', keys: [40], children: ['a', 'b'] },
+            { id: 'a', keys: [20], children: ['a1', 'a2'] },
+            { id: 'b', keys: [60], children: ['b1', 'b2'] },
+            { id: 'a1', keys: [10] },
+            { id: 'a2', keys: [30] },
+            { id: 'b1', keys: [50] },
+            { id: 'b2', keys: [70, 80] }
           ],
-          caption: '2-3 trees are the conceptual blueprint for database B-Trees.'
+          highlights: { promote: ['r'], split: ['a', 'b'] },
+          note: { en: 'The tree grew one level <b>at the top</b>, so every leaf is still on the same level.', bn: 'ট্রি <b>ওপরের দিকে</b> এক লেভেল বাড়ল, তাই সব লিফ এখনো একই লেভেলে।' }
         }
       }
     ]
@@ -482,14 +489,14 @@ export const multiwayTopics = [
         iteration: { i: 1, of: 4, label: { en: 'Disk Bottleneck', bn: 'ডিস্ক সমস্যা' } },
         state: { ramSpeed: '10 ns', diskSpeed: '10 ms', speedDifference: '1,000,000x slower' },
         scene: {
-          kind: 'cards',
-          label: 'Why B-Trees Revolutionized Database Storage',
-          cards: [
-            { icon: '⚡', title: 'RAM Access', desc: 'Blazing fast (10 ns). Binary trees work fine in RAM.', state: 'ok', tag: 'Nanoseconds', accent: 'var(--cyan)' },
-            { icon: '💾', title: 'Disk Seek', desc: 'Glacially slow (10 ms). Every pointer chase costs real time.', state: 'bad', tag: 'Milliseconds', accent: 'var(--red)' },
-            { icon: '🗄️', title: 'B-Tree Block', desc: '1 Node = 1 Disk Page (4KB). 512 keys read in 1 seek!', state: 'active', tag: 'Optimal', accent: 'var(--green)' }
+          kind: 'chart',
+          label: { en: 'Disk reads to find 1 record among 1 billion', bn: '১০০ কোটি রেকর্ডের মধ্যে ১টা খুঁজতে কতবার ডিস্ক পড়তে হয়' },
+          max: 30,
+          items: [
+            { label: { en: 'AVL tree', bn: 'AVL ট্রি' }, v: 30, color: 'var(--red)', note: { en: '2 keys per node · ≈ 300 ms', bn: 'নোডে ২টা কী · ≈ 300 ms' } },
+            { label: { en: 'B-tree', bn: 'B-ট্রি' }, v: 4, color: 'var(--green)', note: { en: '512 keys per node · ≈ 40 ms', bn: 'নোডে ৫১২টা কী · ≈ 40 ms' } }
           ],
-          caption: 'B-Trees minimize disk seeks by packing hundreds of keys into each disk block.'
+          caption: { en: 'one node = one disk block, so a wide node saves disk reads', bn: 'একটা নোড = একটা ডিস্ক ব্লক, তাই চওড়া নোডে ডিস্ক পড়া কমে' }
         }
       },
       {
@@ -807,14 +814,18 @@ export const multiwayTopics = [
         iteration: { i: 2, of: 4, label: { en: 'Comparison', bn: 'তুলনা' } },
         state: { btreeRange: 'Requires full tree traversal', bplusRange: 'O(1) sequential leaf scan' },
         scene: {
-          kind: 'cards',
-          label: 'Why B+ Trees Rule the Relational Database World',
-          cards: [
-            { icon: '🚀', title: 'Huge Fan-Out', desc: 'Internal blocks hold thousands of keys because no record payload is attached.', state: 'ok', tag: 'Fan-Out', accent: 'var(--cyan)' },
-            { icon: '🔗', title: 'Linked Leaf Chaining', desc: 'Leaves form a doubly linked list, enabling O(K) range scans without touching root.', state: 'active', tag: 'Linked Leaves', accent: 'var(--green)' },
-            { icon: '🛢️', title: 'Database Standard', desc: 'MySQL InnoDB, SQLite, and PostgreSQL B-Tree indexes are all implemented as B+ Trees.', state: 'ok', tag: 'Industry Standard', accent: 'var(--purple)' }
+          kind: 'multiway',
+          isBPlus: true,
+          label: { en: 'B+ tree: upper nodes hold only keys; records live in the linked leaves', bn: 'B+ ট্রি: ওপরের নোডে শুধু কী; রেকর্ড থাকে লিংক করা লিফে' },
+          root: 'r',
+          nodes: [
+            { id: 'r', keys: [30, 60], children: ['l1', 'l2', 'l3'] },
+            { id: 'l1', keys: [10, 20], sub: 'records' },
+            { id: 'l2', keys: [30, 40, 50], sub: 'records' },
+            { id: 'l3', keys: [60, 70, 80], sub: 'records' }
           ],
-          caption: 'B+ Tree is the undisputed champion of relational database indexing.'
+          highlights: { active: ['l1', 'l2', 'l3'] },
+          note: { en: 'Green dashed arrows link the leaves, so a range scan just walks sideways.', bn: 'সবুজ ড্যাশ তীরগুলো লিফ জোড়ে, তাই রেঞ্জ খুঁজতে পাশাপাশি হাঁটলেই হয়।' }
         }
       },
       {
@@ -1054,14 +1065,16 @@ export const multiwayTopics = [
         iteration: { i: 1, of: 4, label: { en: 'Master Table', bn: 'মাস্টার ছক' } },
         state: { bestForRead: 'AVL Tree', bestForWrite: 'Red-Black Tree', bestForDisk: 'B-Tree', bestForRangeQuery: 'B+ Tree' },
         scene: {
-          kind: 'cards',
-          label: 'Which Tree Wins for Each Workload?',
-          cards: [
-            { icon: '⚖️', title: 'AVL Tree', desc: 'Strictly bounded to 1.44 log2 N height. Fastest pure in-memory search.', state: 'ok', tag: 'Fastest Search', accent: 'var(--cyan)' },
-            { icon: '🔴', title: 'Red-Black Tree', desc: 'Fewer rotations on write. Preferred for standard library associative containers.', state: 'active', tag: 'Fastest Write', accent: 'var(--red)' },
-            { icon: '🗄️', title: 'B-Tree & B+ Tree', desc: 'Flattens tree height to 3 or 4 levels. Supreme champion of disk storage.', state: 'ok', tag: 'Disk Storage', accent: 'var(--green)' }
+          kind: 'chart',
+          label: { en: 'Worst-case height with N = 1,000,000 keys', bn: 'N = 1,000,000 কী থাকলে সবচেয়ে খারাপ উচ্চতা' },
+          max: 40,
+          items: [
+            { label: 'AVL', v: 29, color: 'var(--cyan)', note: '1.44·log₂N' },
+            { label: 'Red-Black', v: 40, color: 'var(--red)', note: '2·log₂(N+1)' },
+            { label: '2-3 tree', v: 20, color: 'var(--purple)', note: '≤ log₂N' },
+            { label: 'B-tree m=512', v: 3, color: 'var(--green)', note: 'log₂₅₆ N' }
           ],
-          caption: 'Every tree structure was invented to solve a specific physical memory constraint.'
+          caption: { en: 'a plain BST can reach 999,999 — far off this chart', bn: 'সাধারণ BST 999,999 পর্যন্ত যেতে পারে — চার্টের অনেক বাইরে' }
         }
       },
       {
@@ -1096,14 +1109,18 @@ export const multiwayTopics = [
         iteration: { i: 3, of: 4, label: { en: 'Storage Engines', bn: 'স্টোরেজ ইঞ্জিন' } },
         state: { innoDbEngine: 'B+ Tree', postgresIndex: 'B+ Tree', rangeScanSpeed: 'Optimal' },
         scene: {
-          kind: 'cards',
-          label: 'B+ Tree Dominance in Modern Databases',
-          cards: [
-            { icon: '🛢️', title: 'MySQL InnoDB', desc: 'Clustered index stores entire table rows inside the B+ Tree leaves.', state: 'ok', tag: 'Clustered Index', accent: 'var(--cyan)' },
-            { icon: '🐘', title: 'PostgreSQL', desc: 'Default CREATE INDEX command builds a high-concurrency B+ Tree.', state: 'active', tag: 'Default Index', accent: 'var(--yellow)' },
-            { icon: '📱', title: 'SQLite', desc: 'Used in Android and iOS phones to index millions of mobile database rows.', state: 'ok', tag: 'Mobile DB', accent: 'var(--green)' }
+          kind: 'multiway',
+          isBPlus: true,
+          label: { en: 'WHERE age > 21 — find the first leaf once, then walk the leaf chain', bn: 'WHERE age > 21 — একবার প্রথম লিফ খুঁজে, তারপর লিফ চেইন ধরে হাঁটো' },
+          root: 'r',
+          nodes: [
+            { id: 'r', keys: [21, 35], children: ['l1', 'l2', 'l3'] },
+            { id: 'l1', keys: [18, 20] },
+            { id: 'l2', keys: [21, 25, 30] },
+            { id: 'l3', keys: [35, 40] }
           ],
-          caption: 'Every database query you execute touches a B+ Tree under the hood.'
+          highlights: { active: ['l2', 'l3'], insert: ['r'] },
+          note: { en: 'The upper levels are small enough to stay in RAM — only the leaves need disk reads.', bn: 'ওপরের লেভেলগুলো ছোট, তাই RAM-এ থাকে — শুধু লিফের জন্য ডিস্ক পড়তে হয়।' }
         }
       },
       {
@@ -1116,14 +1133,9 @@ export const multiwayTopics = [
         iteration: { i: 4, of: 4, label: { en: 'Mastery', bn: 'মাস্টারি' } },
         state: { topicsCovered: 'All 3 Reference Guides', implementationReady: true, status: 'Completed' },
         scene: {
-          kind: 'cards',
-          label: 'Comprehensive Tree Curriculum Complete',
-          cards: [
-            { icon: '🎓', title: 'University DSA Mastered', desc: 'All concepts, theorems, visual algorithms, and verified multi-language implementations.', state: 'ok', tag: 'Complete', accent: 'var(--green)' },
-            { icon: '💻', title: 'Multi-Language Code', desc: 'JavaScript, Java, Python, and C++ implementations matching line-by-line.', state: 'active', tag: '4 Languages', accent: 'var(--cyan)' },
-            { icon: '🚀', title: 'Top-Notch Visuals', desc: 'Animations, state HUDs, and step-by-step interactive breakdowns.', state: 'ok', tag: 'Visualization', accent: 'var(--yellow)' }
-          ],
-          caption: 'Ready to build production-grade search trees and database storage engines.'
+          kind: 'none',
+          title: { en: 'Trees curriculum complete', bn: 'ট্রি কারিকুলাম শেষ' },
+          desc: { en: 'Foundations → traversals → BST → AVL & Red-Black → 2-3, B and B+ trees.', bn: 'ভিত্তি → ট্রাভার্সাল → BST → AVL ও রেড-ব্ল্যাক → ২-৩, B ও B+ ট্রি।' }
         }
       }
     ]

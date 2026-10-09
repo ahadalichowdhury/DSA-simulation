@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { rich } from './utils.js';
 
 /**
  * TreeMemoryVisual: High-fidelity visual simulation of Tree Memory Representations.
@@ -72,7 +73,7 @@ function ArrayMappingView({ scene, selectedIdx, onSelect, lang }) {
 
   return (
     <div className="tm-wrap">
-      {scene.label && <div className="tm-title" dangerouslySetInnerHTML={{ __html: scene.label }} />}
+      {scene.label && <div className="tm-title" dangerouslySetInnerHTML={{ __html: rich(scene.label, lang) }} />}
 
       {/* SVG Canvas for Tree + Connectors */}
       <svg className="tm-svg" width="520" height="340" viewBox="0 0 520 340">
@@ -243,7 +244,7 @@ function ArrayMappingView({ scene, selectedIdx, onSelect, lang }) {
         </div>
       </div>
 
-      {scene.note && <div className="arr-note" style={{ textAlign: 'center', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: scene.note }} />}
+      {scene.note && <div className="arr-note" style={{ textAlign: 'center', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: rich(scene.note, lang) }} />}
     </div>
   );
 }
@@ -266,7 +267,7 @@ function SkewedWasteView({ scene, lang }) {
 
   return (
     <div className="tm-wrap">
-      {scene.label && <div className="tm-title" dangerouslySetInnerHTML={{ __html: scene.label }} />}
+      {scene.label && <div className="tm-title" dangerouslySetInnerHTML={{ __html: rich(scene.label, lang) }} />}
 
       {/* Skewed Tree + Connector Lines */}
       <svg className="tm-svg" width="460" height="230" viewBox="0 0 460 230">
@@ -342,7 +343,7 @@ function SkewedWasteView({ scene, lang }) {
         </div>
       </div>
 
-      {scene.note && <div className="arr-note" style={{ textAlign: 'center', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: scene.note }} />}
+      {scene.note && <div className="arr-note" style={{ textAlign: 'center', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: rich(scene.note, lang) }} />}
     </div>
   );
 }
@@ -384,7 +385,7 @@ function LinkedStructView({ scene, lang }) {
 
   return (
     <div className="tm-wrap">
-      {scene.label && <div className="tm-title" dangerouslySetInnerHTML={{ __html: scene.label }} />}
+      {scene.label && <div className="tm-title" dangerouslySetInnerHTML={{ __html: rich(scene.label, lang) }} />}
 
       <div className="tm-badge-row">
         <span className="tm-tag cyan">struct Node {'{ Node* lchild; int data; Node* rchild; }'}</span>
@@ -453,7 +454,7 @@ function LinkedStructView({ scene, lang }) {
         <span className="tm-leg-item"><i style={{ background: 'var(--text-primary)' }} /> {lang === 'bn' ? 'নোডের আসল মান (data)' : 'Payload (Data Value)'}</span>
       </div>
 
-      {scene.note && <div className="arr-note" style={{ textAlign: 'center', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: scene.note }} />}
+      {scene.note && <div className="arr-note" style={{ textAlign: 'center', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: rich(scene.note, lang) }} />}
     </div>
   );
 }
@@ -475,7 +476,7 @@ function NullTheoremView({ scene, lang }) {
 
   return (
     <div className="tm-wrap">
-      {scene.label && <div className="tm-title" dangerouslySetInnerHTML={{ __html: scene.label }} />}
+      {scene.label && <div className="tm-title" dangerouslySetInnerHTML={{ __html: rich(scene.label, lang) }} />}
 
       {/* SVG Canvas for Tree + Explicit Red Terminals */}
       <svg className="tm-svg" width="500" height="250" viewBox="0 0 500 250">
@@ -556,7 +557,7 @@ function NullTheoremView({ scene, lang }) {
         </div>
       </div>
 
-      {scene.note && <div className="arr-note" style={{ textAlign: 'center', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: scene.note }} />}
+      {scene.note && <div className="arr-note" style={{ textAlign: 'center', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: rich(scene.note, lang) }} />}
     </div>
   );
 }

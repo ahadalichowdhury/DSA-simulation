@@ -8,7 +8,7 @@ const bi = (en, bn) => ({ en, bn });
 
 const SCENE_KEYS = [
   'kind', 'label', 'cells', 'showIndex', 'sub', 'highlights', 'pointers',
-  'brackets', 'aux', 'items', 'unit', 'max', 'cards', 'nodes', 'note',
+  'brackets', 'aux', 'items', 'unit', 'max', 'nodes', 'note',
   'caption', 'legend', 'desc'
 ];
 
@@ -278,15 +278,14 @@ export const sortingTopics = [
           '**ভালো লাগে**\n- কয়েকটা আইটেমের খুব ছোট তালিকায়,\n- কম মেমরিতে — স্পেস `O(1)`,\n- যখন লেখা-পড়া খরচি (ফ্ল্যাশ মেমরি): সোয়াপ (swap) সবসময় `n - 1` বারের বেশি নয়।\n\n**খারাপ** বড় ডেটায়। ১০,০০০ আইটেম → প্রায় ৫ কোটি বার তুলনা।\n\n> সময় সবক্ষেত্রে `O(n²)`, স্পেস `O(1)`। সহজ, অনুমানযোগ্য, কিন্তু বড় ডেটায় ধীর।'
         ),
         scene({
-          kind: 'cards',
-          label: 'Selection sort at a glance',
-          cards: [
-            { icon: '🐢', title: 'Always O(n²)', desc: 'it scans the whole tail every round', state: 'bad', tag: 'time', accent: 'var(--red)' },
-            { icon: '🔁', title: 'Only n-1 swaps', desc: 'great when writing data costs a lot', state: 'ok', tag: 'writes', accent: 'var(--green)' },
-            { icon: '🧠', title: 'Space O(1)', desc: 'just i, j and min variables', state: 'ok', tag: 'memory', accent: 'var(--cyan)' },
-            { icon: '🐣', title: 'Tiny lists', desc: 'handy for a handful of items', state: 'active', tag: 'use it', accent: 'var(--yellow)' }
+          kind: 'chart',
+          label: 'selection sort on 10,000 items',
+          max: 50000000,
+          items: [
+            { label: 'comparisons', v: 50000000, color: 'var(--red)', note: 'always O(n²)' },
+            { label: 'swaps', v: 9999, color: 'var(--green)', note: 'at most n − 1' }
           ],
-          caption: 'Next lesson in the sidebar: Bubble Sort'
+          note: 'Slow to compare, but it barely writes — handy when writes are expensive.'
         }),
         0,
         { time: 'O(n²)', space: 'O(1)' }
@@ -345,14 +344,12 @@ export const sortingTopics = [
           'ধরো ছয়টা ছেলেমেয়ে এলোমেলো লাইনে দাঁড়িয়ে আছে। তুমি শুধু **দুইজন পাশের** লোককে তুলনা করো।\n\nবামেরটা বড় হলে তারা **সোয়াপ** করে। তারপর এক ধাপ ডানে সরে আবার দেখো।\n\nএক রাউন্ড হাঁটলেই সবচেয়ে লম্বাটা ডানে ভেসে ওঠে — বুদবুদ উপরে ওঠার মতো। এটাই **বাবল সর্ট**।'
         ),
         scene({
-          kind: 'cards',
-          label: 'Two neighbours at a time',
-          cards: [
-            { icon: '🧍', title: 'Compare neighbours', desc: 'only arr[j] and arr[j+1]', state: 'active', tag: 'compare', accent: 'var(--cyan)' },
-            { icon: '🔁', title: 'Swap if out of order', desc: 'the bigger value moves right', state: 'active', tag: 'swap', accent: 'var(--amber)' },
-            { icon: '🫧', title: 'Biggest bubbles to the end', desc: 'after one full pass', state: 'ok', tag: 'one pass', accent: 'var(--green)' }
-          ],
-          caption: 'nums = [5, 3, 8, 1, 9, 2]'
+          kind: 'bars',
+          label: 'compare two neighbours · swap if the left one is bigger',
+          cells: [5, 3, 8, 1, 9, 2],
+          highlights: { compare: [0, 1] },
+          pointers: [{ i: 0, label: 'j', tone: 'cyan' }, { i: 1, label: 'j+1', tone: 'cyan' }],
+          note: '5 > 3 → swap. After one full pass the biggest bar reaches the right end.'
         }),
         0,
         { n: 6, pass: 0 }
@@ -559,15 +556,14 @@ export const sortingTopics = [
           '**ভালো লাগে**\n- শেখার জন্য — নিয়মটা এক লাইনে বলা যায়,\n- ছোট তালিকায়,\n- **প্রায় সাজানো** ডেটায়, আগে থেকে থামার কারণে,\n- সমান মানগুলোর অবস্থান বদলায় না (**stable**)।\n\n**খারাপ** বড় এলোমেলো ডেটায়: ১০,০০০ আইটেম → প্রায় ৫ কোটি বার তুলনা।\n\n> সময় খারাপ কেসে `O(n²)`, ভালো কেসে `O(n)`, স্পেস `O(1)`। বড় ডেটায় মার্জ বা কুইক সর্ট নাও।'
         ),
         scene({
-          kind: 'cards',
-          label: 'Bubble sort in one screen',
-          cards: [
-            { icon: '🫧', title: 'Swap neighbours', desc: 'if arr[j] > arr[j+1], swap them', state: 'active', tag: 'rule', accent: 'var(--cyan)' },
-            { icon: '🍀', title: 'Best O(n)', desc: 'early exit on sorted data', state: 'ok', tag: 'lucky case', accent: 'var(--green)' },
-            { icon: '🌪️', title: 'Worst O(n²)', desc: 'big random lists crawl', state: 'bad', tag: 'slow', accent: 'var(--red)' },
-            { icon: '⚖️', title: 'Stable + O(1)', desc: 'equal values keep order, no extra array', state: 'ok', tag: 'memory', accent: 'var(--purple)' }
+          kind: 'chart',
+          label: 'bubble sort on 10,000 items — comparisons',
+          max: 50000000,
+          items: [
+            { label: 'already sorted', v: 9999, color: 'var(--green)', note: 'best O(n)' },
+            { label: 'random', v: 50000000, color: 'var(--red)', note: 'worst O(n²)' }
           ],
-          caption: 'Next lesson in the sidebar: Insertion Sort'
+          note: 'Stable and O(1) space — fine for tiny or almost-sorted lists.'
         }),
         0,
         { time: 'O(n²)', best: 'O(n)', space: 'O(1)' }
@@ -624,14 +620,13 @@ export const sortingTopics = [
           'তুমি এলোমেলো ক্রমে কিছু কার্ড হাতে ধরে আছো।\n\n**এক এক কার্ড** করে বের করে বাম পাশের সাজানো কার্ডগুলোর মধ্যে ঢোকাও। বড় কার্ডগুলো জায়গা দিতে ডানে সরে যায়।\n\nএটাই **ইনসারশন সর্ট (insertion sort)**: বাম দিক থেকে সাজানো অংশ বাড়ে, প্রতি চক্রে একটা কার্ড।'
         ),
         scene({
-          kind: 'cards',
-          label: 'Hold one card, slide it in',
-          cards: [
-            { icon: '🃏', title: 'Pick the next card', desc: 'key = arr[i], taken out of the row', state: 'active', tag: 'key', accent: 'var(--yellow)' },
-            { icon: '➡️', title: 'Shift bigger cards right', desc: 'they move to open the gap', state: 'active', tag: 'shift', accent: 'var(--cyan)' },
-            { icon: '📥', title: 'Drop it into the gap', desc: 'the sorted part grows by one', state: 'ok', tag: 'insert', accent: 'var(--green)' }
-          ],
-          caption: 'nums = [5, 3, 8, 1, 9, 2]'
+          kind: 'array',
+          label: 'take the next card (key) and slide it into the sorted part',
+          cells: [3, 5, 8, 1, 9, 2],
+          highlights: { sorted: [0, 1, 2], active: [3] },
+          pointers: [{ i: 3, label: 'key', tone: 'yellow' }],
+          brackets: [{ from: 0, to: 2, label: 'sorted hand', tone: 'green' }],
+          note: 'Bigger cards (3, 5, 8) shift right, then 1 drops into the gap at the front.'
         }),
         0,
         { i: 1, n: 6 }
@@ -836,15 +831,14 @@ export const sortingTopics = [
           '**সময়**\n- সেরা `O(n)` — প্রায় সাজানো ডেটা\n- গড় ও খারাপ `O(n²)` — এলোমেলো বা উল্টো ক্রম\n\n**স্পেস** `O(1)` — কাজ করে অ্যারের ভেতরেই।\n\n**আরও ভালো খবর**: এটা **stable**, আর বড় বাস্তব সর্ট ছোট অংশে এটাকেই ব্যবহার করে (এজন্যই মার্জ সর্ট লাইব্রেরির ভেতরে এটা চলে)।\n\n> ছোট অ্যারেতে, প্রায় সাজানো ডেটায়, আর দ্রুত সর্টের শেষ পরিষ্কার-পরিচ্ছন্নতায় এটাই ব্যবহার করো।'
         ),
         scene({
-          kind: 'cards',
-          label: 'Insertion sort at a glance',
-          cards: [
-            { icon: '🍀', title: 'Best O(n)', desc: 'already sorted → one compare per card', state: 'ok', tag: 'lucky', accent: 'var(--green)' },
-            { icon: '🌪️', title: 'Worst O(n²)', desc: 'reversed data → everything slides', state: 'bad', tag: 'slow', accent: 'var(--red)' },
-            { icon: '🧠', title: 'Space O(1) + stable', desc: 'in place, equal values keep order', state: 'ok', tag: 'memory', accent: 'var(--cyan)' },
-            { icon: '🐣', title: 'Best for small data', desc: 'tiny or nearly sorted slices', state: 'active', tag: 'use it', accent: 'var(--yellow)' }
+          kind: 'chart',
+          label: 'insertion sort on 10,000 items — comparisons',
+          max: 50000000,
+          items: [
+            { label: 'nearly sorted', v: 10000, color: 'var(--green)', note: 'best O(n)' },
+            { label: 'reversed', v: 50000000, color: 'var(--red)', note: 'worst O(n²)' }
           ],
-          caption: 'Next lesson in the sidebar: Merge Sort'
+          note: 'In place (O(1) space) and stable — great for small or nearly sorted data.'
         }),
         0,
         { time: 'O(n²)', best: 'O(n)', space: 'O(1)' }
@@ -913,14 +907,14 @@ export const sortingTopics = [
           'ধরো দুটো গাদা পরীক্ষার কাগজ, প্রতিটা গাদাই আগে থেকেই সাজানো।\n\nএকটাই সাজানো গাদা বানাতে হবে একটা কাজ: **দুই গাদার উপরেরটা দেখো, ছোটটা নাও, নতুন গাদায় বসাও।**\n\nদুটো গাদাই ফাঁকা না হওয়া পর্যন্ত এভাবেই চালাও। আর কিছুই আবার দেখতে হয় না।\n\n**মার্জ সর্ট (merge sort)** আগে এলোমেলো গাদাটাকে এক এক কাগজে ভাগ করে, তারপর ঠিক এই কৌশলে আবার জোড়া দেয়।'
         ),
         scene({
-          kind: 'cards',
-          label: 'Merging is the heart of it',
-          cards: [
-            { icon: '✂️', title: 'Split first', desc: 'cut the mess into single items', state: 'active', tag: 'divide', accent: 'var(--purple)' },
-            { icon: '👉', title: 'Two fingers', desc: 'one on each sorted half', state: 'active', tag: 'compare', accent: 'var(--cyan)' },
-            { icon: '📥', title: 'Take the smaller', desc: 'write it, move that finger', state: 'ok', tag: 'merge', accent: 'var(--green)' }
-          ],
-          caption: 'nums = [5, 3, 8, 1, 9, 2]'
+          kind: 'array',
+          label: 'two sorted piles · compare the two tops · take the smaller',
+          cells: [1, 3, 5, 2, 8, 9],
+          highlights: { sorted: [0], compare: [1, 3] },
+          pointers: [{ i: 1, label: 'i', tone: 'cyan' }, { i: 3, label: 'j', tone: 'amber' }],
+          brackets: [{ from: 0, to: 2, label: 'left pile', tone: 'cyan' }],
+          aux: [{ label: 'merged so far', cells: [1, 2], highlights: { insert: [1] } }],
+          note: '3 vs 2 → take 2. Nothing ever needs re-checking.'
         }),
         6,
         { lo: 0, hi: 5 }
@@ -1203,15 +1197,15 @@ export const sortingTopics = [
           '**স্থিতিশীল (stable)** — সমান মান আগের অবস্থানেই থাকে, কারণ `L[i] <= R[j]` হলে আগে বাম লাইন থেকে নেওয়া হয়।\n\n**স্পেস `O(n)`** — মার্জ আগে একটা সাময়িক সারিতে লেখে, তারপর কপি করে আনে। এটাই গতির দাম।\n\n**সবসময় `O(n log n)`** — ভাগ্যবান ইনপুট নেই, দুর্ভাগ্যবান ইনপুটও নেই।\n\n> অনুমানযোগ্য গতি বা স্থিতিশীল ক্রম দরকার হলে মার্জ সর্ট বেছে নাও।'
         ),
         scene({
-          kind: 'cards',
-          label: 'Merge sort in one screen',
-          cards: [
-            { icon: '⚡', title: 'Always O(n log n)', desc: 'best, average and worst are the same', state: 'ok', tag: 'time', accent: 'var(--green)' },
-            { icon: '⚖️', title: 'Stable', desc: 'equal values keep their order', state: 'ok', tag: 'stable', accent: 'var(--cyan)' },
-            { icon: '🧺', title: 'Space O(n)', desc: 'needs a temp row for merging', state: 'active', tag: 'memory', accent: 'var(--yellow)' },
-            { icon: '📺', title: 'Great for big data', desc: 'linked lists and external files too', state: 'ok', tag: 'use it', accent: 'var(--purple)' }
+          kind: 'chart',
+          label: 'merge sort on 1,000 items — comparisons (≈ n log n)',
+          max: 10000,
+          items: [
+            { label: 'sorted input', v: 9976, color: 'var(--green)' },
+            { label: 'random input', v: 9976, color: 'var(--green)' },
+            { label: 'reversed input', v: 9976, color: 'var(--green)' }
           ],
-          caption: 'Next lesson in the sidebar: Quick Sort'
+          note: 'Always O(n log n) and stable — the price is an O(n) temp row.'
         }),
         10,
         { time: 'O(n log n)', space: 'O(n)', stable: true }
@@ -1280,14 +1274,13 @@ export const sortingTopics = [
           '**কুইক সর্ট** একটা মান বেছে নেয় — **পিভট (pivot)** — আর বাকি প্রতিটি মানকে একটা প্রশ্ন করে:\n\n> তুমি কি পিভটের চেয়ে ছোট, নাকি বড়?\n\nছোট হলে **বামে**, বড় হলে **ডানে**। এক চক্রের পরে পিভট নিজের চূড়ান্ত জায়গায় বসে যায়।\n\nএরপর বাম অংশে আবার, আর ডান অংশে আবার একই কাজ।'
         ),
         scene({
-          kind: 'cards',
-          label: 'One pivot, two sides',
-          cards: [
-            { icon: '⚖️', title: 'Pick a pivot', desc: 'one value to judge everything against', state: 'active', tag: 'pivot', accent: 'var(--purple)' },
-            { icon: '👈', title: 'Smaller → left', desc: 'all values ≤ pivot', state: 'ok', tag: 'left side', accent: 'var(--green)' },
-            { icon: '👉', title: 'Bigger → right', desc: 'all values > pivot', state: 'ok', tag: 'right side', accent: 'var(--amber)' }
-          ],
-          caption: 'nums = [5, 3, 8, 1, 9, 2] · pivot = 2'
+          kind: 'array',
+          label: 'pivot = 2 · smaller goes left, bigger goes right',
+          cells: [5, 3, 8, 1, 9, 2],
+          highlights: { pivot: [5] },
+          pointers: [{ i: 5, label: 'pivot', tone: 'purple' }],
+          aux: [{ label: 'after one round — 2 is in its final place', cells: [1, 2, 8, 5, 9, 3], highlights: { sorted: [1], dim: [0, 2, 3, 4, 5] } }],
+          note: 'Then repeat on the left piece [1] and the right piece [8, 5, 9, 3].'
         }),
         0,
         { lo: 0, hi: 5 }
@@ -1527,15 +1520,14 @@ export const sortingTopics = [
           '**স্পেস `O(log n)`** — পার্টিশন হয় অ্যারের ভেতরেই, শুধু রিকারশন স্ট্যাক বাড়তি। মার্জ সর্টে লাগে `O(n)`।\n\n**জায়গা নষ্ট করে না (in place)** — কোনো বড় সাময়িক অ্যারে নেই, তাই ক্যাশের সঙ্গে ভালো মানায়।\n\n**বাস্তবে** — সাধারণত এটাই সবচেয়ে দ্রুত (C++ `std::sort`, আগের জাভা `Arrays.sort`)।\n\n> একটা দুর্বলতা: এটা **stable নয়** — সমান মানের ক্রম বদলে যেতে পারে।'
         ),
         scene({
-          kind: 'cards',
-          label: 'Quick sort in one screen',
-          cards: [
-            { icon: '⚡', title: 'Avg O(n log n)', desc: 'balanced pivots split the data in half', state: 'ok', tag: 'time', accent: 'var(--green)' },
-            { icon: '🌪️', title: 'Worst O(n²)', desc: 'bad pivots: sorted data, fixed last cell', state: 'bad', tag: 'risk', accent: 'var(--red)' },
-            { icon: '🧠', title: 'Space O(log n)', desc: 'in place — only the call stack', state: 'ok', tag: 'memory', accent: 'var(--cyan)' },
-            { icon: '🏁', title: 'Usually fastest', desc: 'the default general sort in libraries', state: 'active', tag: 'in practice', accent: 'var(--yellow)' }
+          kind: 'chart',
+          label: 'extra memory to sort 1,000,000 items',
+          max: 1000000,
+          items: [
+            { label: 'merge sort', v: 1000000, color: 'var(--amber)', note: 'temp row · O(n)' },
+            { label: 'quick sort', v: 20, color: 'var(--green)', note: 'call stack · O(log n)' }
           ],
-          caption: 'You finished Sorting · next chapter: Linked Lists'
+          note: 'In place and usually fastest — but not stable, and O(n²) with bad pivots.'
         }),
         0,
         { time: 'O(n log n) avg', space: 'O(log n)', stable: false }

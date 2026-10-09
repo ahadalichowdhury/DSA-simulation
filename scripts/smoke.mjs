@@ -43,7 +43,7 @@ try {
 
   console.log(`topics: ${topics.length}`);
 
-  const SCENE_KINDS = ['array', 'bars', 'linkedlist', 'stack', 'queue', 'tree', 'graph', 'hash', 'cards', 'chart', 'none'];
+  const SCENE_KINDS = ['array', 'bars', 'linkedlist', 'stack', 'queue', 'tree', 'graph', 'hash', 'chart', 'none'];
   const kindsSeen = new Set();
   let scenes = 0;
   for (const topic of topics) {

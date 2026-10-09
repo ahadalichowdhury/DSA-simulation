@@ -61,14 +61,16 @@ export const hashingTopics = [
         },
         line: 8,
         scene: {
-          kind: 'cards',
-          label: 'Find the value of key <b>cat</b>',
-          cards: [
-            { icon: '🐌', title: 'Array way', desc: 'check 1,000,000 rows one by one', state: 'bad', tag: 'O(n)', accent: 'var(--red)' },
-            { icon: '⚡', title: 'Hash way', desc: 'compute the bucket, jump there once', state: 'active', tag: 'O(1)', accent: 'var(--yellow)' },
-            { icon: '🪣', title: 'Buckets', desc: 'every key gets its own bucket number', state: 'ok', tag: 'key → i', accent: 'var(--cyan)' }
+          kind: 'hash',
+          label: { en: 'say the key "cat" → compute its bucket → one jump', bn: '"cat" কী বলো → বাকেট হিসাব করো → এক লাফ' },
+          formula: 'pos("cat"[0]) % 7',
+          formulaResult: '3',
+          buckets: [
+            { i: 0 }, { i: 1, entries: [{ k: 'ant', v: 3 }] }, { i: 2 },
+            { i: 3, state: 'hit', entries: [{ k: 'cat', v: 7, state: 'probe' }] },
+            { i: 4 }, { i: 5, entries: [{ k: 'sun', v: 5 }] }, { i: 6 }
           ],
-          caption: 'key = the name you look up · value = the data you get back'
+          note: { en: 'No scanning row by row — the key itself tells us where to look.', bn: 'সারি ধরে খোঁজা নেই — কী নিজেই বলে দেয় কোথায় দেখতে হবে।' }
         }
       },
       {
@@ -210,14 +212,14 @@ export const hashingTopics = [
         line: 1,
         state: { keys: 5, buckets: 7, load: 0.71, nextBuckets: 14 },
         scene: {
-          kind: 'cards',
-          label: 'Keeping the chains short',
-          cards: [
-            { icon: '⚖️', title: 'Load factor', desc: '5 keys ÷ 7 buckets ≈ 0.71 — healthy', state: 'ok', tag: 'α = 0.71', accent: 'var(--green)' },
-            { icon: '⛓️', title: 'Chains get long', desc: 'α above 1 → lookup turns into a scan', state: 'bad', tag: 'slow → O(n)', accent: 'var(--red)' },
-            { icon: '📐', title: 'Resize', desc: 'grow 7 → 14 buckets, re-hash every key', state: 'active', tag: '2×', accent: 'var(--yellow)' }
+          kind: 'hash',
+          label: { en: 'load factor α = 5 keys ÷ 7 buckets ≈ 0.71', bn: 'লোড ফ্যাক্টর α = ৫টা কী ÷ ৭টা বাকেট ≈ 0.71' },
+          buckets: [
+            { i: 0 }, { i: 1, entries: [{ k: 'ant', v: 3 }] }, { i: 2 },
+            { i: 3, state: 'active', entries: [{ k: 'cat', v: 7 }, { k: 'cow', v: 2, state: 'col' }, { k: 'car', v: 4, state: 'col' }] },
+            { i: 4 }, { i: 5, entries: [{ k: 'sun', v: 5 }] }, { i: 6 }
           ],
-          caption: 'short chains are exactly what keeps lookups at O(1)'
+          note: { en: 'Above α = 1 chains get long → grow to 14 buckets and re-hash every key.', bn: 'α = 1-এর বেশি হলে চেইন লম্বা হয় → ১৪টা বাকেটে বাড়াও আর সব কী আবার হ্যাশ করো।' }
         }
       },
       {
@@ -227,14 +229,17 @@ export const hashingTopics = [
           bn: 'তুমি প্রতিদিনই হ্যাশ টেবিল ছুঁয়ে যাও:\n\n- **অবজেক্ট / ডিকশনারি** — `user["age"]` লিখলেই সরাসরি মানে পৌঁছে যায়।\n- **সেট (set)** — কী দেখেছি সেটা মনে রাখে, ডুপ্লিকেট ছাড়াই।\n- **ক্যাশ ও মেমোআইজেশন** — উত্তর ইনপুটের নামে রাখা থাকে, তাই দ্বিতীয়বার খরচ শূন্য।\n\nপ্রতিবার একই কথা: **কী থেকে বাক্স বানাও, তারপর ঝাঁপ দাও**।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Three everyday uses',
-          cards: [
-            { icon: '📖', title: 'Object / dict', desc: 'user["age"] → the value in one jump', state: 'active', tag: 'key → value', accent: 'var(--cyan)' },
-            { icon: '🎯', title: 'Set', desc: 'seen IDs — duplicates not allowed', state: 'ok', tag: 'keys only', accent: 'var(--green)' },
-            { icon: '🧲', title: 'Cache', desc: 'store the answer, reuse it for free', state: 'ok', tag: 'memo', accent: 'var(--purple)' }
+          kind: 'hash',
+          label: { en: 'user = { name, age, city } is a hash table inside', bn: 'user = { name, age, city } — ভেতরে আসলে হ্যাশ টেবিল' },
+          formula: 'hash("age") % 5',
+          formulaResult: '2',
+          valueLabel: 'Key → Value',
+          buckets: [
+            { i: 0, entries: [{ k: 'city', v: 'Dhaka' }] }, { i: 1 },
+            { i: 2, state: 'hit', entries: [{ k: 'age', v: 21, state: 'probe' }] },
+            { i: 3 }, { i: 4, entries: [{ k: 'name', v: 'Rafi' }] }
           ],
-          caption: 'JavaScript objects, Python dicts, Java HashMap — one shared trick'
+          note: { en: 'user["age"] → hash → bucket 2 → 21. Sets and caches work the same way.', bn: 'user["age"] → হ্যাশ → বাকেট ২ → 21। সেট আর ক্যাশও একইভাবে কাজ করে।' }
         }
       },
       {
@@ -449,14 +454,15 @@ export const hashingTopics = [
           bn: 'যে প্রশ্ন করছো, সেটা ধরে বেছে নাও:\n\n- **অ্যারে (array)** — **ক্রম ও অবস্থান** দরকার: ৫ নম্বর আইটেমটা দাও, ধারাবাহিক তালিকা, বাম থেকে ডানে হাঁটা।\n- **সেট (set)** — শুধু **আছে, নাকি নেই?** ডুপ্লিকেট নেই, ক্রমও নেই।\n- **ম্যাপ (map)** — পেছনে **নাম আর সংখ্যা** আছে: শব্দ → গুনতি, id → ইউজার।\n\n> কোডে বারবার লিখতে হয় `for x in list: if x == key` — এমন হলে সেট বা ম্যাপ ওই পুরো লুপটাই বাদ দিয়ে দেবে।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Same data, three questions',
-          cards: [
-            { icon: '📏', title: 'Array', desc: 'order matters — index 0, 1, 2…', state: 'ok', tag: 'position', accent: 'var(--cyan)' },
-            { icon: '🎯', title: 'Set', desc: 'membership only — no duplicates', state: 'ok', tag: 'present?', accent: 'var(--green)' },
-            { icon: '🗂️', title: 'Map', desc: 'key → value — count, look up, replace', state: 'active', tag: 'name → number', accent: 'var(--yellow)' }
+          kind: 'array',
+          label: { en: 'array — keeps order and duplicates', bn: 'অ্যারে — ক্রম আর ডুপ্লিকেট রাখে' },
+          cells: ['cat', 'dog', 'cat', 'owl'],
+          highlights: { mark: [0, 2] },
+          aux: [
+            { label: 'set — each item once, answers “is it there?”', cells: ['cat', 'dog', 'owl'] },
+            { label: 'map — key → value (word → count)', cells: ['cat: 2', 'dog: 1', 'owl: 1'], highlights: { active: [0] } }
           ],
-          caption: 'same data, three different questions'
+          note: { en: 'Same words, three different questions.', bn: 'একই শব্দ, তিনটা আলাদা প্রশ্ন।' }
         }
       },
       {
@@ -468,14 +474,16 @@ export const hashingTopics = [
         line: [1, 9],
         state: { setOps: 'add / has / delete', mapOps: 'set / get / delete', all: 'O(1) average' },
         scene: {
-          kind: 'cards',
-          label: 'Copy-paste shapes',
-          cards: [
-            { icon: '➕', title: 'Add', desc: 'seen.add("cat") · freq.set("cat", 1)', state: 'active', tag: 'insert', accent: 'var(--cyan)' },
-            { icon: '🔍', title: 'Read', desc: 'seen.has("cat") · freq.get("cat")', state: 'active', tag: 'lookup', accent: 'var(--yellow)' },
-            { icon: '❌', title: 'Delete', desc: 'seen.delete("cat") · delete freq["cat"]', state: 'ok', tag: 'remove', accent: 'var(--red)' }
+          kind: 'hash',
+          label: { en: 'freq.set("cat", 1) then freq.get("cat") — the same route both times', bn: 'freq.set("cat", 1) তারপর freq.get("cat") — দুবারই একই পথ' },
+          formula: 'hash("cat") % 5',
+          formulaResult: '3',
+          buckets: [
+            { i: 0, entries: [{ k: 'dog', v: 1 }] }, { i: 1 }, { i: 2 },
+            { i: 3, state: 'active', entries: [{ k: 'cat', v: 1, state: 'new' }] },
+            { i: 4, entries: [{ k: 'owl', v: 1 }] }
           ],
-          caption: 'JavaScript shown — Python uses set() and dict[key]'
+          note: { en: 'add, read and delete all go: <b>hash → bucket → chain</b>.', bn: 'যোগ, পড়া, মোছা — সবই: <b>হ্যাশ → বাকেট → চেইন</b>।' }
         }
       },
       {
@@ -485,15 +493,14 @@ export const hashingTopics = [
           bn: '- **add / has / get / delete** — গড়ে **O(1)**, সব কী এক চেইনে পড়লে সবচেয়ে খারাপ কেস **O(n)**।\n- **স্পেস** — **O(n)**: কী-গুলো আর তার চারপাশের খালি বাক্সগুলো।\n- **n আইটেমের তালিকা সেট দিয়ে ডুপ্লিকেট ছাড়া করা** — পুরোটাই **O(n)** (n বার হ্যাশ), নেস্টেড চেকের **O(n²)** নয়।\n- **n টা শব্দ ম্যাপে গুনা** — তাও **O(n)**, প্রতি শব্দে এক ঝাঁপ।\n\n> হ্যাশিং সেই দুর্লভ কৌশল, যা সাধারণ কাজটাকে তাৎক্ষণিক করে তোলে: এক হ্যাশ, এক বাক্স, উত্তর।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Sets and maps at a glance',
-          cards: [
-            { icon: '⚡', title: 'add / has / get', desc: 'one hash, one jump — average O(1)', state: 'ok', tag: 'O(1)', accent: 'var(--green)' },
-            { icon: '🌪️', title: 'Worst case', desc: 'all keys in one chain → walk it', state: 'bad', tag: 'O(n)', accent: 'var(--red)' },
-            { icon: '🧠', title: 'Space', desc: 'keys + bucket slots → O(n)', state: 'active', tag: 'O(n)', accent: 'var(--purple)' },
-            { icon: '🧹', title: 'Dedupe n items', desc: 'one pass with a set → O(n), not O(n²)', state: 'ok', tag: 'O(n)', accent: 'var(--cyan)' }
+          kind: 'chart',
+          label: { en: 'Remove duplicates from 1,000 items — steps needed', bn: '১,০০০ আইটেম থেকে ডুপ্লিকেট সরাতে কত ধাপ' },
+          max: 499500,
+          items: [
+            { label: { en: 'Nested loops', bn: 'নেস্টেড লুপ' }, v: 499500, color: 'var(--red)', note: 'O(n²)' },
+            { label: { en: 'One set', bn: 'একটা সেট' }, v: 1000, color: 'var(--green)', note: 'O(n)' }
           ],
-          caption: 'next lesson in the sidebar: Trees & BST'
+          caption: { en: 'average O(1) per add / has / get · worst O(n) if every key shares one chain', bn: 'প্রতিটা add / has / get গড়ে O(1) · সব কী এক চেইনে পড়লে O(n)' }
         }
       }
     ]

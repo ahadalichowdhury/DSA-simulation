@@ -42,14 +42,12 @@ export const recursionTopics = [
           bn: '**ম্যাট্রিয়োশকা (Matryoshka)** পুতুল ভাবো। খুললে ভেতরে একটা ছোট কপি। ওটাও খুললে আবার আরেকটা ছোট কপি। প্রতিবার আকৃতি একই — শুধু সাইজ ছোট হতে থাকে।\n\nশেষে এমন একটা ক্ষুদ্র পুতুল পাওয়া যায় যেটা **আর খোলে না**। ওখানেই থেমে যায়।\n\n> **রিকারশন (recursion)** মানে ঠিক এটাই: একই কাজ, নিজেরই ছোট করা অংশে — আর একটা স্পষ্ট থামার নিয়ম।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Real life = smaller copy + a stop',
-          cards: [
-            { icon: '🪆', title: 'Matryoshka doll', desc: 'Open one, find a smaller copy inside. The last doll does not open.', state: 'active', tag: 'smaller copy', accent: 'var(--yellow)' },
-            { icon: '🙋', title: '"Go ask your dad"', desc: 'Kid asks dad, dad says "ask grandpa". Grandpa answers, and the answer walks back down.', state: 'ok', tag: 'answer returns', accent: 'var(--cyan)' },
-            { icon: '📁', title: 'Folder in a folder', desc: 'Open a folder, find another folder. Keep opening until you hit a file.', state: 'ok', tag: 'depth', accent: 'var(--purple)' }
-          ],
-          caption: 'Same task · smaller copy of itself · one clear stop'
+          kind: 'stack',
+          label: { en: 'each call opens a smaller copy of the same task', bn: 'প্রতিটা কল একই কাজের একটা ছোট কপি খোলে' },
+          items: ['open(doll 1)', 'open(doll 2)', 'open(doll 3)', 'open(doll 4) ✋'],
+          highlights: { active: [3] },
+          pointers: [{ i: 3, label: 'does not open → stop', tone: 'green' }],
+          note: { en: 'Same task · smaller every time · one clear stop.', bn: 'একই কাজ · প্রতিবার ছোট · একটা নির্দিষ্ট থামা।' }
         }
       },
       {
@@ -61,14 +59,12 @@ export const recursionTopics = [
         line: [1, 3],
         state: { 'base case': 'if n == 0 → return 1', 'recursive case': 'n * factorial(n-1)' },
         scene: {
-          kind: 'cards',
-          label: 'The anatomy of a recursive function',
-          cards: [
-            { icon: '🛑', title: 'Base case', desc: 'The stop rule. Smallest input → answer it directly, no more calls.', state: 'active', tag: 'stop', accent: 'var(--red)' },
-            { icon: '🔁', title: 'Recursive case', desc: 'Call yourself with a SMALLER input, then add one step on that answer.', state: 'active', tag: 'smaller', accent: 'var(--cyan)' },
-            { icon: '🪆', title: 'Trust the small answer', desc: 'fact(3) can work only because fact(2) already answered.', state: 'ok', tag: 'idea', accent: 'var(--green)' }
-          ],
-          caption: 'Both parts must exist — otherwise it never stops'
+          kind: 'stack',
+          label: { en: 'fact(3): recursive cases pile up until the base case answers', bn: 'fact(3): বেস কেস উত্তর না দেওয়া পর্যন্ত রিকার্সিভ কেস জমে' },
+          items: ['fact(3) = 3 × fact(2)', 'fact(2) = 2 × fact(1)', 'fact(1) = 1 × fact(0)', 'fact(0) = 1'],
+          highlights: { sorted: [3], active: [0, 1, 2] },
+          pointers: [{ i: 3, label: 'base case', tone: 'green' }, { i: 1, label: 'recursive case', tone: 'yellow' }],
+          note: { en: 'Without the green base case the pile would never stop growing.', bn: 'সবুজ বেস কেস না থাকলে স্তূপ বাড়তেই থাকত।' }
         }
       },
       {
@@ -137,14 +133,12 @@ export const recursionTopics = [
         line: [1, 2],
         state: { n: -3, 'base case': 'missing', result: 'crash' },
         scene: {
-          kind: 'cards',
-          label: 'What goes wrong without a stop rule',
-          cards: [
-            { icon: '🚫', title: 'No base case', desc: 'n keeps shrinking: 5, 4, 3, 2, 1, 0, -1, -2 … forever.', state: 'bad', tag: 'missing stop', accent: 'var(--red)' },
-            { icon: '💥', title: 'Stack overflow', desc: 'Frames pile up until memory is gone. The program crashes.', state: 'bad', tag: 'crash', accent: 'var(--red)' },
-            { icon: '🩹', title: 'The fix', desc: 'Put the base case back and test it with n = 0 first.', state: 'ok', tag: 'check it', accent: 'var(--green)' }
-          ],
-          caption: 'Rule: **every** recursive path must reach the base case'
+          kind: 'stack',
+          label: { en: 'no base case: fact(n) keeps calling past zero', bn: 'বেস কেস নেই: fact(n) শূন্য পেরিয়েও ডাকতে থাকে' },
+          items: ['fact(3)', 'fact(2)', 'fact(1)', 'fact(0)', 'fact(-1)', 'fact(-2)', 'fact(-3) …'],
+          highlights: { target: [4, 5, 6] },
+          pointers: [{ i: 6, label: 'stack overflow 💥', tone: 'red' }],
+          note: { en: 'Nothing ever pops, so memory fills up and the program crashes.', bn: 'কিছুই pop হয় না, তাই মেমরি ভরে প্রোগ্রাম ক্র্যাশ করে।' }
         }
       },
       {
@@ -203,15 +197,14 @@ export const recursionTopics = [
           bn: '**খরচ**\n- সময় `O(n)` — প্রতিটা লেভেলে একটা কল, তাই `fact(5)` করে ৬টা কল।\n- স্পেস `O(n)` — অপেক্ষারত প্রতিটা ফ্রেম স্ট্যাকে বসে আছে। এটাই রিকারশনের দাম।\n- লুপের ভার্সন একই কাজ `O(1)` অতিরিক্ত স্পেসে করে।\n\n**রিকারশন জেতে যখন**\n- ডেটার আকারটাই **ট্রি বা গ্রাফ** — গোড়া থেকেই ওটা রিকারসিভ,\n- সমস্যাকে **ভাগ করে জয়** করতে হয় (মার্জ সর্ট, কুইক সর্ট),\n- পছন্দ করে আবার পিছু হটতে হয় (**backtracking**, ল্যাবিরিন্থ, সুডোকু)।\n\n> সহজ লুপে লেখা যায় লিখে ফেলো। রিকারশন তখনই ধরো, যখন সমস্যাটার আকারটাই গাছের মতো।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Recursion at a glance',
-          cards: [
-            { icon: '⏱', title: 'Time O(n)', desc: 'one call per level — 6 calls for fact(5)', state: 'ok', tag: 'cheap', accent: 'var(--green)' },
-            { icon: '📚', title: 'Space O(n)', desc: 'every waiting frame lives in the stack', state: 'active', tag: 'the price', accent: 'var(--yellow)' },
-            { icon: '🌳', title: 'Trees & graphs', desc: 'the shape is already recursive', state: 'ok', tag: 'use it', accent: 'var(--cyan)' },
-            { icon: '🪄', title: 'Divide & conquer', desc: 'merge sort, quick sort, backtracking', state: 'ok', tag: 'use it', accent: 'var(--purple)' }
+          kind: 'chart',
+          label: { en: 'Extra memory for fact(1000)', bn: 'fact(1000)-এর জন্য বাড়তি মেমরি' },
+          max: 1000,
+          items: [
+            { label: { en: 'Loop', bn: 'লুপ' }, v: 1, color: 'var(--green)', note: { en: '1 variable · O(1)', bn: '১টা ভেরিয়েবল · O(1)' } },
+            { label: { en: 'Recursion', bn: 'রিকার্শন' }, v: 1000, color: 'var(--amber)', note: { en: '1,000 frames · O(n)', bn: '১,০০০ ফ্রেম · O(n)' } }
           ],
-          caption: 'Loops for lists · recursion for trees'
+          caption: { en: 'loops for lists · recursion for trees, divide & conquer, backtracking', bn: 'লিস্টে লুপ · ট্রি, ভাগ করে জয় আর ব্যাকট্র্যাকিং-এ রিকার্শন' }
         }
       }
     ]
@@ -319,14 +312,12 @@ export const recursionTopics = [
         },
         line: [2, 3],
         scene: {
-          kind: 'cards',
-          label: 'The DP toolbox',
-          cards: [
-            { icon: '🧠', title: 'Memo (a table)', desc: 'Every finished sub-problem is written into a lookup table.', state: 'active', tag: 'store', accent: 'var(--yellow)' },
-            { icon: '⚡', title: 'Cache hit', desc: 'The same question again? Read it back — zero new work.', state: 'ok', tag: 'instant', accent: 'var(--green)' },
-            { icon: '🐇', title: 'Never twice', desc: 'Each small piece is solved exactly one time.', state: 'ok', tag: 'the rule', accent: 'var(--cyan)' }
-          ],
-          caption: 'Store the answer once · reuse it forever'
+          kind: 'array',
+          label: { en: 'memo table: memo[n] = fib(n), written once', bn: 'মেমো টেবিল: memo[n] = fib(n), একবারই লেখা' },
+          cells: [0, 1, 1, 2, 3, 5, 8],
+          highlights: { sorted: [0, 1, 2, 3, 4, 6], compare: [5] },
+          pointers: [{ i: 5, label: 'cache hit', tone: 'cyan' }],
+          note: { en: 'fib(5) asked again? Read memo[5] = 5 — zero new work.', bn: 'আবার fib(5) চাইলে? memo[5] = 5 পড়ো — নতুন কোনো কাজ নেই।' }
         }
       },
       {
@@ -429,15 +420,12 @@ export const recursionTopics = [
           bn: 'প্যাটার্নটা চিনতে পেরে গেলে একই কৌশল পুরো পরিবারের সমস্যায় কাজ করে:\n\n- **সিঁড়ি ওঠা (climbing stairs)** — একবারে ১ বা ২ ধাপ: আসলে ছদ্মবেশী ফিবোনাচিই।\n- **কয়েন চেঞ্জ (coin change)** — টাকার জন্য সবচেয়ে কম কয়েন: সেরা উত্তর = ছোট টাকার সেরা উত্তর + ১।\n- **লংগেস্ট কমনসাবসিকোয়েন্স (LCS)** — দুটো স্ট্রিং ঘরে ঘরে মিলিয়ে, আগের সারি ব্যবহার করে।\n- **ন্যাপস্যাক (knapsack)** — প্রতিটা আইটেমে নেবো নাকি বাদ দেবো, আগে থেকে ভরা টেবিল দেখে।\n\nচারটেই ছোট অংশ থেকে টেবিল বানায়। টেবিল না থাকলে চারটেই একই কাজ বারবার করত।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Four problems, one idea',
-          cards: [
-            { icon: '🪜', title: 'Climbing stairs', desc: 'ways(n) = ways(n-1) + ways(n-2) — it IS Fibonacci', state: 'active', tag: 'O(n)', accent: 'var(--cyan)' },
-            { icon: '🪙', title: 'Coin change', desc: 'best(n) = 1 + best(n - coin)', state: 'active', tag: 'minimise', accent: 'var(--yellow)' },
-            { icon: '🔤', title: 'Longest common subsequence', desc: 'two strings, one table of reused rows', state: 'ok', tag: 'match', accent: 'var(--purple)' },
-            { icon: '🎒', title: 'Knapsack', desc: 'take or skip — both answers are already stored', state: 'ok', tag: 'choose', accent: 'var(--green)' }
-          ],
-          caption: 'Every one of them fills a table from smaller answers'
+          kind: 'array',
+          label: { en: 'climbing stairs: ways(n) = ways(n−1) + ways(n−2)', bn: 'সিঁড়ি ওঠা: ways(n) = ways(n−1) + ways(n−2)' },
+          cells: [1, 1, 2, 3, 5, 8, 13],
+          highlights: { compare: [4, 5], active: [6] },
+          pointers: [{ i: 6, label: '5 + 8', tone: 'yellow' }],
+          note: { en: 'Every DP problem fills a table like this from smaller answers.', bn: 'প্রতিটা DP সমস্যা এভাবে ছোট উত্তর দিয়ে টেবিল ভরে।' }
         }
       },
       {
@@ -447,15 +435,14 @@ export const recursionTopics = [
           bn: 'দুটো প্রশ্ন করো:\n\n1. **অপটিমাল সাবস্ট্রাকচার (optimal substructure)** — বড় ইনপুটের উত্তর কি ছোট ছোট ইনপুটের উত্তর দিয়ে বানানো যায়?\n2. **ওভারল্যাপিং সাব-প্রবলেম (overlapping sub-problems)** — সাধারণ রিকারশন কি একই প্রশ্ন একাধিকবার করে?\n\nদুটোই হ্যাঁ হলে → **DP**। প্রতিবার নতুন অংশ এলে (যেমন বাইনারি সার্চ), মেমোয়াইজেশন কোনো কাজে লাগবে না।\n\n**মেমো লাগানোর পর খরচ**\n- সময় `O(n)` — প্রতিটি মানের জন্য একটাই আসল হিসাব।\n- স্পেস `O(n)` মেমো টেবিল, আর দুটো ভেরিয়েবল ধরলে `O(1)`।\n\n> মেমোয়াইজেশন ঘনীভূত (exponential) কাজকে লিনিয়ার করে দেয় — এটাই পুরো জাদুটা।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Two questions + the bill',
-          cards: [
-            { icon: '🧩', title: 'Optimal substructure', desc: 'big answer = small answers combined', state: 'active', tag: 'question 1', accent: 'var(--cyan)' },
-            { icon: '🔁', title: 'Overlapping sub-problems', desc: 'the naive version asks the same thing again', state: 'active', tag: 'question 2', accent: 'var(--yellow)' },
-            { icon: '⚡', title: 'Time O(n)', desc: 'one real computation per sub-problem', state: 'ok', tag: 'after memo', accent: 'var(--green)' },
-            { icon: '📦', title: 'Space O(n) → O(1)', desc: 'the whole table, or just two variables', state: 'ok', tag: 'after memo', accent: 'var(--purple)' }
+          kind: 'chart',
+          label: { en: 'Function calls to compute fib(30)', bn: 'fib(30) বের করতে কতবার ফাংশন কল' },
+          max: 2692537,
+          items: [
+            { label: { en: 'Plain recursion', bn: 'সাধারণ রিকার্শন' }, v: 2692537, color: 'var(--red)', note: { en: 'same questions again and again', bn: 'একই প্রশ্ন বারবার' } },
+            { label: { en: 'With memo', bn: 'মেমোসহ' }, v: 59, color: 'var(--green)', note: 'O(n)' }
           ],
-          caption: 'Two yes answers = dynamic programming'
+          caption: { en: 'optimal substructure + overlapping sub-problems = use DP', bn: 'অপটিমাল সাবস্ট্রাকচার + বারবার একই সাব-প্রবলেম = DP' }
         }
       }
     ]

@@ -29,7 +29,10 @@ export default function ControlBar({
   onSelectTraversal,
   treeInput = '50, 30, 70, 20, 40, 60, 80',
   treeMode = 'bst',
-  onApplyTree
+  onApplyTree,
+  topTier = null,
+  playReady = false,
+  replayable = false
 }) {
   const atStart = currentStep === 0;
   const atEnd = currentStep >= totalSteps - 1;
@@ -48,7 +51,8 @@ export default function ControlBar({
   }, [treeMode]);
 
   return (
-    <div className={`control-bar-container ${isTraversal ? 'has-traversal' : ''}`}>
+    <div className={`control-bar-container ${isTraversal || topTier ? 'has-traversal' : ''}`}>
+      {topTier}
       {/* Traversal Selector Tier (Bottom Action Row) */}
       {isTraversal && (
         <div className="trav-bar-tier">
@@ -208,7 +212,12 @@ export default function ControlBar({
         </button>
 
         {!isPlaying ? (
-          <button className="ctrl-btn primary" onClick={onPlay} disabled={atEnd} title={L('Auto play', 'অটো প্লে')}>
+          <button
+            className={`ctrl-btn primary${playReady ? ' play-ready' : ''}`}
+            onClick={onPlay}
+            disabled={atEnd && !playReady && !replayable}
+            title={playReady ? L('Run the operation you set up', 'যে অপারেশন সেট করেছ সেটা চালাও') : L('Auto play', 'অটো প্লে')}
+          >
             <Play size={16} />
             {!isMobile && L('Play', 'প্লে')}
           </button>

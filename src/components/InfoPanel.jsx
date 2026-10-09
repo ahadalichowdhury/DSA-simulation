@@ -169,7 +169,27 @@ const InfoPanel = ({
       ? (topic.code[codeLang] || topic.code.pseudo)
       : topic?.code;
   const code = codeVariant ? (codeVariant[lang] || codeVariant.en) : null;
-  const activeLines = step?.line == null ? [] : (Array.isArray(step.line) ? step.line : [step.line]);
+  // A step's line can be a number, or a name (e.g. 'copy') that the topic's
+  // lineMap turns into this language's line numbers — used when languages differ in length.
+  const shownLang = topic?.code?.[codeLang] ? codeLang : 'pseudo';
+  const activeLines = (step?.line == null ? [] : Array.isArray(step.line) ? step.line : [step.line]).flatMap((l) =>
+    typeof l === 'string' ? (topic?.lineMap?.[shownLang]?.[l] ?? []) : [l]
+  );
+  // keep the running line in view inside the code box (traced code jumps around)
+  const codeBlockRef = useRef(null);
+  const activeKey = activeLines.join(',');
+  useEffect(() => {
+    const box = codeBlockRef.current;
+    if (!box || !activeKey) return;
+    const el = box.querySelector('.code-line.active');
+    if (!el) return;
+    const top = el.offsetTop; // .code-block.traced is position:relative
+    if (top < box.scrollTop + 20 || top > box.scrollTop + box.clientHeight - 40) {
+      const target = Math.max(0, top - box.clientHeight / 3);
+      // small moves glide; a jump into another function lands at once
+      box.scrollTo({ top: target, behavior: Math.abs(target - box.scrollTop) > box.clientHeight ? 'auto' : 'smooth' });
+    }
+  }, [activeKey, codeLang, lang, topic, step]);
   const cx = topic?.complexity;
   const state = step?.state && Object.keys(step.state).length ? step.state : null;
 
@@ -263,12 +283,12 @@ const InfoPanel = ({
               </div>
             </div>
 
-            <div className="code-block">
+            <div className={`code-block${topic?.lineMap ? ' traced' : ''}`} ref={codeBlockRef}>
               <div className="code-container">
                 {code.map((line, i) => (
                   <div
                     key={i}
-                    className={`code-line ${activeLines.includes(i) ? 'active' : activeLines.length && i < Math.min(...activeLines) ? 'done' : ''}`}
+                    className={`code-line ${activeLines.includes(i) ? 'active' : !topic?.lineMap && activeLines.length && i < Math.min(...activeLines) ? 'done' : ''}`}
                   >
                     <span className="ln">{i + 1}</span>
                     <span className="code-text">{highlightCode(line)}</span>

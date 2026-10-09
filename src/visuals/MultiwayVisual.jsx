@@ -1,4 +1,5 @@
 import React from 'react';
+import { rich } from './utils.js';
 
 /**
  * Computes simple hierarchical layout for multiway search trees (2-3 Trees, B-Trees, B+ Trees).
@@ -66,7 +67,7 @@ function layoutMultiway(nodes, rootId) {
   return { layoutNodes: [...nodeMap.values()], w: maxW, h: totalH };
 }
 
-export default function MultiwayVisual({ scene }) {
+export default function MultiwayVisual({ scene, lang }) {
   const nodes = scene.nodes || [];
   const rootId = scene.root;
   const { layoutNodes, w, h } = layoutMultiway(nodes, rootId);
@@ -83,7 +84,7 @@ export default function MultiwayVisual({ scene }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-      {scene.label && <div className="arr-label" dangerouslySetInnerHTML={{ __html: scene.label }} />}
+      {scene.label && <div className="arr-label" dangerouslySetInnerHTML={{ __html: rich(scene.label, lang) }} />}
 
       <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="viz-svg">
         <defs>
@@ -139,11 +140,13 @@ export default function MultiwayVisual({ scene }) {
 
         {/* Multiway Nodes */}
         {layoutNodes.map((node) => {
-          const isAct = activeIds.has(node.id);
-          const isOver = overflowIds.has(node.id);
-          const isSplit = splitIds.has(node.id);
-          const isPromote = promoteIds.has(node.id);
-          const isIns = insertIds.has(node.id);
+          // per-node `state` from the lesson data works the same as the highlight lists
+          const st = node.state;
+          const isAct = activeIds.has(node.id) || st === 'active';
+          const isOver = overflowIds.has(node.id) || st === 'overflow';
+          const isSplit = splitIds.has(node.id) || st === 'split';
+          const isPromote = promoteIds.has(node.id) || st === 'promote';
+          const isIns = insertIds.has(node.id) || st === 'new' || st === 'ok';
 
           const borderColor = isOver ? 'var(--red)' : isPromote ? 'var(--yellow)' : isAct ? 'var(--cyan)' : isSplit ? 'var(--amber)' : isIns ? 'var(--green)' : 'var(--border-bright)';
           const bgColor = isOver ? 'var(--red-bg)' : isAct ? 'var(--cyan-bg)' : 'var(--bg-secondary)';
@@ -223,7 +226,7 @@ export default function MultiwayVisual({ scene }) {
         })}
       </svg>
 
-      {scene.note && <div className="arr-note" dangerouslySetInnerHTML={{ __html: scene.note }} />}
+      {scene.note && <div className="arr-note" dangerouslySetInnerHTML={{ __html: rich(scene.note, lang) }} />}
     </div>
   );
 }

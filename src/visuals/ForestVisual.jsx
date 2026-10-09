@@ -1,13 +1,14 @@
 import React from 'react';
 import TreeGraphVisual from './TreeGraphVisual.jsx';
+import { rich, t } from './utils.js';
 
-export default function ForestVisual({ scene }) {
+export default function ForestVisual({ scene, lang }) {
   const trees = scene.trees || [];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-      {scene.label && <div className="arr-label" dangerouslySetInnerHTML={{ __html: scene.label }} />}
+      {scene.label && <div className="arr-label" dangerouslySetInnerHTML={{ __html: rich(scene.label, lang) }} />}
       <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start' }}>
-        {trees.map((t, idx) => (
+        {trees.map((tr, idx) => (
           <div
             key={idx}
             style={{
@@ -21,16 +22,16 @@ export default function ForestVisual({ scene }) {
               boxShadow: 'var(--shadow-md)'
             }}
           >
-            {t.caption && (
+            {tr.caption && (
               <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--yellow)', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>
-                {t.caption}
+                {t(tr.caption, lang)}
               </div>
             )}
-            <TreeGraphVisual scene={{ kind: 'tree', root: t.root, highlights: scene.highlights }} />
+            <TreeGraphVisual scene={{ kind: 'tree', root: tr.root, highlights: scene.highlights }} lang={lang} />
           </div>
         ))}
       </div>
-      {scene.note && <div className="arr-note" dangerouslySetInnerHTML={{ __html: scene.note }} />}
+      {scene.note && <div className="arr-note" dangerouslySetInnerHTML={{ __html: rich(scene.note, lang) }} />}
     </div>
   );
 }

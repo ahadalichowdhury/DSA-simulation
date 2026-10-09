@@ -49,14 +49,12 @@ export const linearTopics = [
         },
         line: 0,
         scene: {
-          kind: 'cards',
-          label: 'Real life = a pile',
-          cards: [
-            { icon: '🥞', title: 'Pile of plates', desc: 'The plate put on top is the plate taken next.', state: 'active', tag: 'LIFO', accent: 'var(--yellow)' },
-            { icon: '📚', title: 'Stack of books', desc: 'Only the top book is easy to grab.', state: 'ok', tag: 'top only', accent: 'var(--cyan)' },
-            { icon: '📥', title: 'Stack of trays', desc: 'The newest tray always comes off first.', state: 'ok', tag: 'newest first', accent: 'var(--green)' }
-          ],
-          caption: 'Same rule everywhere: <b>last in, first out</b>'
+          kind: 'stack',
+          label: { en: 'a pile of plates', bn: 'প্লেটের স্তূপ' },
+          items: ['plate 1', 'plate 2', 'plate 3', 'plate 4'],
+          highlights: { active: [3] },
+          pointers: [{ i: 3, label: 'taken next', tone: 'yellow' }],
+          note: { en: 'Last in, first out (LIFO): the last plate put on is the first one taken.', bn: 'শেষে ঢুকলে আগে বের (LIFO): সবার শেষে রাখা প্লেটটাই আগে তোলা হয়।' }
         }
       },
       {
@@ -178,15 +176,12 @@ export const linearTopics = [
         },
         line: [2, 4, 6],
         scene: {
-          kind: 'cards',
-          label: 'Stack in the real world',
-          cards: [
-            { icon: '🔙', title: 'Undo / redo', desc: 'Ctrl+Z pops your last action back.', state: 'active', tag: 'LIFO', accent: 'var(--yellow)' },
-            { icon: '🌐', title: 'Browser back', desc: 'The last page visited returns first.', state: 'ok', tag: 'history', accent: 'var(--cyan)' },
-            { icon: '⌨️', title: 'Function call stack', desc: 'Each call sits on top until it returns.', state: 'ok', tag: 'calls', accent: 'var(--purple)' },
-            { icon: '🗂', title: 'Closing tabs', desc: 'The newest tab closes first.', state: 'ok', tag: 'newest first', accent: 'var(--green)' }
-          ],
-          caption: 'push · pop · peek = <b>O(1)</b> · space = O(n)'
+          kind: 'stack',
+          label: { en: 'undo history in a text editor', bn: 'টেক্সট এডিটরের undo হিস্টরি' },
+          items: ['type "Hello"', 'make it bold', 'delete a word'],
+          highlights: { remove: [2] },
+          pointers: [{ i: 2, label: 'Ctrl+Z pops this', tone: 'red' }],
+          note: { en: 'push, pop and peek are all O(1) — the top is always right there.', bn: 'push, pop, peek — সবই O(1) — top সবসময় হাতের কাছে।' }
         }
       }
     ]
@@ -242,14 +237,12 @@ export const linearTopics = [
         },
         line: 0,
         scene: {
-          kind: 'cards',
-          label: 'Real life = a line',
-          cards: [
-            { icon: '🚶', title: 'Line at the counter', desc: 'First in line is served first.', state: 'active', tag: 'FIFO', accent: 'var(--green)' },
-            { icon: '🎫', title: 'Ticket window', desc: 'Your token number decides your turn.', state: 'ok', tag: 'fair', accent: 'var(--cyan)' },
-            { icon: '🚌', title: 'Bus stop', desc: 'People board in the order they arrived.', state: 'ok', tag: 'order', accent: 'var(--purple)' }
-          ],
-          caption: 'Same rule everywhere: <b>first in, first served</b>'
+          kind: 'queue',
+          label: { en: 'a line at the counter', bn: 'কাউন্টারের লাইন' },
+          items: ['Ana', 'Ben', 'Chu', 'Dev'],
+          pointers: [{ i: 0, label: 'served first', tone: 'cyan' }, { i: 3, label: 'just arrived', tone: 'yellow' }],
+          highlights: { active: [0] },
+          note: { en: 'First in, first out (FIFO) — nobody overtakes anybody.', bn: 'আগে এলে আগে যাবে (FIFO) — কেউ কাউকে টপকায় না।' }
         }
       },
       {
@@ -369,15 +362,12 @@ export const linearTopics = [
         },
         line: 4,
         scene: {
-          kind: 'cards',
-          label: 'Queue at work',
-          cards: [
-            { icon: '🖨️', title: 'Printer jobs', desc: 'The file sent first is printed first.', state: 'ok', tag: 'FIFO', accent: 'var(--cyan)' },
-            { icon: '💬', title: 'Message queues', desc: 'Tasks arrive and leave in order.', state: 'ok', tag: 'ordered', accent: 'var(--purple)' },
-            { icon: '🧭', title: 'BFS preview', desc: 'Level-by-level graph search runs on a queue.', state: 'active', tag: 'graphs →', accent: 'var(--yellow)' },
-            { icon: '⚖️', title: 'Fair by design', desc: 'Nobody jumps — order equals arrival time.', state: 'ok', tag: 'fair', accent: 'var(--green)' }
-          ],
-          caption: 'First in, first out — fair to everyone in line'
+          kind: 'queue',
+          label: { en: 'printer queue', bn: 'প্রিন্টারের কিউ' },
+          items: ['report.pdf', 'photo.png', 'cv.docx'],
+          pointers: [{ i: 0, label: 'printing now', tone: 'cyan' }],
+          highlights: { active: [0] },
+          note: { en: 'The file sent first is printed first. BFS uses the same kind of queue.', bn: 'যে ফাইল আগে পাঠানো, সেটাই আগে প্রিন্ট। BFS-ও এমন কিউ ব্যবহার করে।' }
         }
       },
       {
@@ -388,14 +378,12 @@ export const linearTopics = [
         },
         line: [2, 4, 6],
         scene: {
-          kind: 'cards',
-          label: 'Queue in one screen',
-          cards: [
-            { icon: '♻️', title: 'Circular buffer', desc: 'rear hits the end, wraps to index 0.', state: 'active', tag: 'wrap', accent: 'var(--purple)' },
-            { icon: '⚡', title: 'All O(1)', desc: 'enqueue, dequeue, peek — ends only.', state: 'ok', tag: 'cost', accent: 'var(--green)' },
-            { icon: '🧠', title: 'Use when…', desc: 'you need the OLDEST item first.', state: 'ok', tag: 'FIFO', accent: 'var(--cyan)' }
-          ],
-          caption: 'front out · rear in · <b>O(1)</b> · space = O(n)'
+          kind: 'array',
+          label: { en: 'circular queue: rear reached the end and wrapped to index 0', bn: 'সার্কুলার কিউ: rear শেষে পৌঁছে ইনডেক্স ০-তে ফিরে গেছে' },
+          cells: ['E', 'F', '', 'B', 'C', 'D'],
+          highlights: { insert: [0, 1], active: [3] },
+          pointers: [{ i: 3, label: 'front', tone: 'cyan' }, { i: 1, label: 'rear', tone: 'yellow' }],
+          note: { en: 'Empty slots in front are reused. enqueue / dequeue / peek are all O(1).', bn: 'সামনের খালি ঘরগুলো আবার ব্যবহার হয়। enqueue / dequeue / peek — সবই O(1)।' }
         }
       }
     ]

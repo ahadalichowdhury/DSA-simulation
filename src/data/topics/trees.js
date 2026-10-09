@@ -260,14 +260,12 @@ export const treeTopics = [
         iteration: { i: 1, of: 6, label: { en: 'Priority', bn: 'অগ্রাধিকার' } },
         state: { queueType: 'Priority Queue', backingStructure: 'Binary Heap in Array' },
         scene: {
-          kind: 'cards',
-          label: 'Real-Life Need for Priority Queues',
-          cards: [
-            { icon: '🚑', title: 'Emergency Room', desc: 'Critical patients jump the queue regardless of arrival time.', state: 'active', tag: 'High Priority', accent: 'var(--red)' },
-            { icon: '💻', title: 'OS CPU Scheduler', desc: 'Real-time tasks preempt background processes.', state: 'ok', tag: 'Scheduler', accent: 'var(--cyan)' },
-            { icon: '⛰️', title: 'Heap Solution', desc: 'Guarantees O(1) peek and O(log n) insert/extract.', state: 'ok', tag: 'O(log n)', accent: 'var(--green)' }
-          ],
-          caption: 'Priority queues always dispense the most important item first.'
+          kind: 'tree',
+          label: { en: 'Min-heap of patients: smaller number = more urgent', bn: 'রোগীদের মিন-হিপ: ছোট সংখ্যা = বেশি জরুরি' },
+          root: { v: 1, sub: 'critical', l: { v: 3, l: { v: 7 }, r: { v: 5 } }, r: { v: 2, l: { v: 9 } } },
+          highlights: { current: 1 },
+          pointers: [{ i: 1, label: 'served first', tone: 'yellow' }],
+          note: { en: 'Every parent is smaller than its children, so the most urgent patient is always at the top.', bn: 'প্রতিটা প্যারেন্ট তার চাইল্ডদের চেয়ে ছোট, তাই সবচেয়ে জরুরি রোগী সবসময় ওপরে।' }
         }
       },
       {

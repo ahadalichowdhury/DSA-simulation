@@ -1,5 +1,7 @@
 import React from 'react';
-import { resolveRefs } from './utils.js';
+import { resolveRefs, rich, t, HL_MEANING } from './utils.js';
+
+const TONE_COLOR = { yellow: 'var(--yellow)', cyan: 'var(--cyan)', green: 'var(--green)', amber: 'var(--amber)', purple: 'var(--purple)', red: 'var(--red)' };
 
 /* ---------------- tree layout ---------------- */
 const HG = 74; // horizontal gap
@@ -21,6 +23,7 @@ function layoutTree(root) {
       value: nd.v ?? nd.value ?? '',
       sub: nd.sub,
       depth,
+      leaf: left == null && right == null,
       x: order++ * HG + HG / 2 + 14,
       y: depth * VG + 44
     };
@@ -99,7 +102,7 @@ function edgeClass(e, scene) {
 }
 
 /* ---------------- visual ---------------- */
-export default function TreeGraphVisual({ scene }) {
+export default function TreeGraphVisual({ scene, lang }) {
   const isTree = scene.kind === 'tree';
   const { nodes, edges, w, h } = isTree ? layoutTree(scene.root ?? scene) : normaliseGraph(scene);
 
@@ -119,7 +122,9 @@ export default function TreeGraphVisual({ scene }) {
     if (!beforePos) return;
     setMorphed(false);
     const raf = requestAnimationFrame(() => requestAnimationFrame(() => setMorphed(true)));
-    return () => cancelAnimationFrame(raf);
+    // fallback: if animation frames are throttled (background tab), still settle the tree
+    const timer = setTimeout(() => setMorphed(true), 80);
+    return () => { cancelAnimationFrame(raf); clearTimeout(timer); };
   }, [beforePos, scene]);
 
   const hl = scene.highlights || {};
@@ -146,12 +151,23 @@ export default function TreeGraphVisual({ scene }) {
     return '';
   };
 
+  const STATE_KEY = { 'h-current': 'current', 'h-path': 'path', 'h-active': 'active', 'h-insert': 'insert', 'h-remove': 'remove', 'h-frontier': 'frontier', 'h-visited': 'visited', 'h-reject': 'reject', 'h-dim': 'dim' };
+  const nodeTip = (n, cls) => {
+    const parts = [`${lang === 'bn' ? 'নোড' : 'node'} ${n.value}`];
+    if (isTree && n.depth === 0) parts.push(lang === 'bn' ? 'রুট (শুরু)' : 'root (the top)');
+    else if (isTree && n.leaf) parts.push(lang === 'bn' ? 'লিফ (কোনো চাইল্ড নেই)' : 'leaf (no children)');
+    if (STATE_KEY[cls]) parts.push(t(HL_MEANING[STATE_KEY[cls]], lang));
+    return parts.join(' · ');
+  };
+  const rootNode = isTree ? nodes.find((n) => n.depth === 0) : null;
+  const hasRootPtr = (scene.pointers || []).some((p) => /root/i.test(String(p.label)));
+
   const showWeights = scene.showWeights ?? edges.some((e) => e.w != null);
   const R = 24;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-      {scene.label && <div className="arr-label" dangerouslySetInnerHTML={{ __html: scene.label }} />}
+      {scene.label && <div className="arr-label" dangerouslySetInnerHTML={{ __html: rich(scene.label, lang) }} />}
       <svg className="viz-svg" width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
         <defs>
           <marker id="gArrow" markerWidth="10" markerHeight="10" refX="19" refY="4.5" orient="auto">
@@ -202,6 +218,7 @@ export default function TreeGraphVisual({ scene }) {
             <g key={String(n.value) || n.id} className={`gnode ${cls}`} style={{ transform: `translate(${x}px, ${y}px)` }}>
               {pulsing && <circle className="gnode-pulse" r={R} />}
               {pulsing && <circle className="gnode-ring2" r={R} />}
+              <title>{nodeTip(n, cls)}</title>
               <circle className="gnode-circle" r={R} />
               <text className="gnode-text" y="1">{n.value}</text>
               {n.sub && (
@@ -211,12 +228,20 @@ export default function TreeGraphVisual({ scene }) {
           );
         })}
 
+        {/* "root" tag so a beginner knows where the tree starts */}
+        {rootNode && !rootNode.sub && !hasRootPtr && !(scene.pointers || []).some((p) => String(p.target ?? p.id ?? p.i) === String(rootNode.value)) && nodes.length > 1 && (
+          <text className="glabel root-tag" x={rootNode.x} y={rootNode.y - R - 10}>
+            {lang === 'bn' ? 'রুট' : 'root'}
+          </text>
+        )}
+
         {/* Animated Pointers for Tree/Graph Nodes */}
         {(scene.pointers || []).map((p, idx) => {
           const target = p.target ?? p.id ?? p.i;
           const nd = nodes.find((n) => String(n.value) === String(target) || n.id === String(target));
           if (!nd) return null;
-          const toneColor = p.tone === 'yellow' ? 'var(--yellow)' : p.tone === 'cyan' ? 'var(--cyan)' : p.tone === 'green' ? 'var(--green)' : 'var(--cyan)';
+          const toneColor = TONE_COLOR[p.tone] || 'var(--cyan)';
+          const pw = Math.max(48, String(p.label).length * 7.5 + 16);
           return (
             <g
               key={`ptr-${p.label}-${idx}`}
@@ -227,7 +252,7 @@ export default function TreeGraphVisual({ scene }) {
               }}
             >
               <polygon points="-4,-4 4,-4 0,2" fill={toneColor} />
-              <rect x="-24" y="-22" width="48" height="18" rx="9" fill="var(--bg-card)" stroke={toneColor} strokeWidth="1.5" />
+              <rect x={-pw / 2} y="-22" width={pw} height="18" rx="9" fill="var(--bg-card)" stroke={toneColor} strokeWidth="1.5" />
               <text x="0" y="-10" fill={toneColor} fontSize="11" fontWeight="700" fontFamily="var(--font-mono)" textAnchor="middle" dominantBaseline="central">
                 {p.label}
               </text>
@@ -240,7 +265,7 @@ export default function TreeGraphVisual({ scene }) {
       {scene.output && scene.output.length > 0 && (
         <div className="tree-output-wrap">
           <div className="tree-output-head">
-            <span>{scene.outputLabel || 'Output Stream:'}</span>
+            <span>{t(scene.outputLabel, lang) || (lang === 'bn' ? 'আউটপুট:' : 'Output:')}</span>
           </div>
           <div className="tree-output-tape">
             {scene.output.map((val, idx) => (
@@ -256,7 +281,7 @@ export default function TreeGraphVisual({ scene }) {
         </div>
       )}
 
-      {scene.note && <div className="arr-note" style={{ textAlign: 'center' }} dangerouslySetInnerHTML={{ __html: scene.note }} />}
+      {scene.note && <div className="arr-note" style={{ textAlign: 'center' }} dangerouslySetInnerHTML={{ __html: rich(scene.note, lang) }} />}
     </div>
   );
 }

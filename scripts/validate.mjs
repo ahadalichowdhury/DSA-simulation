@@ -11,7 +11,7 @@ import { pathToFileURL } from 'node:url';
 const TOPICS_DIR = resolve('src/data/topics');
 const CATEGORY_KEYS = ['basics', 'arrays', 'searching', 'sorting', 'linked', 'linear', 'hashing', 'trees', 'graphs', 'recursion'];
 const LEVELS = ['beginner', 'intermediate', 'advanced'];
-const KINDS = ['array', 'bars', 'linkedlist', 'stack', 'queue', 'tree', 'graph', 'hash', 'cards', 'chart', 'multiway', 'forest', 'catalan-calc', 'tree-memory', 'none'];
+const KINDS = ['array', 'bars', 'linkedlist', 'stack', 'queue', 'tree', 'graph', 'hash', 'chart', 'multiway', 'forest', 'catalan-calc', 'tree-memory', 'bst', 'none'];
 const HL_KEYS = ['compare', 'swap', 'active', 'sorted', 'pivot', 'target', 'insert', 'remove', 'dim', 'mark', 'visited', 'frontier', 'ok', 'reject', 'current', 'path', 'overflow', 'promote', 'split'];
 const TONES = ['cyan', 'amber', 'green', 'purple', 'red', 'yellow', ''];
 const CODE_LANGS = ['pseudo', 'js', 'java', 'python', 'cpp'];
@@ -43,7 +43,6 @@ function checkScene(file, where, scene) {
   if (k === 'tree-memory' && !scene.memoryMode) err(file, `${where}: tree-memory needs memoryMode`);
   if (k === 'graph' && !Array.isArray(scene.nodes)) err(file, `${where}: graph needs nodes[]`);
   if (k === 'hash' && !Array.isArray(scene.buckets)) err(file, `${where}: hash needs buckets[]`);
-  if (k === 'cards' && !Array.isArray(scene.cards)) err(file, `${where}: cards needs cards[]`);
   if (k === 'chart' && !Array.isArray(scene.items)) err(file, `${where}: chart needs items[]`);
   if (k === 'multiway') {
     if (!Array.isArray(scene.nodes) || scene.nodes.length === 0) err(file, `${where}: multiway needs nodes[]`);
@@ -108,7 +107,8 @@ function checkStep(file, topicId, step, i) {
   checkScene(file, where, step.scene);
   if (step.line != null) {
     const lines = Array.isArray(step.line) ? step.line : [step.line];
-    lines.forEach((l) => { if (!Number.isInteger(l) || l < 0) err(file, `${where}.line must be a >=0 integer (0-based)`); });
+    // a line is a 0-based number, or a name looked up in topic.lineMap (checked in checkTopic)
+    lines.forEach((l) => { if (typeof l !== 'string' && (!Number.isInteger(l) || l < 0)) err(file, `${where}.line must be a >=0 integer (0-based) or a line name`); });
   }
   if (step.iteration != null) {
     const it = step.iteration;
@@ -145,8 +145,13 @@ function checkCode(file, topic) {
   for (const lang of CODE_LANGS) {
     const v = code[lang];
     if (!v) { warn(file, `${topic.id}: code.${lang} missing`); continue; }
-    if (!Array.isArray(v.en) || v.en.length !== n) err(file, `${topic.id}: code.${lang}.en must have exactly ${n} lines (same as pseudo)`);
-    if (!Array.isArray(v.bn) || v.bn.length !== n) err(file, `${topic.id}: code.${lang}.bn must have exactly ${n} lines`);
+    // with a lineMap each language may have its own length; en and bn must still match
+    if (topic.lineMap) {
+      if (!Array.isArray(v.en) || !Array.isArray(v.bn) || v.en.length !== v.bn.length) err(file, `${topic.id}: code.${lang}.bn must mirror code.${lang}.en length`);
+    } else {
+      if (!Array.isArray(v.en) || v.en.length !== n) err(file, `${topic.id}: code.${lang}.en must have exactly ${n} lines (same as pseudo)`);
+      if (!Array.isArray(v.bn) || v.bn.length !== n) err(file, `${topic.id}: code.${lang}.bn must have exactly ${n} lines`);
+    }
     [...(v.en || []), ...(v.bn || [])].forEach((l, i) => {
       if (typeof l !== 'string') err(file, `${topic.id}: code.${lang} line ${i} is not a string`);
     });
@@ -174,7 +179,14 @@ function checkTopic(file, topic) {
     topic.steps.forEach((s, i) => {
       if (s.line == null) return warn(file, `${topic.id}.steps[${i}]: no code line`);
       const ls = Array.isArray(s.line) ? s.line : [s.line];
-      if (lines && ls.some((l) => l >= lines)) err(file, `${topic.id}.steps[${i}].line ${ls} beyond code length ${lines}`);
+      for (const l of ls) {
+        if (typeof l === 'string') {
+          // a named line must exist in every language of this topic
+          for (const lang of ['pseudo', ...CODE_LANGS]) {
+            if (topic.code?.[lang] && !topic.lineMap?.[lang]?.[l]) err(file, `${topic.id}.steps[${i}].line "${l}" is not tagged in code.${lang}`);
+          }
+        } else if (lines && l >= lines) err(file, `${topic.id}.steps[${i}].line ${ls} beyond code length ${lines}`);
+      }
     });
   }
   if (topic.complexity) {

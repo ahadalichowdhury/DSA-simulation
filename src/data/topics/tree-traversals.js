@@ -339,14 +339,14 @@ export const traversalTopics = [
         iteration: { i: 4, of: 5, label: { en: 'Flag Trick', bn: 'ফ্ল্যাগ ট্রিক' } },
         state: { leftFlag: 'Pre-Order', bottomFlag: 'In-Order', rightFlag: 'Post-Order' },
         scene: {
-          kind: 'cards',
-          label: 'The 3-Point Boundary Flag Classification',
-          cards: [
-            { icon: '🚩', title: 'Left Flag (Pre-Order)', desc: 'Touched as the trace first descends down the node.', state: 'active', tag: 'Root-first', accent: 'var(--yellow)' },
-            { icon: '📍', title: 'Bottom Flag (In-Order)', desc: 'Touched between left and right subtree ascents.', state: 'ok', tag: 'Sorted-BST', accent: 'var(--cyan)' },
-            { icon: '🏁', title: 'Right Flag (Post-Order)', desc: 'Touched as the trace leaves the node permanently.', state: 'ok', tag: 'Bottom-up', accent: 'var(--green)' }
+          kind: 'forest',
+          label: { en: 'Trace around the tree once — the #number is when each node gets its flag', bn: 'ট্রির চারপাশে একবার ঘোরো — #সংখ্যা মানে কখন নোডটা ফ্ল্যাগ পায়' },
+          trees: [
+            { root: { v: 'A', sub: '#1', l: { v: 'B', sub: '#2', l: { v: 'D', sub: '#3' }, r: { v: 'E', sub: '#4' } }, r: { v: 'C', sub: '#5' } }, caption: 'Left flag → Pre-order' },
+            { root: { v: 'A', sub: '#4', l: { v: 'B', sub: '#2', l: { v: 'D', sub: '#1' }, r: { v: 'E', sub: '#3' } }, r: { v: 'C', sub: '#5' } }, caption: 'Bottom flag → In-order' },
+            { root: { v: 'A', sub: '#5', l: { v: 'B', sub: '#3', l: { v: 'D', sub: '#1' }, r: { v: 'E', sub: '#2' } }, r: { v: 'C', sub: '#4' } }, caption: 'Right flag → Post-order' }
           ],
-          caption: '1 trace around perimeter = 3 flag points per node!'
+          caption: { en: 'pre: A B D E C · in: D B E A C · post: D E B C A', bn: 'প্রি: A B D E C · ইন: D B E A C · পোস্ট: D E B C A' }
         }
       },
       {
@@ -567,14 +567,14 @@ export const traversalTopics = [
         iteration: { i: 1, of: 4, label: { en: 'Compulsory Rule', bn: 'মূল নিয়ম' } },
         state: { preorderAlone: 'Ambiguous', prePlusPost: 'Ambiguous', inOrderRequired: true },
         scene: {
-          kind: 'cards',
-          label: 'Traversal Combinations & Uniqueness',
-          cards: [
-            { icon: '❌', title: 'Pre + Post', desc: 'Cannot determine if child is left or right.', state: 'bad', tag: 'Ambiguous', accent: 'var(--red)' },
-            { icon: '✅', title: 'Pre + In', desc: 'Pre gives the root; In splits left/right subtrees.', state: 'active', tag: 'Unique', accent: 'var(--green)' },
-            { icon: '✅', title: 'Post + In', desc: 'Post gives root (at end); In splits subtrees.', state: 'ok', tag: 'Unique', accent: 'var(--cyan)' }
+          kind: 'forest',
+          label: { en: 'Two different trees, same preorder AND same postorder', bn: 'দুটো আলাদা ট্রি, প্রি-অর্ডার আর পোস্ট-অর্ডার দুটোই এক' },
+          trees: [
+            { root: { v: 'A', l: { v: 'B' } }, caption: 'B on the left' },
+            { root: { v: 'A', r: { v: 'B' } }, caption: 'B on the right' }
           ],
-          caption: 'In-Order is strictly mandatory to reconstruct any unique binary tree.'
+          highlights: { active: ['B'] },
+          caption: { en: 'pre = A B and post = B A for both · inorder tells them apart: B A vs A B', bn: 'দুটোরই প্রি = A B, পোস্ট = B A · ইন-অর্ডারে আলাদা: B A বনাম A B' }
         }
       },
       {

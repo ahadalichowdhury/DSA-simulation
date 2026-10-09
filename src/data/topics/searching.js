@@ -155,13 +155,14 @@ export const searchingTopics = [
           bn: '- **সেরা কেস** `O(1)` — কী প্রথম ঘরেই আছে।\n- **সবচেয়ে খারাপ কেস** `O(n)` — শেষ ঘরে, বা নেইই।\n- **স্পেস** `O(1)` — শুধু একটা পয়েন্টার `i` ধরে রাখি।\n\nতাই **ছোট বা অসাজানো** ডেটায় লিনিয়ার সার্চ দারুণ কাজ করে; লিংকড লিস্টে যেখানে ঝাঁপ দেওয়াই যায় না, সেখানে তো একমাত্র পথ।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Linear search at a glance',
-          cards: [
-            { icon: '🍀', title: 'Best O(1)', desc: 'key is the first item', state: 'ok', tag: 'lucky', accent: 'var(--green)' },
-            { icon: '🌪️', title: 'Worst O(n)', desc: 'key is last or missing', state: 'bad', tag: 'full scan', accent: 'var(--red)' },
-            { icon: '🧠', title: 'Space O(1)', desc: 'only one pointer variable', state: 'ok', tag: 'tiny memory', accent: 'var(--cyan)' }
-          ]
+          kind: 'chart',
+          label: { en: 'Linear search on 8 items — checks needed', bn: '৮টা আইটেমে লিনিয়ার সার্চ — কতবার দেখতে হয়' },
+          max: 8,
+          items: [
+            { label: { en: 'Best', bn: 'সেরা' }, v: 1, color: 'var(--green)', note: 'O(1)' },
+            { label: { en: 'Worst', bn: 'সবচেয়ে খারাপ' }, v: 8, color: 'var(--red)', note: 'O(n)' }
+          ],
+          caption: { en: 'extra memory: just one variable <b>i</b> → O(1) space', bn: 'বাড়তি মেমরি: শুধু একটা ভেরিয়েবল <b>i</b> → O(1) স্পেস' }
         }
       },
       {
@@ -171,15 +172,9 @@ export const searchingTopics = [
           bn: "লিনিয়ার সার্চ ব্যবহার করো যখন:\n\n- তালিকাটা **ছোট** (কয়েক ডজন আইটেম),\n- তালিকাটা **অসাজানো** এবং সাজানোর খরচই বেশি,\n- তুমি **লিংকড লিস্ট** ঘাটছো।\n\nতালিকা সাজানো আর বড় হলে পরের পাঠে যাও: **বাইনারি সার্চ** — অর্ধেক করে ফেলে দেওয়ার কৌশল।"
         },
         scene: {
-          kind: 'cards',
-          label: 'Pick the right tool',
-          cards: [
-            { icon: '📦', title: 'Small list', desc: 'just walk it — don’t overthink', state: 'ok', tag: 'use linear', accent: 'var(--green)' },
-            { icon: '🎲', title: 'Unsorted data', desc: 'no structure to exploit', state: 'ok', tag: 'use linear', accent: 'var(--cyan)' },
-            { icon: '📇', title: 'Linked list', desc: 'jumping is impossible', state: 'ok', tag: 'use linear', accent: 'var(--purple)' },
-            { icon: '🔢', title: 'Big + sorted', desc: 'then go halving instead', state: 'active', tag: 'binary →', accent: 'var(--yellow)' }
-          ],
-          caption: 'Next lesson in the sidebar: Binary Search'
+          kind: 'none',
+          title: { en: 'When to use linear search', bn: 'কখন লিনিয়ার সার্চ' },
+          desc: { en: 'Small lists, unsorted data, or a linked list. Big and sorted? Use binary search.', bn: 'ছোট লিস্ট, এলোমেলো ডেটা, বা লিংকড লিস্ট। বড় আর সাজানো? বাইনারি সার্চ।' }
         }
       }
     ]
@@ -387,15 +382,12 @@ export const searchingTopics = [
           bn: "**নিয়ম**\n- অ্যারেটা **সাজানো** থাকতে হবে।\n- শুধু ইনডেক্স দিয়ে পড়া যায় — তাই অ্যারের জন্য উপযুক্ত, লিংকড লিস্টের জন্য নয়।\n\n**খরচ**\n- সময় `O(log n)`, স্পেস `O(1)`।\n- আগে সাজাতে `O(n log n)` লাগে, তাই একবার সাজিয়ে বারবার খোঁজো।\n\n**ব্যবহার** করো ডাটাবেস, ফোনবুক, ডিবাগারে — যেখানে বড় সাজানো তালিকায় \"এই আইডি আছে কি?\" জানতে হয়।"
         },
         scene: {
-          kind: 'cards',
-          label: 'Binary search in one screen',
-          cards: [
-            { icon: '📇', title: 'Sorted only', desc: 'unsorted data breaks it', state: 'active', tag: 'rule 1', accent: 'var(--yellow)' },
-            { icon: '✂️', title: 'Halve every round', desc: 'lo/hi shrink towards each other', state: 'active', tag: 'trick', accent: 'var(--cyan)' },
-            { icon: '⚡', title: 'O(log n)', desc: '1,000,000 items → ~20 checks', state: 'ok', tag: 'cost', accent: 'var(--green)' },
-            { icon: '🧠', title: 'O(1) space', desc: 'only lo, hi, mid variables', state: 'ok', tag: 'memory', accent: 'var(--purple)' }
-          ],
-          caption: 'You just finished Searching · next chapter: Sorting'
+          kind: 'array',
+          label: { en: 'sorted array · look at the middle · keep only one half', bn: 'সাজানো অ্যারে · মাঝখানে দেখো · শুধু এক অর্ধেক রাখো' },
+          cells: [2, 5, 8, 12, 16, 23, 38, 56, 72, 91],
+          highlights: { active: [4] },
+          pointers: [{ i: 0, label: 'lo', tone: 'cyan' }, { i: 4, label: 'mid', tone: 'yellow' }, { i: 9, label: 'hi', tone: 'amber' }],
+          note: { en: 'O(log n) time · O(1) space — only <b>lo</b>, <b>mid</b> and <b>hi</b>.', bn: 'O(log n) সময় · O(1) স্পেস — শুধু <b>lo</b>, <b>mid</b> আর <b>hi</b>।' }
         }
       }
     ]

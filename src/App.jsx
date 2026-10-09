@@ -4,6 +4,10 @@ import Sidebar from './components/Sidebar';
 import InfoPanel from './components/InfoPanel';
 import ControlBar from './components/ControlBar';
 import Stage from './visuals/Stage';
+import BstToolbar from './components/BstToolbar';
+import { runBstOp, fromPreorder, preorder, checkOp, BST_DEFAULT } from './visuals/bstGenerator.js';
+import { BST_OP_META } from './data/topics/bst-playground.js';
+import { codeFor } from './visuals/bstCode.js';
 import { topics, categoryOrder } from './data/topics/index.js';
 import { TRAVERSAL_CONFIGS } from './data/topics/traversalData.js';
 import { buildTree, generateTraversalSteps } from './visuals/traversalGenerator.js';
@@ -18,7 +22,8 @@ const LS = {
   lang: 'algosim-lang',
   codeLang: 'algosim-code-lang',
   collapsed: 'algosim-collapsed',
-  completed: 'algosim-completed'
+  completed: 'algosim-completed',
+  bstRun: 'algosim-bst-run'
 };
 
 function readLS(key, fallback) {
@@ -60,6 +65,18 @@ function App() {
   const [treeInput, setTreeInput] = useState('50, 30, 70, 20, 40, 60, 80');
   const [treeMode, setTreeMode] = useState('bst');
 
+  // BST playground: the tree the last operation started from + that operation.
+  // The tree it produces becomes the starting point of the next operation.
+  const [bstRun, setBstRun] = useState(() => {
+    try {
+      const saved = JSON.parse(readLS(LS.bstRun, 'null'));
+      if (saved && saved.op && Array.isArray(saved.base)) return { ...saved, id: 0 };
+    } catch {
+      /* fall through to the default tree */
+    }
+    return { base: [], op: { type: 'build', ...BST_DEFAULT }, id: 0 };
+  });
+
   const standardTopic = useMemo(() => topics.find((tp) => tp.id === activeId) || topics[0], [activeId]);
   const isInteractiveTraversal = activeId === 'tree-traversal-mechanics';
 
@@ -83,8 +100,53 @@ function App() {
     return generateTraversalSteps(root, activeTraversal, label);
   }, [isInteractiveTraversal, activeTraversal, treeInput, treeMode]);
 
-  const activeTopic = isInteractiveTraversal && traversalTopic ? traversalTopic : standardTopic;
-  const steps = isInteractiveTraversal && traversalSteps ? traversalSteps : (standardTopic?.steps || []);
+  const isBstPlayground = activeId === 'bst-crud-playground';
+  const bstOutcome = useMemo(() => {
+    if (!isBstPlayground) return null;
+    return runBstOp(fromPreorder(bstRun.base), bstRun.op);
+  }, [isBstPlayground, bstRun]);
+  const bstTopic = useMemo(() => {
+    if (!isBstPlayground) return null;
+    const meta = BST_OP_META[bstRun.op.type];
+    // the real program for this operation, with main() making the user's own call
+    const program = codeFor(bstRun.op, { queue: bstOutcome?.queue, mode: bstOutcome?.mode });
+    return {
+      ...standardTopic,
+      description: { en: `Now running: ${meta.en}. ${standardTopic.description.en}`, bn: `এখন চলছে: ${meta.bn}। ${standardTopic.description.bn}` },
+      complexity: { ...standardTopic.complexity, time: meta.time },
+      code: program.code,
+      lineMap: program.lineMap
+    };
+  }, [isBstPlayground, bstRun, standardTopic, bstOutcome]);
+
+  // What the toolbar is set up to do next. ▶ Play runs it when it differs from what is showing.
+  const [bstDraft, setBstDraft] = useState(null);
+  const [bstError, setBstError] = useState(null);
+  const sameOp = (a, b) => {
+    if (!a || !b || a.type !== b.type) return false;
+    const n = (x) => String(x ?? '').trim();
+    if (a.type === 'build') return n(a.input) === n(b.input) && a.mode === b.mode;
+    if (a.type === 'traverse') return (a.order || 'inorder') === (b.order || 'inorder');
+    return n(a.key) === n(b.key) && n(a.newKey) === n(b.newKey);
+  };
+  const bstPending = isBstPlayground && bstDraft != null && !sameOp(bstDraft, bstRun.op);
+  const onBstDraft = useCallback((d) => { setBstDraft(d); setBstError(null); }, []);
+
+  const runBst = useCallback((op) => {
+    const current = bstOutcome?.result ?? null;
+    setBstRun((prev) => {
+      const next = { base: op.type === 'build' ? [] : preorder(current), op, id: prev.id + 1 };
+      try { localStorage.setItem(LS.bstRun, JSON.stringify({ base: next.base, op })); } catch {}
+      return next;
+    });
+    setStepIndex(0);
+    setIsPlaying(true);
+  }, [bstOutcome]);
+
+  const activeTopic = isInteractiveTraversal && traversalTopic ? traversalTopic : isBstPlayground && bstTopic ? bstTopic : standardTopic;
+  const steps = isInteractiveTraversal && traversalSteps
+    ? traversalSteps
+    : isBstPlayground && bstOutcome ? bstOutcome.steps : (standardTopic?.steps || []);
   const safeStep = Math.min(stepIndex, Math.max(0, steps.length - 1));
   const step = steps[safeStep];
 
@@ -148,7 +210,8 @@ function App() {
   // auto play
   useEffect(() => {
     if (!isPlaying) return;
-    const interval = 2800 / speed;
+    // the BST playground plays many small moves, so it steps faster
+    const interval = (isBstPlayground ? 1300 : 2800) / speed;
     playTimerRef.current = setInterval(() => {
       setStepIndex((prev) => {
         if (prev >= steps.length - 1) {
@@ -160,7 +223,28 @@ function App() {
       });
     }, interval);
     return () => { if (playTimerRef.current) clearInterval(playTimerRef.current); };
-  }, [isPlaying, speed, steps.length]);
+  }, [isPlaying, speed, steps.length, isBstPlayground]);
+
+  // ▶ Play: in the BST playground it first runs a newly prepared operation,
+  // and replays from the start when the animation already finished.
+  const handlePlay = useCallback(() => {
+    if (isBstPlayground && bstPending) {
+      const err = checkOp(bstOutcome?.result ?? null, bstDraft);
+      if (err) { setBstError(err); return; }
+      runBst(bstDraft);
+      return;
+    }
+    if (safeStep >= steps.length - 1) {
+      if (!isBstPlayground) return;
+      setStepIndex(0);
+    }
+    setIsPlaying(true);
+  }, [isBstPlayground, bstPending, bstOutcome, bstDraft, runBst, safeStep, steps.length]);
+
+  // Setting up a new operation pauses the old animation, so ▶ Play is right there to run it.
+  useEffect(() => {
+    if (bstPending) stopPlay();
+  }, [bstPending, stopPlay]);
 
   // keyboard shortcuts
   useEffect(() => {
@@ -169,14 +253,14 @@ function App() {
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
       if (e.key === 'ArrowRight') { e.preventDefault(); stopPlay(); handleNext(); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); stopPlay(); handlePrev(); }
-      else if (e.key === ' ') { e.preventDefault(); isPlaying ? stopPlay() : setIsPlaying(true); }
+      else if (e.key === ' ') { e.preventDefault(); isPlaying ? stopPlay() : handlePlay(); }
       else if (e.key === 'r' || e.key === 'R') { handleReset(); }
       else if (e.key === 't' || e.key === 'T') { toggleTheme(); }
       else if (e.key === 'l' || e.key === 'L') { toggleLang(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [isPlaying, handleNext, handlePrev, handleReset, stopPlay]);
+  }, [isPlaying, handleNext, handlePrev, handleReset, stopPlay, handlePlay]);
 
   const toggleDone = useCallback(() => {
     setCompleted((prev) => (prev.includes(activeId) ? prev.filter((x) => x !== activeId) : [...prev, activeId]));
@@ -235,9 +319,10 @@ function App() {
         <div className="canvas-area">
           <Stage
             scene={step?.scene}
-            stageKey={isInteractiveTraversal ? `${activeId}-${activeTraversal}-${treeInput}-${treeMode}` : activeId}
+            stageKey={isInteractiveTraversal ? `${activeId}-${activeTraversal}-${treeInput}-${treeMode}` : isBstPlayground ? `${activeId}-run${bstRun.id}` : activeId}
             step={step}
             lang={lang}
+            speed={speed}
           />
 
           {isMobile && (
@@ -295,12 +380,25 @@ function App() {
         lang={lang}
         onPrev={() => { stopPlay(); handlePrev(); }}
         onNext={() => { stopPlay(); handleNext(); }}
-        onPlay={() => setIsPlaying(true)}
+        onPlay={handlePlay}
+        playReady={bstPending}
+        replayable={isBstPlayground}
         onPause={stopPlay}
         onReset={handleReset}
         onSpeedChange={setSpeed}
         isMobile={isMobile}
         isTraversal={isInteractiveTraversal}
+        topTier={isBstPlayground ? (
+          <BstToolbar
+            tree={bstOutcome?.result ?? null}
+            lastOp={bstRun.op}
+            lang={lang}
+            isMobile={isMobile}
+            onDraftChange={onBstDraft}
+            onPlay={handlePlay}
+            error={bstError}
+          />
+        ) : null}
         activeTraversal={activeTraversal}
         onSelectTraversal={(trav) => {
           stopPlay();

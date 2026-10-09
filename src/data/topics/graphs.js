@@ -78,14 +78,17 @@ export const graphTopics = [
         },
         line: 0,
         scene: {
-          kind: 'cards',
-          label: 'Real life = a graph',
-          cards: [
-            { icon: '🗺️', title: 'City map', desc: 'places are the dots, roads join them', state: 'active', tag: 'graph', accent: 'var(--cyan)' },
-            { icon: '👥', title: 'Social network', desc: 'people are the dots, friendships join them', state: 'ok', tag: 'graph', accent: 'var(--green)' },
-            { icon: '🌐', title: 'The internet', desc: 'web pages are the dots, links join them', state: 'ok', tag: 'graph', accent: 'var(--purple)' }
+          kind: 'graph',
+          label: { en: 'a small city: places are dots, roads are lines', bn: 'ছোট একটা শহর: জায়গাগুলো বিন্দু, রাস্তাগুলো রেখা' },
+          nodes: [
+            { id: 0, label: 'A', sub: 'home' }, { id: 1, label: 'B', sub: 'school' }, { id: 2, label: 'C', sub: 'shop' },
+            { id: 3, label: 'D', sub: 'park' }, { id: 4, label: 'E', sub: 'bank' }, { id: 5, label: 'F', sub: 'station' }
           ],
-          caption: 'dot = <b>vertex</b> · line = <b>edge</b>'
+          edges: W_EDGES,
+          pos: POS,
+          showWeights: true,
+          highlights: { current: ids('A') },
+          caption: { en: 'dot = <b>vertex</b> · line = <b>edge</b> · number = km', bn: 'বিন্দু = <b>ভার্টেক্স</b> · রেখা = <b>এজ</b> · সংখ্যা = কিমি' }
         }
       },
       {
@@ -186,17 +189,14 @@ export const graphTopics = [
           bn: 'গ্রাফ সব জায়গায় লুকিয়ে থাকে:\n\n- **জিপিএস** — রাস্তাই কিমি ওজনসহ এজ। ডাইজক্সট্রা বলে "সবচেয়ে দ্রুত পথ"।\n- **রেকমেন্ডেশন** — "তোমার মতো মানুষ" মানে বন্ধুর গ্রাফে হাঁটা।\n- **ডিপেন্ডেন্সি অর্ডার** — বিল্ড টুল আগে A ইনস্টল করবে, তারপর B। ওটাই ডাইরেক্টেড গ্রাফ।\n\nএই শব্দগুলো মনে রেখো: **ভার্টেক্স (vertex)** = বিন্দু, **এজ (edge)** = লাইন, **অ্যাডজাসেন্সি (adjacency)** = কে কার পাশে, আর গোনতি **V** আর **E**।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Graphs are everywhere + your glossary',
-          cards: [
-            { icon: '🗺️', title: 'GPS', desc: 'roads with km weights → fastest route', state: 'ok', tag: 'where', accent: 'var(--cyan)' },
-            { icon: '🎯', title: 'Recommendations', desc: 'walk the friend graph, suggest neighbours', state: 'ok', tag: 'where', accent: 'var(--green)' },
-            { icon: '📦', title: 'Dependency order', desc: 'install A before B → directed graph', state: 'ok', tag: 'where', accent: 'var(--purple)' },
-            { icon: '🟢', title: 'Vertex / node', desc: 'one dot: a place, a person, a page', state: 'active', tag: 'glossary', accent: 'var(--yellow)' },
-            { icon: '➖', title: 'Edge', desc: 'one line: a road, a friendship, a link', state: 'active', tag: 'glossary', accent: 'var(--yellow)' },
-            { icon: '🔗', title: 'Adjacency', desc: 'the list of who is next to whom', state: 'active', tag: 'glossary', accent: 'var(--yellow)' }
-          ],
-          caption: 'Next lesson: <b>BFS</b> — how we walk a graph'
+          kind: 'graph',
+          label: { en: 'glossary on one picture', bn: 'এক ছবিতে শব্দকোষ' },
+          nodes: NODES,
+          edges: EDGES,
+          pos: POS,
+          highlights: { current: ids('A'), frontier: ids('B', 'C') },
+          activeEdges: [pair('A', 'B')],
+          note: { en: '<b>vertex</b> A (yellow) · <b>edge</b> A–B (blue) · <b>adjacency</b> of A = {B, C} (dashed) · V = 6, E = 6', bn: '<b>ভার্টেক্স</b> A (হলুদ) · <b>এজ</b> A–B (নীল) · A-এর <b>প্রতিবেশী</b> = {B, C} (ড্যাশ) · V = 6, E = 6' }
         }
       }
     ]
@@ -251,14 +251,17 @@ export const graphTopics = [
         },
         line: 0,
         scene: {
-          kind: 'cards',
-          label: 'The ripple idea',
-          cards: [
-            { icon: '🪨', title: 'Drop a stone', desc: 'rings spread outward, one ring at a time', state: 'active', tag: 'level 0 → 1 → 2', accent: 'var(--cyan)' },
-            { icon: '📢', title: 'Tell 5 friends', desc: 'they each tell 5 more — wave 2 follows wave 1', state: 'ok', tag: 'spread', accent: 'var(--green)' },
-            { icon: '🎉', title: 'Party invites', desc: 'nobody hears earlier just because they are closer', state: 'ok', tag: 'even', accent: 'var(--purple)' }
+          kind: 'graph',
+          label: { en: 'BFS from A spreads out in rings', bn: 'A থেকে BFS ঢেউয়ের মতো ছড়ায়' },
+          nodes: [
+            { id: 0, label: 'A', sub: 'ring 0' }, { id: 1, label: 'B', sub: 'ring 1' }, { id: 2, label: 'C', sub: 'ring 1' },
+            { id: 3, label: 'D', sub: 'ring 2' }, { id: 4, label: 'E', sub: 'ring 3' }, { id: 5, label: 'F', sub: 'ring 4' }
           ],
-          caption: 'same distance = same time'
+          edges: EDGES,
+          pos: POS,
+          highlights: { current: ids('A'), frontier: ids('B', 'C') },
+          frontierEdges: [pair('A', 'B'), pair('A', 'C')],
+          caption: { en: 'same distance = reached at the same time', bn: 'একই দূরত্ব = একই সময়ে পৌঁছানো' }
         }
       },
       {
@@ -392,15 +395,17 @@ export const graphTopics = [
           bn: '**সময় `O(V + E)`** — প্রতিটা ভার্টেক্স একবার প্রসেস হয়, প্রতিটা এজ একবার দেখা হয়।\n\n**স্পেস `O(V)`** — কিউ-তে পুরো একটা লেয়ার বসতে পারে, সবচেয়ে খারাপ কেসে সেটা হলো সবাই।\n\nবিএফএস ব্যবহার করো যখন:\n\n- **অনওয়েটেড গ্রাফে** সবচেয়ে **ছোট পথ** দরকার,\n- **লেভেল অর্ডার** দরকার (ট্রিতে এক সারি করে),\n- ওয়েবসাইট **ব্রেডথ-ফার্স্ট** করে ক্রল করতে হয়।\n\nএজে ওজন থাকলে বিএফএস অন্ধ — ওটার কাজ ডাইজক্সট্রা, ৪ নম্বর পাঠ।'
         },
         scene: {
-          kind: 'cards',
-          label: 'BFS in one screen',
-          cards: [
-            { icon: '⏱', title: 'Time O(V + E)', desc: 'each vertex once, each edge once', state: 'ok', tag: 'cost', accent: 'var(--green)' },
-            { icon: '🧠', title: 'Space O(V)', desc: 'the queue can hold a whole level', state: 'ok', tag: 'memory', accent: 'var(--cyan)' },
-            { icon: '🎯', title: 'Use for', desc: 'shortest unweighted path · level order · crawling', state: 'active', tag: 'when', accent: 'var(--yellow)' },
-            { icon: '⚖️', title: 'Weights?', desc: 'then BFS is blind — use Dijkstra', state: 'bad', tag: 'limit', accent: 'var(--red)' }
+          kind: 'graph',
+          label: { en: 'BFS finished: every vertex once (#order), every edge looked at once', bn: 'BFS শেষ: প্রতিটা ভার্টেক্স একবার (#ক্রম), প্রতিটা এজ একবার' },
+          nodes: [
+            { id: 0, label: 'A', sub: '#1' }, { id: 1, label: 'B', sub: '#2' }, { id: 2, label: 'C', sub: '#3' },
+            { id: 3, label: 'D', sub: '#4' }, { id: 4, label: 'E', sub: '#5' }, { id: 5, label: 'F', sub: '#6' }
           ],
-          caption: 'A B C D E F — one stone, one ripple'
+          edges: EDGES,
+          pos: POS,
+          highlights: { visited: ids('A', 'B', 'C', 'D', 'E', 'F') },
+          pathEdges: [pair('A', 'B'), pair('A', 'C'), pair('B', 'D'), pair('D', 'E'), pair('E', 'F')],
+          note: { en: 'Time O(V + E) · space O(V) for the queue · weighted edges? use Dijkstra.', bn: 'সময় O(V + E) · কিউর জন্য স্পেস O(V) · এজে ওজন থাকলে? Dijkstra।' }
         }
       }
     ]
@@ -451,14 +456,14 @@ export const graphTopics = [
         },
         line: 0,
         scene: {
-          kind: 'cards',
-          label: 'Left hand on the wall',
-          cards: [
-            { icon: '🧭', title: 'Left-hand rule', desc: 'touch the wall, keep walking deeper', state: 'active', tag: 'deep', accent: 'var(--purple)' },
-            { icon: '🕳️', title: 'Dead end', desc: 'no new corridor → walk back to the junction', state: 'bad', tag: 'backtrack', accent: 'var(--red)' },
-            { icon: '🔄', title: 'Try the other side', desc: 'the junction still has one unexplored door', state: 'ok', tag: 'again', accent: 'var(--cyan)' }
-          ],
-          caption: 'deep first, sideways later'
+          kind: 'graph',
+          label: { en: 'DFS runs down one corridor as deep as it can', bn: 'DFS একটা পথ ধরে যতদূর পারে গভীরে যায়' },
+          nodes: NODES,
+          edges: EDGES,
+          pos: POS,
+          highlights: { path: ids('A', 'B', 'D', 'E'), current: ids('F'), frontier: ids('C') },
+          pathEdges: [pair('A', 'B'), pair('B', 'D'), pair('D', 'E'), pair('E', 'F')],
+          caption: { en: 'dead end at F → walk back and try the unexplored door C', bn: 'F-এ কানাগলি → পেছনে ফিরে না-দেখা দরজা C চেষ্টা করো' }
         }
       },
       {
@@ -553,15 +558,17 @@ export const graphTopics = [
         },
         line: 2,
         scene: {
-          kind: 'cards',
-          label: 'Same graph, two walks',
-          cards: [
-            { icon: '🧗', title: 'DFS = deep', desc: 'stack · order A B D E F C · long tunnels first', state: 'active', tag: 'depth', accent: 'var(--purple)' },
-            { icon: '🌊', title: 'BFS = wide', desc: 'queue · order A B C D E F · one ring at a time', state: 'ok', tag: 'breadth', accent: 'var(--cyan)' },
-            { icon: '🎯', title: 'Fewest hops?', desc: 'BFS answers it, DFS cannot', state: 'ok', tag: 'pick BFS', accent: 'var(--green)' },
-            { icon: '🌀', title: 'Just any path?', desc: 'DFS finds one faster and remembers less', state: 'ok', tag: 'pick DFS', accent: 'var(--yellow)' }
+          kind: 'graph',
+          label: { en: 'same graph, two walks: DFS order vs BFS order', bn: 'একই গ্রাফ, দুই রকম হাঁটা: DFS ক্রম বনাম BFS ক্রম' },
+          nodes: [
+            { id: 0, label: 'A', sub: 'DFS 1 · BFS 1' }, { id: 1, label: 'B', sub: 'DFS 2 · BFS 2' }, { id: 2, label: 'C', sub: 'DFS 6 · BFS 3' },
+            { id: 3, label: 'D', sub: 'DFS 3 · BFS 4' }, { id: 4, label: 'E', sub: 'DFS 4 · BFS 5' }, { id: 5, label: 'F', sub: 'DFS 5 · BFS 6' }
           ],
-          caption: 'depth-first vs breadth-first'
+          edges: EDGES,
+          pos: POS,
+          highlights: { visited: ids('A', 'B', 'D', 'E', 'F', 'C') },
+          pathEdges: [pair('A', 'B'), pair('B', 'D'), pair('D', 'E'), pair('E', 'F')],
+          caption: { en: 'DFS (stack): A B D E F C · BFS (queue): A B C D E F', bn: 'DFS (স্ট্যাক): A B D E F C · BFS (কিউ): A B C D E F' }
         }
       },
       {
@@ -594,14 +601,15 @@ export const graphTopics = [
           bn: '**সময় `O(V + E)`** — প্রতিটা ভার্টেক্স একবার, প্রতিটা এজ একবার, ঠিক বিএফএস-এর মতোই।\n\n**স্পেস `O(V)`** — স্ট্যাকে পুরো পথটা বসতে পারে। খুব গভীর গ্রাফে রিকারশন ওভারফ্লো করে, তাই আসল প্রোগ্রামে প্রায়ই আলাদা স্ট্যাক ব্যবহার করা হয়।\n\nডিএফএস ব্যবহার করো:\n\n- **সাইকেল ডিটেকশনে** (পাড়ি এখনো স্ট্যাকে থাকলে),\n- **টোপোলজিক্যাল সর্টে** (ডিপেন্ডেন্সি অর্ডার),\n- **কানেক্টেড কম্পোনেন্টে** (কয়টা দ্বীপ আছে?), আর\n- **গোলকধাঁধায়** — বের হওয়ার একটা পথই যথেষ্ট।'
         },
         scene: {
-          kind: 'cards',
-          label: 'DFS in one screen',
-          cards: [
-            { icon: '⏱', title: 'Time O(V + E)', desc: 'each vertex once, each edge once', state: 'ok', tag: 'cost', accent: 'var(--green)' },
-            { icon: '🧠', title: 'Space O(V)', desc: 'stack depth = path length, deep graphs may overflow', state: 'ok', tag: 'memory', accent: 'var(--cyan)' },
-            { icon: '🧩', title: 'Use for', desc: 'cycles · topological sort · components · mazes', state: 'active', tag: 'when', accent: 'var(--yellow)' }
-          ],
-          caption: 'DFS = deep first, then backtrack'
+          kind: 'graph',
+          label: { en: 'DFS path A → B → D → C: C touches A, which is still on the stack → a cycle', bn: 'DFS পথ A → B → D → C: C ছুঁয়েছে A-কে, যে এখনো স্ট্যাকে → সাইকেল' },
+          nodes: NODES,
+          edges: EDGES,
+          pos: POS,
+          highlights: { path: ids('A', 'B', 'D'), current: ids('C'), dim: ids('E', 'F') },
+          pathEdges: [pair('A', 'B'), pair('B', 'D'), pair('C', 'D')],
+          frontierEdges: [pair('A', 'C')],
+          note: { en: 'Time O(V + E) · space O(V): the stack holds the current path.', bn: 'সময় O(V + E) · স্পেস O(V): স্ট্যাকে থাকে বর্তমান পথ।' }
         }
       }
     ]
@@ -681,14 +689,15 @@ export const graphTopics = [
         },
         line: 4,
         scene: {
-          kind: 'cards',
-          label: 'Dijkstra in three moves',
-          cards: [
-            { icon: '📏', title: 'Track distance', desc: 'best known km for every node, start with ∞', state: 'ok', tag: 'dist', accent: 'var(--cyan)' },
-            { icon: '🏆', title: 'Pick smallest', desc: 'settle the unsettled node with the smallest dist', state: 'active', tag: 'greedy', accent: 'var(--yellow)' },
-            { icon: '🔄', title: 'Relax edges', desc: 'if u + w beats v, lower v — then repeat', state: 'ok', tag: 'improve', accent: 'var(--green)' }
-          ],
-          caption: 'repeat until every node is settled'
+          kind: 'graph',
+          label: { en: 'A is settled (0). Smallest unsettled distance is C = 2 → settle C next', bn: 'A ঠিক হয়েছে (0)। না-ঠিক হওয়াদের মধ্যে সবচেয়ে ছোট C = 2 → এরপর C' },
+          nodes: distNodes(['0 ✓', '9', '2', '∞', '∞', '∞']),
+          edges: W_EDGES,
+          pos: POS,
+          showWeights: true,
+          highlights: { visited: ids('A'), current: ids('C'), frontier: ids('B') },
+          activeEdges: [pair('A', 'C')],
+          caption: { en: 'track distance → pick the smallest → relax its edges → repeat', bn: 'দূরত্ব রাখো → সবচেয়ে ছোটটা নাও → এজ রিল্যাক্স করো → আবার' }
         }
       },
       {
@@ -815,15 +824,16 @@ export const graphTopics = [
           bn: '**খরচ।** বাইনারি হিপ দিয়ে: সময় **`O((V + E) log V)`**, স্পেস `O(V)`। প্রতিটা এজ একবার রিল্যাক্স হয়, হিপের ভেতরে প্রতিবার ঠিক করতে `log V` লাগে।\n\n**ব্যবহার করো** জিপিএস রুট, নেটওয়ার্ক রাউটিং, টিকেটের দামে — ০ বা তার বেশি সংখ্যার যেকোনো ওজনসহ গ্রাফে।\n\n**যে নিয়ম ভাঙা যায় না: ঋণাত্মক ওজন নয়।** ধরো A→B = 2, A→C = 5, C→B = −10। ডাইজক্সট্রা আগে B-কে 2 দিয়ে সেটেল করে। পরে তখন C দেখায় −5, কিন্তু B তো বন্ধ হয়ে গেছে। সে 2 বলে, আসল উত্তর −5।\n\n> ঋণাত্মক ওজন থাকলে **বেলম্যান-ফোর্ড** চালাও। সব এজের ওজন ১ হলে সাধারণ **বিএফএস**-ই সস্তা।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Dijkstra: rules of the road',
-          cards: [
-            { icon: '🧮', title: 'O((V+E) log V)', desc: 'binary heap: relax each edge once, log V to fix', state: 'ok', tag: 'cost', accent: 'var(--green)' },
-            { icon: '🗺️', title: 'Use for', desc: 'GPS, routing, ticket prices — positive weights', state: 'active', tag: 'when', accent: 'var(--yellow)' },
-            { icon: '⛔', title: 'No negative weights', desc: 'A→B 2, A→C 5, C→B −10 → locks B at 2, truth is −5', state: 'bad', tag: 'limit', accent: 'var(--red)' },
-            { icon: '🚌', title: 'All weights = 1?', desc: 'then plain BFS gives the same answer cheaper', state: 'ok', tag: 'or BFS', accent: 'var(--cyan)' }
-          ],
-          caption: 'positive weights only · otherwise Bellman-Ford'
+          kind: 'graph',
+          directed: true,
+          label: { en: 'Negative weight breaks Dijkstra', bn: 'নেগেটিভ ওজনে Dijkstra ভুল করে' },
+          nodes: [{ id: 'A', label: 'A', sub: '0' }, { id: 'B', label: 'B', sub: '2 ✗ (truth −5)' }, { id: 'C', label: 'C', sub: '5' }],
+          edges: [{ from: 'A', to: 'B', w: 2 }, { from: 'A', to: 'C', w: 5 }, { from: 'C', to: 'B', w: -10 }],
+          pos: { A: { x: 90, y: 150 }, B: { x: 330, y: 60 }, C: { x: 330, y: 240 } },
+          showWeights: true,
+          highlights: { visited: ['A'], reject: ['B'] },
+          frontierEdges: [['C', 'B']],
+          caption: { en: 'B was locked at 2 before C offered −5 · negative weights → Bellman-Ford', bn: 'C −5 দেওয়ার আগেই B 2-তে লক · নেগেটিভ ওজন → Bellman-Ford' }
         }
       }
     ]

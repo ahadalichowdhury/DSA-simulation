@@ -69,15 +69,13 @@ export const linkedTopics = [
         },
         line: 1,
         scene: {
-          kind: 'cards',
-          label: 'Treasure hunt = a chain of clues',
-          cards: [
-            { icon: '📜', title: 'Clue 1', desc: '"Next paper is under the bench."', state: 'active', tag: 'data + next', accent: 'var(--yellow)' },
-            { icon: '🪑', title: 'Clue 2', desc: '"Look in the fountain."', state: 'ok', tag: 'data + next', accent: 'var(--cyan)' },
-            { icon: '⛲', title: 'Clue 3', desc: '"Dig by the big tree."', state: 'ok', tag: 'data + next', accent: 'var(--purple)' },
-            { icon: '🏁', title: 'You hold one at a time', desc: 'start at head, follow next, stop at the end.', state: 'ok', tag: 'the idea', accent: 'var(--green)' }
-          ],
-          caption: 'Each clue = <b>data</b> + <b>a way to the next one</b> · that is a node'
+          kind: 'linkedlist',
+          label: { en: 'treasure hunt: each clue holds a message + the way to the next clue', bn: 'গুপ্তধন খোঁজা: প্রতিটা ক্লুতে একটা বার্তা + পরের ক্লুর পথ' },
+          nodes: ['bench', 'fountain', 'tree'],
+          head: 0,
+          pointers: [{ i: 0, label: 'head', tone: 'yellow' }],
+          highlights: { active: [0] },
+          note: { en: 'You hold one clue at a time: start at <b>head</b>, follow <b>next</b>, stop at <b>null</b>.', bn: 'একবারে একটা ক্লু হাতে: <b>head</b> থেকে শুরু, <b>next</b> ধরে চলো, <b>null</b>-এ থামো।' }
         }
       },
       {
@@ -231,17 +229,16 @@ export const linkedTopics = [
           bn: 'একই ডেটা, আলাদা আদান-প্রদান:\n\n- **ঝাঁপ** — অ্যারেতে `arr[i]` দিয়ে `O(1)`; লিস্টে হেঁটে যেতে হয়, `O(n)`।\n- **সামনে ঢোকানো** — অ্যারে সব সরায় `O(n)`; লিস্ট শুধু `head` বদলায়, `O(1)`।\n- **মাঝখানে মুছা** — অ্যারে সব সরায় `O(n)`; লিস্ট দুটো তীর বদলায়, জায়গা পেয়ে গেলে `O(1)`।\n- **মেমরি** — অ্যারে আগে থেকেই জায়গা রেখে দেয়; লিস্ট প্রতি নোডে খরচ করে, কোনো খালি ঘর নষ্ট করে না।\n\n**লিংকড লিস্ট ব্যবহার করো যখন** বেশিরভাগ সময় **সামনে** ঢোকাও বা মুছো, সাইজ বদলায়, বা লিস্ট ওভারই ঘাটছো (আনডু হিস্ট্রি, ইভেন্টের স্ট্রিম)।\n\n> **এড়িয়ে চলো যখন** ৫০০০ নম্বর আইটেম এখনই লাগবে — ওখানে অ্যারে জিতে। মনে রাখার খরচ: হাঁটা `O(n)` · হেডে ঢোকানো `O(1)` · শেষে জোড়া `O(n)` · `prev` পেয়ে মুছা `O(1)` · বাড়তি স্পেস `O(1)`।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Which one wins where?',
-          cards: [
-            { icon: '🪜', title: 'Jump to index i', desc: 'Array O(1) · list must walk O(n)', state: 'ok', tag: 'array wins', accent: 'var(--green)' },
-            { icon: '➕', title: 'Insert at front', desc: 'Array shifts O(n) · list O(1)', state: 'active', tag: 'list wins', accent: 'var(--yellow)' },
-            { icon: '✂️', title: 'Delete in middle', desc: 'Array shifts O(n) · list two links', state: 'active', tag: 'list wins', accent: 'var(--yellow)' },
-            { icon: '🧠', title: 'Memory', desc: 'Array reserves ahead · list grows per node', state: 'ok', tag: 'list wins', accent: 'var(--cyan)' },
-            { icon: '🪄', title: 'Use it for streams', desc: 'undo history, queues of events, front-heavy data', state: 'ok', tag: 'good fit', accent: 'var(--green)' },
-            { icon: '🪜', title: 'Skip it for lookups', desc: 'need item 5000 now? use an array', state: 'bad', tag: 'weakness', accent: 'var(--red)' }
+          kind: 'chart',
+          label: { en: 'Steps needed with 1,000 items', bn: '১,০০০ আইটেমে কত ধাপ লাগে' },
+          max: 1000,
+          items: [
+            { label: { en: 'Array: insert at front', bn: 'অ্যারে: শুরুতে ঢোকানো' }, v: 1000, color: 'var(--red)', note: { en: 'shift all', bn: 'সবাইকে সরাও' } },
+            { label: { en: 'List: insert at front', bn: 'লিস্ট: শুরুতে ঢোকানো' }, v: 1, color: 'var(--green)', note: { en: 'move head', bn: 'head সরাও' } },
+            { label: { en: 'Array: read #500', bn: 'অ্যারে: #500 পড়া' }, v: 1, color: 'var(--green)', note: { en: 'one jump', bn: 'এক লাফ' } },
+            { label: { en: 'List: read #500', bn: 'লিস্ট: #500 পড়া' }, v: 500, color: 'var(--red)', note: { en: 'walk', bn: 'হাঁটতে হয়' } }
           ],
-          caption: 'There is no best structure — only the one that fits · next: <b>Reverse a Linked List</b>'
+          caption: { en: 'lists win at the front · arrays win at jumping', bn: 'শুরুতে লিস্ট জেতে · লাফ দিতে অ্যারে জেতে' }
         }
       }
     ]
@@ -483,17 +480,14 @@ export const linkedTopics = [
         },
         line: [6, 8],
         scene: {
-          kind: 'cards',
-          label: 'Reverse a list at a glance',
-          cards: [
-            { icon: '⏱', title: 'Time O(n)', desc: 'one pass, every node once', state: 'ok', tag: 'linear', accent: 'var(--green)' },
-            { icon: '🧠', title: 'Space O(1)', desc: 'prev, curr, next — that is all', state: 'ok', tag: 'constant', accent: 'var(--cyan)' },
-            { icon: '♻️', title: 'Recursion = O(n) space', desc: 'call stack grows n levels', state: 'bad', tag: 'costlier', accent: 'var(--red)' },
-            { icon: '🎯', title: 'Order of moves matters', desc: 'save next BEFORE flipping', state: 'active', tag: 'the trap', accent: 'var(--yellow)' },
-            { icon: '📊', title: 'Interview signal', desc: 'pointers + order + complexity, said out loud', state: 'active', tag: 'core skill', accent: 'var(--purple)' },
-            { icon: '🧩', title: 'Variants', desc: 'reverse in groups of k, palindromes', state: 'ok', tag: 'next up', accent: 'var(--cyan)' }
+          kind: 'chart',
+          label: { en: 'Extra memory to reverse a list of 1,000 nodes', bn: '১,০০০ নোডের লিস্ট উল্টাতে বাড়তি মেমরি' },
+          max: 1000,
+          items: [
+            { label: { en: 'Loop', bn: 'লুপ' }, v: 3, color: 'var(--green)', note: 'prev, curr, next' },
+            { label: { en: 'Recursion', bn: 'রিকার্শন' }, v: 1000, color: 'var(--red)', note: { en: '1,000 stack frames', bn: '১,০০০টা স্ট্যাক ফ্রেম' } }
           ],
-          caption: 'Next lesson: <b>Cycle Detection</b> — a slow and a fast runner'
+          caption: { en: 'both take O(n) time · the loop needs only O(1) space', bn: 'দুটোতেই O(n) সময় · লুপে স্পেস মাত্র O(1)' }
         }
       }
     ]
@@ -572,15 +566,16 @@ export const linkedTopics = [
         },
         line: 2,
         scene: {
-          kind: 'cards',
-          label: 'Two runners, two possible endings',
-          cards: [
-            { icon: '🛣️', title: 'Straight road', desc: 'fast runner reaches null → no cycle', state: 'ok', tag: 'case A', accent: 'var(--green)' },
-            { icon: '🏟️', title: 'Circular track', desc: 'fast runner laps the slow one → they meet', state: 'active', tag: 'case B', accent: 'var(--yellow)' },
-            { icon: '🐇', title: 'Hare (fast)', desc: 'moves 2 nodes each round', state: 'active', tag: 'fast', accent: 'var(--cyan)' },
-            { icon: '🐢', title: 'Tortoise (slow)', desc: 'moves 1 node each round', state: 'ok', tag: 'slow', accent: 'var(--purple)' }
-          ],
-          caption: 'Floyd\'s algorithm — also called <b>tortoise and hare</b>'
+          kind: 'linkedlist',
+          label: { en: 'a circular track: 4 points back to 2', bn: 'গোল ট্র্যাক: 4 আবার 2-কে দেখায়' },
+          nodes: [1, 2, 3, 4],
+          head: 0,
+          next: [1, 2, 3, 1],
+          showNull: false,
+          pointers: [{ i: 1, label: 'slow (1 step)', tone: 'cyan' }, { i: 2, label: 'fast (2 steps)', tone: 'amber' }],
+          highlights: { active: [1, 2] },
+          aux: 'straight road → fast reaches null · circle → fast laps slow and they meet',
+          note: { en: 'Floyd’s algorithm — the tortoise and the hare.', bn: 'Floyd-এর অ্যালগরিদম — কচ্ছপ আর খরগোশ।' }
         }
       },
       {
@@ -696,15 +691,15 @@ export const linkedTopics = [
           bn: '**খরচ**\n- সময় `O(n)` — দ্রুত পয়েন্টার সর্বোচ্চ দ্বিগুণ দূরত্ব চলে, তবু পাস একটাই।\n- স্পেস `O(1)` — শুধু দুটো পয়েন্টার, কোনো সেট বা অতিরিক্ত অ্যারে নেই।\n\n**কেন দরকার**\n- নষ্ট ইমপোর্ট থেকে আসা খারাপ ডেটা চিরকাল ঘুরতে পারে — এটা সঙ্গে সঙ্গে ধরে ফেলে।\n- যেকোনো `while` লুপ আটকে গেলে পেছনে সাধারণত এরকম পয়েন্টারের গোলচক্রই থাকে।\n- ইন্টারভিউয়ের প্রিয় প্রশ্ন: কোডটা ছোট, কিন্তু পয়েন্টার বোঝার গভীর পরীক্ষা।'
         },
         scene: {
-          kind: 'cards',
-          label: "Floyd's algorithm at a glance",
-          cards: [
-            { icon: '⏱', title: 'Time O(n)', desc: 'one pass, fast pointer does 2× the work', state: 'ok', tag: 'fast', accent: 'var(--green)' },
-            { icon: '🧠', title: 'Space O(1)', desc: 'just slow and fast pointers', state: 'ok', tag: 'tiny', accent: 'var(--cyan)' },
-            { icon: '🪤', title: 'Forgotten null', desc: 'the usual cause of a cycle', state: 'bad', tag: 'bug', accent: 'var(--red)' },
-            { icon: '🛡️', title: 'Real use', desc: 'validate data, kill infinite loops, impress interviewers', state: 'active', tag: 'why', accent: 'var(--yellow)' }
-          ],
-          caption: 'You finished <b>Linked Lists</b> · next chapter: Stacks & Queues'
+          kind: 'linkedlist',
+          label: { en: 'slow and fast meet → cycle found, using just 2 pointers', bn: 'slow আর fast দেখা হলো → সাইকেল পাওয়া গেছে, মাত্র ২টা পয়েন্টার দিয়ে' },
+          nodes: [1, 2, 3, 4],
+          head: 0,
+          next: [1, 2, 3, 1],
+          showNull: false,
+          pointers: [{ i: 3, label: 'slow', tone: 'cyan' }, { i: 3, label: 'fast', tone: 'amber' }],
+          highlights: { current: 3, target: [3] },
+          note: { en: 'Time O(n) · space O(1) · a forgotten <b>null</b> is the usual cause of a cycle.', bn: 'সময় O(n) · স্পেস O(1) · ভুলে যাওয়া <b>null</b>-ই সাধারণত সাইকেলের কারণ।' }
         }
       }
     ]

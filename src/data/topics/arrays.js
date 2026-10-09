@@ -57,14 +57,12 @@ export const arrayTopics = [
         },
         line: 0,
         scene: {
-          kind: 'cards',
-          label: 'Real life = a row of fixed slots',
-          cards: [
-            { icon: '🎟️', title: 'Cinema seats', desc: 'Seat 12 means 12 steps from the entrance.', state: 'active', tag: 'index', accent: 'var(--cyan)' },
-            { icon: '🥚', title: 'Egg carton', desc: 'Each egg has its own fixed slot — they never move.', state: 'ok', tag: 'fixed row', accent: 'var(--green)' },
-            { icon: '📚', title: 'Library shelf', desc: 'Book #5 is fifth from the left, every single day.', state: 'ok', tag: 'index', accent: 'var(--purple)' }
-          ],
-          caption: 'An array = a fixed row of boxes, each with a position number'
+          kind: 'array',
+          label: { en: 'an array = one row of boxes, each with a fixed position', bn: 'অ্যারে = এক সারি বক্স, প্রতিটার নির্দিষ্ট অবস্থান' },
+          cells: [10, 20, 30, 40, 50, 60],
+          highlights: { active: [2] },
+          pointers: [{ i: 2, label: 'box 2', tone: 'yellow' }],
+          note: { en: 'Like cinema seats: box 2 is always the third one from the left.', bn: 'সিনেমার সিটের মতো: বক্স ২ সবসময় বাম থেকে তৃতীয়টা।' }
         }
       },
       {
@@ -199,15 +197,13 @@ export const arrayTopics = [
           bn: '**অ্যারে ব্যবহার করো যখন:**\n\n- ইনডেক্স ধরে পড়া বেশি, বা শুরু থেকে শেষ পর্যন্ত ঘোরা,\n- আকারটা আগে থেকেই জানা, বা শুধু শেষে বাড়ে,\n- আইটেম খুব কম নড়ে।\n\n**এড়িয়ে চলো যখন:**\n\n- বারবার **মাঝখানে** ইনসার্ট বা ডিলিট করতে হয় — প্রতিবার বাকি সারিটাই সরতে হয়,\n- ডেটা বারবার বাড়ে আর কপি করলে ঝামেলা — তখন dynamic list (`ArrayList`, Python-এর `list`) নাও,\n- যেকোনো জায়গায় দ্রুত ইনসার্ট দরকার — **লিংকড লিস্ট** সেটা O(1)-এ করে।'
         },
         scene: {
-          kind: 'cards',
-          label: 'Pick the right tool',
-          cards: [
-            { icon: '🎯', title: 'Great for', desc: 'read by index · loop in order · fixed size', state: 'ok', tag: 'use array', accent: 'var(--green)' },
-            { icon: '⚠️', title: 'Painful', desc: 'insert or delete often in the middle', state: 'bad', tag: 'avoid', accent: 'var(--red)' },
-            { icon: '🌱', title: 'Keeps growing', desc: 'use a dynamic list: ArrayList / Python list', state: 'active', tag: 'alternative', accent: 'var(--yellow)' },
-            { icon: '🔗', title: 'Lots of shuffling', desc: 'linked list inserts in O(1)', state: 'ok', tag: 'alternative', accent: 'var(--cyan)' }
-          ],
-          caption: 'Fast to read · slow to change in the middle'
+          kind: 'array',
+          label: { en: 'insert 99 at index 2 → everything after it must shift right', bn: 'ইনডেক্স ২-এ 99 ঢোকাও → এর পরের সবাইকে ডানে সরতে হয়' },
+          cells: [3, 7, 99, 9, 12, 15],
+          highlights: { insert: [2], swap: [3, 4, 5] },
+          brackets: [{ from: 3, to: 5, label: 'shifted right — slow', tone: 'amber' }],
+          aux: [{ label: 'reading arr[4] — one jump, fast', cells: [3, 7, 99, 9, 12, 15], highlights: { active: [4] } }],
+          note: { en: 'Arrays are <b>fast to read</b>, <b>slow to change in the middle</b>.', bn: 'অ্যারে <b>পড়তে দ্রুত</b>, কিন্তু <b>মাঝখানে বদলাতে ধীর</b>।' }
         }
       }
     ]
@@ -265,14 +261,14 @@ export const arrayTopics = [
         },
         line: 0,
         scene: {
-          kind: 'cards',
-          label: 'Sorted numbers · target = 23',
-          cards: [
-            { icon: '🧮', title: 'The task', desc: 'Sorted numbers — find the pair that adds to 23.', state: 'active', tag: 'pair sum', accent: 'var(--yellow)' },
-            { icon: '🐢', title: 'Check every pair', desc: '7 numbers → 21 pairs. 1,000 numbers → 499,500.', state: 'bad', tag: 'O(n²)', accent: 'var(--red)' },
-            { icon: '🫰', title: 'Two pointers', desc: 'One finger at each end, both walking inwards.', state: 'ok', tag: 'O(n)', accent: 'var(--green)' }
+          kind: 'chart',
+          label: { en: 'Checks needed to find the pair (1,000 sorted numbers)', bn: 'জোড়া খুঁজতে কতবার দেখতে হয় (১,০০০টা সাজানো সংখ্যা)' },
+          max: 499500,
+          items: [
+            { label: { en: 'Every pair', bn: 'প্রতিটা জোড়া' }, v: 499500, color: 'var(--red)', note: 'O(n²)' },
+            { label: { en: 'Two pointers', bn: 'দুই পয়েন্টার' }, v: 999, color: 'var(--green)', note: 'O(n)' }
           ],
-          caption: 'Fingers only move forward — they never go back'
+          caption: { en: 'two fingers walk inwards and never go back', bn: 'দুটো আঙুল ভেতরের দিকে হাঁটে, কখনো পেছনে যায় না' }
         }
       },
       {

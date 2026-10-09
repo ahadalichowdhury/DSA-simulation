@@ -216,14 +216,15 @@ export const bstOpsTopics = [
         iteration: { i: 3, of: 4, label: { en: 'Complexity', bn: 'জটিলতা' } },
         state: { balancedSearch: 'O(log N)', skewedSearch: 'O(N)', standardTree: 'O(N)' },
         scene: {
-          kind: 'cards',
-          label: 'Complexity Advantage of Balanced BST',
-          cards: [
-            { icon: '🌲', title: 'Binary Tree', desc: 'O(N) search (blind traversal of all nodes).', state: 'bad', tag: 'Linear', accent: 'var(--red)' },
-            { icon: '⚡', title: 'Balanced BST', desc: 'O(log N) search (halves search space every step).', state: 'active', tag: 'Logarithmic', accent: 'var(--green)' },
-            { icon: '⚠️', title: 'Skewed BST', desc: 'O(N) search (degenerates to linked list).', state: 'bad', tag: 'Degenerate', accent: 'var(--amber)' }
+          kind: 'chart',
+          label: { en: 'Nodes checked to find one key among N = 1,000,000', bn: 'N = 1,000,000 কী-র মধ্যে একটা খুঁজতে কতগুলো নোড দেখতে হয়' },
+          max: 1000000,
+          items: [
+            { label: { en: 'Binary tree', bn: 'বাইনারি ট্রি' }, v: 1000000, color: 'var(--red)', note: { en: 'no order → check all', bn: 'ক্রম নেই → সব দেখো' } },
+            { label: { en: 'Balanced BST', bn: 'ব্যালান্সড BST' }, v: 20, color: 'var(--green)', note: { en: 'halves every step', bn: 'প্রতি ধাপে অর্ধেক' } },
+            { label: { en: 'Skewed BST', bn: 'হেলানো BST' }, v: 1000000, color: 'var(--red)', note: { en: 'a long chain', bn: 'লম্বা একটা চেইন' } }
           ],
-          caption: 'Balanced BST offers O(log N) logarithmic operations.'
+          caption: { en: 'balanced BST: <b>20</b> checks instead of <b>1,000,000</b>', bn: 'ব্যালান্সড BST: <b>1,000,000</b>-এর বদলে মাত্র <b>20</b> বার' }
         }
       },
       {
@@ -1529,15 +1530,12 @@ export const bstOpsTopics = [
         iteration: { i: 1, of: 5, label: { en: 'Divide & Conquer', bn: 'ভাগ ও সমাধান' } },
         state: { formula: 'Combine(Left, Right) + Root', paradigm: 'Post-Order' },
         scene: {
-          kind: 'cards',
-          label: 'Master Recursive Formulas',
-          cards: [
-            { icon: '🔢', title: 'Total Nodes', desc: 'count(left) + count(right) + 1', state: 'active', tag: 'Count', accent: 'var(--yellow)' },
-            { icon: '🍃', title: 'Leaf Nodes', desc: 'leaf(left) + leaf(right) + (isLeaf ? 1 : 0)', state: 'ok', tag: 'Leaves', accent: 'var(--green)' },
-            { icon: '📏', title: 'Tree Height', desc: 'max(height(left), height(right)) + 1', state: 'ok', tag: 'Height', accent: 'var(--cyan)' },
-            { icon: '➕', title: 'Sum of Values', desc: 'sum(left) + sum(right) + p.data', state: 'ok', tag: 'Sum', accent: 'var(--purple)' }
-          ],
-          caption: 'All tree metrics share the same elegant bottom-up post-order recurrence.'
+          kind: 'tree',
+          label: { en: 'count(node) = count(left) + count(right) + 1 — solved bottom-up', bn: 'count(node) = count(left) + count(right) + 1 — নিচ থেকে ওপরে' },
+          root: { v: 50, sub: '3 + 3 + 1 = 7', l: { v: 30, sub: '1 + 1 + 1 = 3', l: { v: 20, sub: '0 + 0 + 1 = 1' }, r: { v: 40, sub: '0 + 0 + 1 = 1' } }, r: { v: 70, sub: '1 + 1 + 1 = 3', l: { v: 60, sub: '0 + 0 + 1 = 1' }, r: { v: 80, sub: '0 + 0 + 1 = 1' } } },
+          highlights: { current: 50, visited: [20, 40, 30, 60, 80, 70] },
+          output: [20, 40, 30, 60, 80, 70, 50],
+          outputLabel: { en: 'Post-order (children are solved before their parent):', bn: 'পোস্ট-অর্ডার (প্যারেন্টের আগে চাইল্ডের হিসাব):' }
         }
       },
       {

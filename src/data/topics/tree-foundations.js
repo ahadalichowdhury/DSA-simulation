@@ -877,15 +877,16 @@ export const foundationTopics = [
         iteration: { i: 3, of: 5, label: { en: 'Permutations', bn: 'পারমিউটেশন' } },
         state: { N: 3, structuralShapes: 5, permutations: 6, totalLabeledTrees: 30, maxHeightTrees: 4 },
         scene: {
-          kind: 'cards',
-          label: 'Labeled Nodes Permutations for N = 3',
-          cards: [
-            { icon: '🌲', title: 'Unlabeled Shapes', desc: 'T(3) = 5 shapes without values.', state: 'ok', tag: 'Catalan', accent: 'var(--cyan)' },
-            { icon: '🔤', title: 'Key Permutations', desc: '3! = 6 ways to place A, B, C.', state: 'active', tag: 'N!', accent: 'var(--yellow)' },
-            { icon: '🎯', title: 'Total Labeled', desc: '5 × 6 = 30 distinct trees.', state: 'ok', tag: 'Result', accent: 'var(--green)' },
-            { icon: '📏', title: 'Max Height Trees', desc: '2^(N-1) = 2^2 = 4 tall trees.', state: 'dim', tag: '2^(N-1)', accent: 'var(--purple)' }
+          kind: 'chart',
+          label: { en: 'Counting binary trees with N = 3 nodes', bn: 'N = 3 নোডের বাইনারি ট্রি গোনা' },
+          max: 30,
+          items: [
+            { label: { en: 'Shapes', bn: 'আকার' }, v: 5, color: 'var(--cyan)', note: 'T(3) = 5' },
+            { label: { en: 'Orders of A, B, C', bn: 'A, B, C-র ক্রম' }, v: 6, color: 'var(--purple)', note: '3! = 6' },
+            { label: { en: 'Labeled trees', bn: 'লেবেলসহ ট্রি' }, v: 30, color: 'var(--green)', note: '5 × 6 = 30' },
+            { label: { en: 'Tallest trees', bn: 'সবচেয়ে উঁচু ট্রি' }, v: 4, color: 'var(--amber)', note: '2^(N−1) = 4' }
           ],
-          caption: 'Total Labeled = Catalan T(N) × N! permutations'
+          caption: { en: 'labeled trees = shapes × N!', bn: 'লেবেলসহ ট্রি = আকার × N!' }
         }
       },
       {
