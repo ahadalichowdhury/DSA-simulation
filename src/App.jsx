@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { Sun, Moon, Menu, X, ChevronUp, Globe } from 'lucide-react';
+import { Sun, Moon, Menu, X, ChevronUp, ChevronDown, Globe } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import InfoPanel from './components/InfoPanel';
 import ControlBar from './components/ControlBar';
@@ -55,7 +55,7 @@ function App() {
       return [];
     }
   });
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 900);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
   const playTimerRef = useRef(null);
@@ -271,7 +271,7 @@ function App() {
     : 'Data Structures &amp; Algorithms — Noob to Pro';
 
   return (
-    <div className={`app ${isMobile ? 'is-mobile' : ''}`}>
+    <div className={`app ${isMobile ? 'is-mobile' : ''}${isMobile && mobilePanelOpen ? ' sheet-open' : ''}`}>
       <header className="header">
         <div className="header-left">
           {isMobile && (
@@ -325,20 +325,15 @@ function App() {
             speed={speed}
           />
 
-          {isMobile && (
-            <button
-              className="mobile-panel-toggle"
-              onClick={() => setMobilePanelOpen((o) => !o)}
-              title={mobilePanelOpen ? 'Collapse step details' : 'Expand step details'}
-            >
-              {mobilePanelOpen ? <X size={16} /> : <ChevronUp size={16} />}
-              <span>{t(step?.title, lang) || (lang === 'bn' ? 'বিবরণ' : 'Details')}</span>
-            </button>
-          )}
         </div>
 
         {isMobile ? (
-          <div className={`bottom-sheet ${mobilePanelOpen ? 'open' : ''}`}>
+          <div className={`bottom-sheet ${mobilePanelOpen ? 'open' : ''}`} aria-hidden={!mobilePanelOpen}>
+            <button className="sheet-handle" onClick={() => setMobilePanelOpen(false)}>
+              <span className="sheet-grip" />
+              <ChevronDown size={16} />
+              {lang === 'bn' ? 'বিবরণ লুকাও' : 'Hide details'}
+            </button>
             <InfoPanel
               topic={activeTopic}
               step={step}
@@ -371,6 +366,14 @@ function App() {
           />
         )}
       </div>
+
+      {isMobile && (
+        <button className="mobile-panel-toggle" onClick={() => setMobilePanelOpen(true)}>
+          <ChevronUp size={16} />
+          <span className="mobile-panel-label">{lang === 'bn' ? 'বিবরণ ও কোড' : 'Details & code'}</span>
+          <span className="mobile-panel-title">{t(step?.title, lang)}</span>
+        </button>
+      )}
 
       <ControlBar
         currentStep={safeStep}

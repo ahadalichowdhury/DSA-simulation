@@ -44,7 +44,7 @@ function readGuideOpen() {
  * Interactive Zoomable & Pannable Stage for Tree and Algorithm Visualizations.
  * Supports:
  * - Mouse wheel zooming (0.3x to 3.5x)
- * - Click and drag panning (mouse & touch)
+ * - Click and drag panning (mouse & touch), two-finger pinch zoom
  * - Floating on-screen zoom toolbar (+, -, %, Fit/Reset)
  * - Auto-fit scaling to viewport
  * - Iteration HUD and variable chips
@@ -173,35 +173,77 @@ export default function Stage({ scene, stageKey, step, lang, speed = 1 }) {
     setIsDragging(false);
   }, []);
 
-  // Drag-to-pan handlers (Touch for Mobile)
-  const handleTouchStart = useCallback((e) => {
-    if (e.touches.length !== 1) return;
-    if (e.target.closest('button, input, select, .stage-legend, .stage-zoom-bar, .tree-output-wrap')) {
-      return;
-    }
-    const touch = e.touches[0];
-    setIsDragging(true);
-    dragStart.current = {
-      x: touch.clientX,
-      y: touch.clientY,
-      panX: pan.x,
-      panY: pan.y
+  // Touch: one finger drags, two fingers pinch-zoom around the point between them.
+  // Native non-passive listeners, so the pinch zooms the canvas and not the whole page.
+  const viewRef = useRef({ zoom: 1, pan: { x: 0, y: 0 } });
+  viewRef.current = { zoom: userZoom, pan };
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return undefined;
+    let mode = null; // 'drag' | 'pinch'
+    let start = null;
+    const skip = (e) => e.target.closest('button, input, select, .stage-legend, .stage-zoom-bar, .tree-output-wrap');
+    const mid = (t) => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 });
+    const dist = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+
+    const begin = (e) => {
+      const { zoom, pan: p } = viewRef.current;
+      if (e.touches.length >= 2) {
+        const r = measureRef.current?.getBoundingClientRect();
+        mode = 'pinch';
+        start = {
+          zoom,
+          pan: p,
+          mid: mid(e.touches),
+          dist: dist(e.touches) || 1,
+          // centre of the drawing without the user's pan (the scale origin is the centre)
+          cx: r ? r.left + r.width / 2 - p.x : 0,
+          cy: r ? r.top + r.height / 2 - p.y : 0
+        };
+        setIsDragging(true);
+      } else if (e.touches.length === 1 && !skip(e)) {
+        mode = 'drag';
+        start = { x: e.touches[0].clientX, y: e.touches[0].clientY, pan: p };
+        setIsDragging(true);
+      }
     };
-  }, [pan]);
-
-  const handleTouchMove = useCallback((e) => {
-    if (!isDragging || e.touches.length !== 1) return;
-    const touch = e.touches[0];
-    const dx = touch.clientX - dragStart.current.x;
-    const dy = touch.clientY - dragStart.current.y;
-    setPan({
-      x: dragStart.current.panX + dx,
-      y: dragStart.current.panY + dy
-    });
-  }, [isDragging]);
-
-  const handleTouchEnd = useCallback(() => {
-    setIsDragging(false);
+    const move = (e) => {
+      if (!mode) return;
+      e.preventDefault();
+      if (mode === 'pinch' && e.touches.length >= 2) {
+        const m = mid(e.touches);
+        const z = Math.max(0.3, Math.min(3.5, start.zoom * (dist(e.touches) / start.dist)));
+        const k = z / start.zoom;
+        // keep the point that was under the fingers under the fingers
+        setUserZoom(Math.round(z * 100) / 100);
+        setPan({
+          x: m.x - start.cx - k * (start.mid.x - start.cx - start.pan.x),
+          y: m.y - start.cy - k * (start.mid.y - start.cy - start.pan.y)
+        });
+      } else if (mode === 'drag' && e.touches.length === 1) {
+        setPan({ x: start.pan.x + e.touches[0].clientX - start.x, y: start.pan.y + e.touches[0].clientY - start.y });
+      }
+    };
+    const end = (e) => {
+      if (e.touches.length === 0) {
+        mode = null;
+        setIsDragging(false);
+      } else if (mode === 'pinch' && e.touches.length === 1) {
+        // one finger lifted: carry on as a drag from here
+        mode = 'drag';
+        start = { x: e.touches[0].clientX, y: e.touches[0].clientY, pan: viewRef.current.pan };
+      }
+    };
+    el.addEventListener('touchstart', begin, { passive: true });
+    el.addEventListener('touchmove', move, { passive: false });
+    el.addEventListener('touchend', end);
+    el.addEventListener('touchcancel', end);
+    return () => {
+      el.removeEventListener('touchstart', begin);
+      el.removeEventListener('touchmove', move);
+      el.removeEventListener('touchend', end);
+      el.removeEventListener('touchcancel', end);
+    };
   }, []);
 
   // Zoom toolbar buttons
@@ -270,9 +312,6 @@ export default function Stage({ scene, stageKey, step, lang, speed = 1 }) {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
       style={{
         cursor: isDragging ? 'grabbing' : 'grab',
         userSelect: isDragging ? 'none' : 'auto'

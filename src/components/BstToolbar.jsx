@@ -49,7 +49,11 @@ export default function BstToolbar({ tree, lastOp, lang, isMobile, onDraftChange
 
   // Hide the section to give the tree the whole canvas. Remembered between visits.
   const [open, setOpen] = useState(() => {
-    try { return localStorage.getItem('algosim-bst-toolbar') !== 'hidden'; } catch { return true; }
+    // On a phone it starts hidden so the tree gets the screen; your choice is remembered.
+    try {
+      const saved = localStorage.getItem('algosim-bst-toolbar');
+      return saved ? saved !== 'hidden' : !isMobile;
+    } catch { return !isMobile; }
   });
   const toggleOpen = () => setOpen((o) => {
     try { localStorage.setItem('algosim-bst-toolbar', o ? 'hidden' : 'open'); } catch { /* storage blocked */ }
