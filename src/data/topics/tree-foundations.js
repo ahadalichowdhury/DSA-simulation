@@ -70,11 +70,11 @@ export const foundationTopics = [
           '  constructor(val) { this.val = val; }',
           '',
           '  getDegree() {',
-          '    return this.children.length; }',
-          '',
+          '    return this.children.length;',
+          '  }',
           '  isLeaf() {',
-          '    return this.children.length === 0; }',
-          '',
+          '    return this.children.length === 0;',
+          '  }',
           '  // N nodes have N - 1 edges',
           '}'
         ],
@@ -86,11 +86,11 @@ export const foundationTopics = [
           '  constructor(val) { this.val = val; }',
           '',
           '  getDegree() {',
-          '    return this.children.length; }',
-          '',
+          '    return this.children.length;',
+          '  }',
           '  isLeaf() {',
-          '    return this.children.length === 0; }',
-          '',
+          '    return this.children.length === 0;',
+          '  }',
           '  // N নোডে N - 1 এজ',
           '}'
         ]
@@ -104,11 +104,11 @@ export const foundationTopics = [
           '  TreeNode(int val) { this.val = val; }',
           '',
           '  int getDegree() {',
-          '    return children.size(); }',
-          '',
+          '    return children.size();',
+          '  }',
           '  boolean isLeaf() {',
-          '    return children.isEmpty(); }',
-          '',
+          '    return children.isEmpty();',
+          '  }',
           '  // N nodes have N - 1 edges',
           '}'
         ],
@@ -120,11 +120,11 @@ export const foundationTopics = [
           '  TreeNode(int val) { this.val = val; }',
           '',
           '  int getDegree() {',
-          '    return children.size(); }',
-          '',
+          '    return children.size();',
+          '  }',
           '  boolean isLeaf() {',
-          '    return children.isEmpty(); }',
-          '',
+          '    return children.isEmpty();',
+          '  }',
           '  // N নোডে N - 1 এজ',
           '}'
         ]
@@ -133,8 +133,8 @@ export const foundationTopics = [
         en: [
           '# Python Tree Node Definition',
           'class TreeNode:',
-          '  val = 0',
-          '  children = []',
+          '  # every node keeps its value and its own list of children',
+          '',
           '  def __init__(self, val): self.val = val; self.children = []',
           '',
           '  def get_degree(self):',
@@ -149,8 +149,8 @@ export const foundationTopics = [
         bn: [
           '# পাইথন ট্রি নোড ডেফিনিশন',
           'class TreeNode:',
-          '  val = 0',
-          '  children = []',
+          '  # প্রতিটা নোড নিজের মান আর নিজের চাইল্ডের তালিকা রাখে',
+          '',
           '  def __init__(self, val): self.val = val; self.children = []',
           '',
           '  def get_degree(self):',
@@ -172,11 +172,11 @@ export const foundationTopics = [
           '  TreeNode(int v) : val(v) {}',
           '',
           '  int getDegree() const {',
-          '    return children.size(); }',
-          '',
+          '    return children.size();',
+          '  }',
           '  bool isLeaf() const {',
-          '    return children.empty(); }',
-          '',
+          '    return children.empty();',
+          '  }',
           '  // N nodes have N - 1 edges',
           '};'
         ],
@@ -188,11 +188,11 @@ export const foundationTopics = [
           '  TreeNode(int v) : val(v) {}',
           '',
           '  int getDegree() const {',
-          '    return children.size(); }',
-          '',
+          '    return children.size();',
+          '  }',
           '  bool isLeaf() const {',
-          '    return children.empty(); }',
-          '',
+          '    return children.empty();',
+          '  }',
           '  // N নোডে N - 1 এজ',
           '};'
         ]
@@ -414,9 +414,9 @@ export const foundationTopics = [
           '    return isFullBinaryTree(node.left) && isFullBinaryTree(node.right);',
           '  }',
           '  return false; // Degree 1 node detected',
+          '}',
           '// Complete: sequential levels without gap',
-          '// Perfect: 2^(h+1) - 1 nodes strictly',
-          '}'
+          '// Perfect: 2^(h+1) - 1 nodes strictly'
         ],
         bn: [
           '// জাভাস্ক্রিপ্ট বাইনারি ট্রি টাইপ চেকার',
@@ -427,9 +427,9 @@ export const foundationTopics = [
           '    return isFullBinaryTree(node.left) && isFullBinaryTree(node.right);',
           '  }',
           '  return false; // ১ চাইল্ড নোড পাওয়া গেছে',
+          '}',
           '// কমপ্লিট: কোনো ফাঁক ছাড়া বাম থেকে ডানে পূর্ণ',
-          '// পারফেক্ট: পুরোপুরি 2^(h+1) - 1 নোড',
-          '}'
+          '// পারফেক্ট: পুরোপুরি 2^(h+1) - 1 নোড'
         ]
       },
       java: {
@@ -442,9 +442,9 @@ export const foundationTopics = [
           '    return isFullBinaryTree(node.left) && isFullBinaryTree(node.right);',
           '  }',
           '  return false; // Has exactly one child',
+          '}',
           '// Complete: array index i maps to 2i and 2i+1',
-          '// Perfect: all leaves at same maximum height',
-          '}'
+          '// Perfect: all leaves at same maximum height'
         ],
         bn: [
           '// জাভা বাইনারি ট্রি টাইপ চেকার',
@@ -455,9 +455,9 @@ export const foundationTopics = [
           '    return isFullBinaryTree(node.left) && isFullBinaryTree(node.right);',
           '  }',
           '  return false; // ঠিক একটি সন্তান আছে',
+          '}',
           '// কমপ্লিট: অ্যারে ইনডেক্স i থেকে 2i ও 2i+1',
-          '// পারফেক্ট: সব লিফ একই সর্বোচ্চ হাইটে',
-          '}'
+          '// পারফেক্ট: সব লিফ একই সর্বোচ্চ হাইটে'
         ]
       },
       python: {
@@ -493,27 +493,27 @@ export const foundationTopics = [
           '// C++ Binary Tree Type Checker',
           'bool isFullBinaryTree(Node* node) {',
           '  if (!node) return true;',
-          '  if (!node->lchild && !node->rchild) return true;',
-          '  if (node->lchild && node->rchild) {',
-          '    return isFullBinaryTree(node->lchild) && isFullBinaryTree(node->rchild);',
+          '  if (!node->left && !node->right) return true;',
+          '  if (node->left && node->right) {',
+          '    return isFullBinaryTree(node->left) && isFullBinaryTree(node->right);',
           '  }',
           '  return false; // Degree 1 found',
+          '}',
           '// Complete: heap array representation valid',
-          '// Perfect: all leaf heights equal',
-          '}'
+          '// Perfect: all leaf heights equal'
         ],
         bn: [
           '// সি++ বাইনারি ট্রি টাইপ চেকার',
           'bool isFullBinaryTree(Node* node) {',
           '  if (!node) return true;',
-          '  if (!node->lchild && !node->rchild) return true;',
-          '  if (node->lchild && node->rchild) {',
-          '    return isFullBinaryTree(node->lchild) && isFullBinaryTree(node->rchild);',
+          '  if (!node->left && !node->right) return true;',
+          '  if (node->left && node->right) {',
+          '    return isFullBinaryTree(node->left) && isFullBinaryTree(node->right);',
           '  }',
           '  return false; // ১ ডিগ্রি পাওয়া গেছে',
+          '}',
           '// কমপ্লিট: হিপ অ্যারে মডেল শতভাগ প্রযোজ্য',
-          '// পারফেক্ট: সব লিফের উচ্চতা সমান',
-          '}'
+          '// পারফেক্ট: সব লিফের উচ্চতা সমান'
         ]
       }
     },
@@ -980,7 +980,7 @@ export const foundationTopics = [
           '  rchild = null',
           '',
           '// NULL Pointer Theorem: N nodes have N + 1 NULL pointers',
-          'nullPointers = nodeCount + 1'
+          'nullPointers(n) = n + 1'
         ],
         bn: [
           '// ১-ভিত্তিক সিকোয়েনশিয়াল অ্যারের সূত্র:',
@@ -996,7 +996,7 @@ export const foundationTopics = [
           '  rchild = null',
           '',
           '// নাল পয়েন্টার উপপাদ্য: N নোডে ঠিক N + 1 টি NULL থাকে',
-          'nullPointers = nodeCount + 1'
+          'nullPointers(n) = n + 1'
         ]
       },
       js: {
@@ -1014,7 +1014,7 @@ export const foundationTopics = [
           '  rchild = null;',
           '  constructor(val) { this.data = val; }',
           '}',
-          'const nullCount = nodeCount + 1;'
+          'const nullPointers = (n) => n + 1;'
         ],
         bn: [
           '// ১-ভিত্তিক সিকোয়েনশিয়াল অ্যারের সূত্র:',
@@ -1030,7 +1030,7 @@ export const foundationTopics = [
           '  rchild = null;',
           '  constructor(val) { this.data = val; }',
           '}',
-          'const nullCount = nodeCount + 1;'
+          'const nullPointers = (n) => n + 1;'
         ]
       },
       java: {
@@ -1048,7 +1048,7 @@ export const foundationTopics = [
           '  Node rchild;',
           '  Node(int val) { this.data = val; }',
           '}',
-          'int nullCount = nodeCount + 1;'
+          'int nullPointers(int n) { return n + 1; }'
         ],
         bn: [
           '// ১-ভিত্তিক সিকোয়েনশিয়াল অ্যারের সূত্র:',
@@ -1064,7 +1064,7 @@ export const foundationTopics = [
           '  Node rchild;',
           '  Node(int val) { this.data = val; }',
           '}',
-          'int nullCount = nodeCount + 1;'
+          'int nullPointers(int n) { return n + 1; }'
         ]
       },
       python: {
@@ -1082,7 +1082,7 @@ export const foundationTopics = [
           '  rchild = None',
           '  def __init__(self, val): self.data = val',
           '',
-          'null_count = node_count + 1'
+          'def null_pointers(n): return n + 1'
         ],
         bn: [
           '# ১-ভিত্তিক সিকোয়েনশিয়াল অ্যারের সূত্র:',
@@ -1098,7 +1098,7 @@ export const foundationTopics = [
           '  rchild = None',
           '  def __init__(self, val): self.data = val',
           '',
-          'null_count = node_count + 1'
+          'def null_pointers(n): return n + 1'
         ]
       },
       cpp: {
@@ -1116,7 +1116,7 @@ export const foundationTopics = [
           '  Node *rchild;',
           '  Node(int val) : data(val), lchild(nullptr), rchild(nullptr) {}',
           '};',
-          'int nullCount = nodeCount + 1;'
+          'int nullPointers(int n) { return n + 1; }'
         ],
         bn: [
           '// ১-ভিত্তিক সিকোয়েনশিয়াল অ্যারের সূত্র:',
@@ -1132,7 +1132,7 @@ export const foundationTopics = [
           '  Node *rchild;',
           '  Node(int val) : data(val), lchild(nullptr), rchild(nullptr) {}',
           '};',
-          'int nullCount = nodeCount + 1;'
+          'int nullPointers(int n) { return n + 1; }'
         ]
       }
     },

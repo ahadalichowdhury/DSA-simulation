@@ -122,14 +122,14 @@ export const TRAVERSAL_CONFIGS = {
         cppBn: '  inOrder(root->right);  // ৩. ডান সাব-ট্রি'
       },
       {
-        pseudo: 'end function',
-        pseudoBn: 'end function',
+        pseudo: '  // this node is done → go back to the caller',
+        pseudoBn: '  // এই নোড শেষ → যে ডেকেছিল তার কাছে ফেরো',
         js: '}',
         jsBn: '}',
         java: '}',
         javaBn: '}',
-        python: '  return',
-        pythonBn: '  return',
+        python: '  # this node is done → go back to the caller',
+        pythonBn: '  # এই নোড শেষ → যে ডেকেছিল তার কাছে ফেরো',
         cpp: '}',
         cppBn: '}'
       }
@@ -228,14 +228,14 @@ export const TRAVERSAL_CONFIGS = {
         cppBn: '  preOrder(root->right); // ৩. ডান সাব-ট্রি'
       },
       {
-        pseudo: 'end function',
-        pseudoBn: 'end function',
+        pseudo: '  // this node is done → go back to the caller',
+        pseudoBn: '  // এই নোড শেষ → যে ডেকেছিল তার কাছে ফেরো',
         js: '}',
         jsBn: '}',
         java: '}',
         javaBn: '}',
-        python: '  return',
-        pythonBn: '  return',
+        python: '  # this node is done → go back to the caller',
+        pythonBn: '  # এই নোড শেষ → যে ডেকেছিল তার কাছে ফেরো',
         cpp: '}',
         cppBn: '}'
       }
@@ -334,14 +334,14 @@ export const TRAVERSAL_CONFIGS = {
         cppBn: '  cout << root->val << " ";'
       },
       {
-        pseudo: 'end function',
-        pseudoBn: 'end function',
+        pseudo: '  // this node is done → go back to the caller',
+        pseudoBn: '  // এই নোড শেষ → যে ডেকেছিল তার কাছে ফেরো',
         js: '}',
         jsBn: '}',
         java: '}',
         javaBn: '}',
-        python: '  return',
-        pythonBn: '  return',
+        python: '  # this node is done → go back to the caller',
+        pythonBn: '  # এই নোড শেষ → যে ডেকেছিল তার কাছে ফেরো',
         cpp: '}',
         cppBn: '}'
       }
@@ -412,8 +412,8 @@ export const TRAVERSAL_CONFIGS = {
         javaBn: '  Queue<TreeNode> queue = new LinkedList<>(List.of(root));',
         python: '  queue = deque([root])',
         pythonBn: '  queue = deque([root])',
-        cpp: '  queue<TreeNode*> queue; queue.push(root);',
-        cppBn: '  queue<TreeNode*> queue; queue.push(root);'
+        cpp: '  queue<TreeNode*> q; q.push(root);',
+        cppBn: '  queue<TreeNode*> q; q.push(root);'
       },
       {
         pseudo: '  while queue not empty:',
@@ -424,8 +424,8 @@ export const TRAVERSAL_CONFIGS = {
         javaBn: '  while (!queue.isEmpty()) {',
         python: '  while queue:',
         pythonBn: '  while queue:',
-        cpp: '  while (!queue.empty()) {',
-        cppBn: '  while (!queue.empty()) {'
+        cpp: '  while (!q.empty()) {',
+        cppBn: '  while (!q.empty()) {'
       },
       {
         pseudo: '    curr = queue.pop(0)       // Dequeue front',
@@ -436,8 +436,8 @@ export const TRAVERSAL_CONFIGS = {
         javaBn: '    TreeNode curr = queue.poll(); // কিউ থেকে পপ',
         python: '    curr = queue.popleft()    # Dequeue front',
         pythonBn: '    curr = queue.popleft()    # কিউ থেকে পপ',
-        cpp: '    TreeNode* curr = queue.front(); queue.pop();',
-        cppBn: '    TreeNode* curr = queue.front(); queue.pop();'
+        cpp: '    TreeNode* curr = q.front(); q.pop();',
+        cppBn: '    TreeNode* curr = q.front(); q.pop();'
       },
       {
         pseudo: '    visit(curr.val)           // Visit node',
@@ -460,8 +460,8 @@ export const TRAVERSAL_CONFIGS = {
         javaBn: '    if (curr.left != null) queue.add(curr.left);',
         python: '    if curr.left: queue.append(curr.left)',
         pythonBn: '    if curr.left: queue.append(curr.left)',
-        cpp: '    if (curr->left) queue.push(curr->left);',
-        cppBn: '    if (curr->left) queue.push(curr->left);'
+        cpp: '    if (curr->left) q.push(curr->left);',
+        cppBn: '    if (curr->left) q.push(curr->left);'
       },
       {
         pseudo: '    if curr.right: queue.push(curr.right)',
@@ -472,20 +472,27 @@ export const TRAVERSAL_CONFIGS = {
         javaBn: '    if (curr.right != null) queue.add(curr.right);',
         python: '    if curr.right: queue.append(curr.right)',
         pythonBn: '    if curr.right: queue.append(curr.right)',
-        cpp: '    if (curr->right) queue.push(curr->right);',
-        cppBn: '    if (curr->right) queue.push(curr->right);'
+        cpp: '    if (curr->right) q.push(curr->right);',
+        cppBn: '    if (curr->right) q.push(curr->right);'
       },
       {
-        pseudo: 'end function',
-        pseudoBn: 'end function',
+        pseudo: '  // the queue is empty → every node was visited',
+        pseudoBn: '  // queue খালি → সব নোড ভিজিট হয়ে গেছে',
+        js: '  }',
+        jsBn: '  }',
+        java: '  }',
+        javaBn: '  }',
+        python: '  # the queue is empty → every node was visited',
+        pythonBn: '  # queue খালি → সব নোড ভিজিট হয়ে গেছে',
+        cpp: '  }',
+        cppBn: '  }'
+      },
+      {
+        pseudo: '',
         js: '}',
-        jsBn: '}',
         java: '}',
-        javaBn: '}',
-        python: '    return',
-        pythonBn: '    return',
-        cpp: '}',
-        cppBn: '}'
+        python: '',
+        cpp: '}'
       }
     ])
   }

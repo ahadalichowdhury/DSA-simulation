@@ -805,7 +805,7 @@ const ORDER_INFO = {
   postorder: { name: B('Postorder', 'পোস্ট-অর্ডার'), rule: B('Left → Right → Root', 'বাম → ডান → রুট'), seq: ['left', 'right', 'visit'], why: B('Children always come before their parent.', 'চাইল্ড সবসময় প্যারেন্টের আগে আসে।') }
 };
 
-function genTraverse(root, order = 'inorder') {
+export function genTraverse(root, order = 'inorder') {
   const info = ORDER_INFO[order] || ORDER_INFO.inorder;
   const steps = [];
   const out = [];
@@ -834,7 +834,7 @@ function genTraverse(root, order = 'inorder') {
         out.push(n.v);
         steps.push({
           title: B(`visit ${n.v} → output #${out.length}`, `${n.v} দেখা → আউটপুট #${out.length}`),
-          explanation: B(`Print **${n.v}**. Output so far: \`${fmt(out)}\`.${out.length === values(root).length ? `\n\nAll nodes visited.\n\n> ${info.why.en}` : ''}`, `**${n.v}** প্রিন্ট করো। এখন পর্যন্ত আউটপুট: \`${fmt(out)}\`।${out.length === values(root).length ? `\n\nসব নোড দেখা হয়েছে।\n\n> ${info.why.bn}` : ''}`),
+          explanation: B(`Now it is ${n.v}'s turn in the rule (${info.rule.en}), so print **${n.v}** — node #${out.length} to be visited. Output so far: \`${fmt(out)}\`.${out.length === values(root).length ? `\n\nAll nodes visited.\n\n> ${info.why.en}` : ''}`, `নিয়ম (${info.rule.bn}) অনুযায়ী এখন ${n.v}-এর পালা, তাই **${n.v}** প্রিন্ট করো — #${out.length} নম্বর ভিজিট। এখন পর্যন্ত আউটপুট: \`${fmt(out)}\`।${out.length === values(root).length ? `\n\nসব নোড দেখা হয়েছে।\n\n> ${info.why.bn}` : ''}`),
           line: ['visit'],
           state: { root: n.v, printed: out.length },
           scene: scene({ cursor: n.v, states: statesOf({ visited: out.slice(0, -1), found: n.v }), status: B(`print <b>${n.v}</b>`, `<b>${n.v}</b> প্রিন্ট`) })
@@ -843,7 +843,7 @@ function genTraverse(root, order = 'inorder') {
         const child = act === 'left' ? n.l : n.r;
         const word = act === 'left' ? B('left', 'বাম') : B('right', 'ডান');
         steps.push({
-          title: B(`${order}(root.${act}) → ${child ? child.v : 'null'}`, `${order}(root.${act}) → ${child ? child.v : 'null'}`),
+          title: B(`${order}(root.${act}) → ${child ? child.v : 'null'}`, `${word.bn}ে কল: ${order}(root.${act}) → ${child ? child.v : 'null'}`),
           explanation: child
             ? B(`Call ${order} on the ${word.en} child, **${child.v}**. This call has to finish before we come back to ${n.v}.`, `${word.bn} চাইল্ড **${child.v}**-এর ওপর ${order} কল। এটা শেষ হলে তবেই ${n.v}-এ ফিরব।`)
             : B(`The ${word.en} child of ${n.v} is **null**, so that call returns immediately (\`if root == null: return\`).`, `${n.v}-এর ${word.bn} চাইল্ড **null**, তাই সেই কল সাথে সাথে ফিরে আসে (\`if root == null: return\`)।`),

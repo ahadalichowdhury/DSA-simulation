@@ -33,9 +33,9 @@ export const bstPlaygroundTopics = [
     },
     categoryKey: 'trees',
     level: 'beginner',
-    order: 35,
+    order: 10,
     icon: '🧪',
-    subgroupKey: 'bst',
+    subgroupKey: 'playground',
     complexity: {
       time: 'O(h)',
       best: 'O(log n)',

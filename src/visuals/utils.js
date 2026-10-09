@@ -100,6 +100,39 @@ export function tone(toneName, fallback = 'v-cyan') {
 
 /* ---------------- noob-friendly helpers ---------------- */
 
+const TEX_SYMBOLS = {
+  implies: '⟹', to: '→', rightarrow: '→', leftarrow: '←', times: '×', cdot: '·', le: '≤', leq: '≤', ge: '≥', geq: '≥',
+  neq: '≠', ne: '≠', approx: '≈', in: '∈', infty: '∞', dots: '…', ldots: '…', pm: '±', lceil: '⌈', rceil: '⌉',
+  lfloor: '⌊', rfloor: '⌋', log: 'log', max: 'max', min: 'min', sum: 'Σ', left: '', right: ''
+};
+
+/**
+ * Lesson text was written with LaTeX math between $…$ ($\log_2 N$, $\mathbf{2N + 1}$ …), which a
+ * browser shows as raw symbols. This turns it into plain readable text with real sub/superscripts.
+ */
+export function texToHtml(str) {
+  if (!str || str.indexOf('$') < 0) return str;
+  const conv = (m) => {
+    let x = m.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    for (let k = 0; k < 3; k++) {
+      x = x
+        .replace(/\\mathbf\{([^{}]*)\}/g, '<b>$1</b>')
+        .replace(/\\text\{([^{}]*)\}/g, '$1')
+        .replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, (_, a, b) => `${/^\w+$/.test(a) ? a : `(${a})`}/${/^\w+$/.test(b) ? b : `(${b})`}`)
+        .replace(/\\binom\{([^{}]*)\}\{([^{}]*)\}/g, 'C($1, $2)')
+        .replace(/\\sqrt\{([^{}]*)\}/g, '√($1)');
+    }
+    x = x.replace(/\\([a-zA-Z]+)/g, (all, name) => (TEX_SYMBOLS[name] != null ? TEX_SYMBOLS[name] : name));
+    x = x.replace(/_\{([^{}]*)\}/g, '<sub>$1</sub>').replace(/_([A-Za-z0-9])/g, '<sub>$1</sub>');
+    x = x.replace(/\^\{([^{}]*)\}/g, '<sup>$1</sup>').replace(/\^([A-Za-z0-9])/g, '<sup>$1</sup>');
+    return `<span class="math">${x.replace(/[{}]/g, '').trim()}</span>`;
+  };
+  // only $…$ on one line that does not start or end with a space (so "$5 and $6" stays as is)
+  return str
+    .replace(/\$\$([^$`]{1,240}?)\$\$/g, (_, m) => conv(m.trim()))
+    .replace(/\$(?=\S)([^$\n`]{1,160}?)(?<=\S)\$/g, (_, m) => conv(m));
+}
+
 /**
  * Turn a scene string (plain, HTML, or the lesson's light markdown) into HTML.
  * Lesson notes use **bold** and `code` but used to show the raw asterisks.
@@ -107,7 +140,7 @@ export function tone(toneName, fallback = 'v-cyan') {
 export function rich(obj, lang) {
   const s = t(obj, lang);
   if (!s) return '';
-  return String(s)
+  return texToHtml(String(s))
     .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
     .replace(/`([^`]+)`/g, '<code>$1</code>');
 }
@@ -148,7 +181,14 @@ export const HL_MEANING = {
   col:      { swatch: 'k-amber',   en: 'Collision (same bucket)', bn: 'কোলিশন (একই বাকেট)' },
   probe:    { swatch: 'k-cyan',    en: 'Checking this one',    bn: 'এটা যাচাই হচ্ছে' },
   hit:      { swatch: 'k-green',   en: 'Found it',             bn: 'পাওয়া গেছে' },
-  miss:     { swatch: 'k-red',     en: 'Not here',             bn: 'এখানে নেই' }
+  miss:     { swatch: 'k-red',     en: 'Not here',             bn: 'এখানে নেই' },
+  // graph chapter states
+  source:   { swatch: 'k-purple',  en: 'Start vertex',         bn: 'শুরুর ভার্টেক্স' },
+  done:     { swatch: 'k-green',   en: 'Finished — answer is final', bn: 'শেষ — উত্তর চূড়ান্ত' },
+  tree:     { swatch: 'k-green',   en: 'Edge we used / kept',  bn: 'যে এজ ব্যবহার / রাখা হয়েছে' },
+  relax:    { swatch: 'k-green',   en: 'Just got better (updated)', bn: 'এইমাত্র আরও ভালো হলো (আপডেট)' },
+  setA:     { swatch: 'k-blue',    en: 'Group A',              bn: 'দল A' },
+  setB:     { swatch: 'k-amber',   en: 'Group B',              bn: 'দল B' }
 };
 
 function nonEmpty(v) {
@@ -170,6 +210,17 @@ export function usedHighlightKeys(scene) {
     // a BST node in state 'new' is drawn green, like an array 'insert'
     Object.values(scene.states || {}).forEach((st) => { const k = st === 'new' ? 'insert' : st; if (HL_MEANING[k]) keys.add(k); });
     if ((scene.lit || []).length) keys.add('path');
+    (scene.panels || []).forEach((p) => Object.values(p.hl || {}).forEach((st) => { if (HL_MEANING[st]) keys.add(st); }));
+  }
+  if (scene.kind === 'graphx') {
+    const add = (st) => { if (st && HL_MEANING[st]) keys.add(st); };
+    Object.values(scene.nodeState || {}).forEach(add);
+    Object.values(scene.edgeState || {}).forEach(add);
+    if (scene.cursor != null) keys.add('cursor');
+    (scene.panels || []).forEach((p) => {
+      Object.values(p.hl || {}).forEach(add);
+      (p.rows || []).forEach((r) => { add(r.state); (r.items || []).forEach((it) => add(it.state)); });
+    });
   }
   (Array.isArray(scene.aux) ? scene.aux : []).forEach((a) => addFrom(a && a.highlights));
   (scene.cells || []).forEach((c) => c && typeof c === 'object' && c.state && keys.add(c.state));
@@ -229,6 +280,10 @@ export const READ_GUIDE = {
 READ_GUIDE.bst = {
   en: ['Every node follows one rule: **smaller keys on the left, bigger keys on the right**.', 'The **orange ring** is where the algorithm is right now. It carries the key and walks down the edges; the edges it walked turn orange.', 'Press **▶ Play** to watch it move, or use **‹ ›** to go one move at a time. The line under the tree says what just happened.'],
   bn: ['প্রতিটা নোড একটা নিয়ম মানে: **ছোট কী বামে, বড় কী ডানে**।', '**কমলা রিং** দেখায় অ্যালগরিদম এখন কোথায়। এটা কী-টা নিয়ে এজ ধরে নিচে নামে; যে এজ দিয়ে গেছে সেগুলো কমলা হয়ে যায়।', 'চলতে দেখতে **▶ প্লে** চাপো, অথবা **‹ ›** দিয়ে এক এক ধাপ দেখো। ট্রির নিচের লাইনে লেখা থাকে এইমাত্র কী হলো।']
+};
+READ_GUIDE.graphx = {
+  en: ['Each **circle** is a **vertex** (a place, a person, a task). Each **line** is an **edge** joining two vertices. An arrow means you may only go one way.', 'A number on an edge is its **weight** — think distance, time or cost.', 'The boxes under the graph are the algorithm\'s **memory** (queue, stack, arrays, tables). Watch them change together with the picture; the line at the bottom says what just happened.'],
+  bn: ['প্রতিটা **বৃত্ত** একটা **ভার্টেক্স (vertex)** — একটা জায়গা, মানুষ বা কাজ। প্রতিটা **রেখা** একটা **এজ (edge)**, যা দুটো ভার্টেক্সকে জোড়ে। তীর থাকলে শুধু এক দিকে যাওয়া যায়।', 'এজের ওপরের সংখ্যা হলো **ওজন (weight)** — দূরত্ব, সময় বা খরচ ভাবো।', 'গ্রাফের নিচের বক্সগুলো অ্যালগরিদমের **মেমরি** (কিউ, স্ট্যাক, অ্যারে, টেবিল)। ছবির সঙ্গে এগুলোও কীভাবে বদলায় দেখো; একদম নিচের লাইনে লেখা থাকে এইমাত্র কী হলো।']
 };
 READ_GUIDE.forest = READ_GUIDE.tree;
 READ_GUIDE['tree-memory'] = READ_GUIDE.tree;

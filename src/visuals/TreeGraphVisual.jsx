@@ -210,12 +210,14 @@ export default function TreeGraphVisual({ scene, lang }) {
 
         {nodes.map((n) => {
           const cls = nodeCls(n);
+          // keyed by value so a node glides when it moves; repeated labels (like "•") fall back to the node id
+          const key = nodes.filter((m) => String(m.value) === String(n.value)).length > 1 ? `id-${n.id}` : String(n.value) || n.id;
           const pulsing = current.has(n.id) || active.has(n.id);
           const from = beforePos && !morphed ? beforePos.get(String(n.value)) : null;
           const x = from ? from.x : n.x;
           const y = from ? from.y : n.y;
           return (
-            <g key={String(n.value) || n.id} className={`gnode ${cls}`} style={{ transform: `translate(${x}px, ${y}px)` }}>
+            <g key={key} className={`gnode ${cls}`} style={{ transform: `translate(${x}px, ${y}px)` }}>
               {pulsing && <circle className="gnode-pulse" r={R} />}
               {pulsing && <circle className="gnode-ring2" r={R} />}
               <title>{nodeTip(n, cls)}</title>

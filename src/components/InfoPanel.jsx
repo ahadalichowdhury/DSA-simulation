@@ -4,7 +4,7 @@ import {
   CheckCircle2, BadgeCheck, Timer, MemoryStick, ListChecks, Code2,
   Sparkles, TrendingUp, Copy, Check
 } from 'lucide-react';
-import { t } from '../visuals/utils.js';
+import { t, texToHtml } from '../visuals/utils.js';
 
 marked.setOptions({ breaks: true, gfm: true });
 
@@ -157,7 +157,7 @@ const InfoPanel = ({
     const raw = t(step?.explanation, lang);
     if (!raw) return '';
     try {
-      return marked.parse(raw);
+      return marked.parse(texToHtml(raw));
     } catch {
       return raw;
     }
@@ -247,7 +247,10 @@ const InfoPanel = ({
       <div className="info-body">
         <div className="info-step-title">
           <span className="info-step-num">{stepIndex + 1}/{totalSteps}</span>
-          <span>{t(step.title, lang) || (lang === 'bn' ? 'ধাপ' : 'Step')}</span>
+          {/* only titles that contain $…$ math go through HTML; the rest stay plain text */}
+          {String(t(step.title, lang)).includes('$')
+            ? <span dangerouslySetInnerHTML={{ __html: texToHtml(t(step.title, lang)) }} />
+            : <span>{t(step.title, lang) || (lang === 'bn' ? 'ধাপ' : 'Step')}</span>}
         </div>
 
         <div className="info-explanation" style={{ fontSize: `${fontSize}px` }} dangerouslySetInnerHTML={{ __html: html }} />
@@ -285,7 +288,8 @@ const InfoPanel = ({
 
             <div className={`code-block${topic?.lineMap ? ' traced' : ''}`} ref={codeBlockRef}>
               <div className="code-container">
-                {code.map((line, i) => (
+                {/* blank padding lines at the end (kept so every language has the same length) are not shown */}
+                {code.slice(0, Math.max(code.length - [...code].reverse().findIndex((l) => l.trim() !== ''), ...activeLines.map((x) => x + 1))).map((line, i) => (
                   <div
                     key={i}
                     className={`code-line ${activeLines.includes(i) ? 'active' : !topic?.lineMap && activeLines.length && i < Math.min(...activeLines) ? 'done' : ''}`}

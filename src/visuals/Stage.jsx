@@ -6,6 +6,7 @@ import TreeMemoryVisual from './TreeMemoryVisual.jsx';
 import MultiwayVisual from './MultiwayVisual.jsx';
 import ForestVisual from './ForestVisual.jsx';
 import BstAnimVisual from './BstAnimVisual.jsx';
+import GraphAlgoVisual from './GraphAlgoVisual.jsx';
 import CatalanCalculator from './CatalanCalculator.jsx';
 import { HashVisual, ChartVisual, IdleVisual } from './MiscVisuals.jsx';
 import { LinkedListVisual, StackVisual, QueueVisual } from './LinearVisuals.jsx';
@@ -13,7 +14,7 @@ import { t, rich, HL_MEANING, usedHighlightKeys, READ_GUIDE } from './utils.js';
 
 const SWATCH_COLOR = {
   'k-yellow': 'yellow', 'k-yellow-o': 'yellow', 'k-cyan': 'cyan', 'k-cyan-d': 'cyan', 'k-amber': 'amber',
-  'k-purple': 'purple', 'k-red': 'red', 'k-red-x': 'red', 'k-red-d': 'red', 'k-green': 'green', 'k-green-o': 'green', 'k-dim': 'dim', 'k-orange-ring': 'orange'
+  'k-purple': 'purple', 'k-red': 'red', 'k-red-x': 'red', 'k-red-d': 'red', 'k-green': 'green', 'k-green-o': 'green', 'k-dim': 'dim', 'k-orange-ring': 'orange', 'k-blue': 'blue'
 };
 
 /** Lesson-authored legend first, then the automatic meaning of every other colour on screen. */
@@ -268,6 +269,9 @@ export default function Stage({ scene, stageKey, step, lang, speed = 1 }) {
         break;
       case 'bst':
         body = <BstAnimVisual scene={s} lang={lang} speed={speed} />;
+        break;
+      case 'graphx':
+        body = <GraphAlgoVisual scene={s} lang={lang} speed={speed} />;
         break;
       case 'multiway':
         body = <MultiwayVisual scene={s} lang={lang} />;

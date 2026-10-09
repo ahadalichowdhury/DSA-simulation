@@ -8,6 +8,12 @@ import BstToolbar from './components/BstToolbar';
 import { runBstOp, fromPreorder, preorder, checkOp, BST_DEFAULT } from './visuals/bstGenerator.js';
 import { BST_OP_META } from './data/topics/bst-playground.js';
 import { codeFor } from './visuals/bstCode.js';
+import GraphToolbar from './components/GraphToolbar';
+import { runGraphOp, checkGraphOp, GRAPH_DEFAULT } from './visuals/graphPlayground.js';
+import { GRAPH_ALGO_META } from './data/topics/graph-playground.js';
+import TreeToolbar from './components/TreeToolbar';
+import { runTreeOp, checkTreeOp, TREE_DEFAULT } from './visuals/treePlayground.js';
+import { TREE_ALGO_META } from './data/topics/tree-playground.js';
 import { topics, categoryOrder } from './data/topics/index.js';
 import { TRAVERSAL_CONFIGS } from './data/topics/traversalData.js';
 import { buildTree, generateTraversalSteps } from './visuals/traversalGenerator.js';
@@ -23,7 +29,9 @@ const LS = {
   codeLang: 'algosim-code-lang',
   collapsed: 'algosim-collapsed',
   completed: 'algosim-completed',
-  bstRun: 'algosim-bst-run'
+  bstRun: 'algosim-bst-run',
+  graphRun: 'algosim-graph-run',
+  treeRun: 'algosim-tree-run'
 };
 
 function readLS(key, fallback) {
@@ -143,10 +151,84 @@ function App() {
     setIsPlaying(true);
   }, [bstOutcome]);
 
-  const activeTopic = isInteractiveTraversal && traversalTopic ? traversalTopic : isBstPlayground && bstTopic ? bstTopic : standardTopic;
+  // Graph playground: the learner's own graph + algorithm. ▶ Play runs a changed setup.
+  const isGraphPlayground = activeId === 'graph-playground';
+  const [graphRun, setGraphRun] = useState(() => {
+    try {
+      const saved = JSON.parse(readLS(LS.graphRun, 'null'));
+      if (saved && saved.algo && !checkGraphOp(saved)) return { op: saved, id: 0 };
+    } catch {
+      /* fall through to the default graph */
+    }
+    return { op: GRAPH_DEFAULT, id: 0 };
+  });
+  const graphOutcome = useMemo(() => (isGraphPlayground ? runGraphOp(graphRun.op) : null), [isGraphPlayground, graphRun]);
+  const graphTopic = useMemo(() => {
+    if (!isGraphPlayground || !graphOutcome) return null;
+    const meta = GRAPH_ALGO_META[graphRun.op.algo];
+    return {
+      ...standardTopic,
+      description: { en: `Now running: ${meta.en}. ${standardTopic.description.en}`, bn: `এখন চলছে: ${meta.bn}। ${standardTopic.description.bn}` },
+      complexity: { ...standardTopic.complexity, time: meta.time },
+      code: graphOutcome.code,
+      lineMap: graphOutcome.lineMap
+    };
+  }, [isGraphPlayground, graphOutcome, graphRun, standardTopic]);
+  const [graphDraft, setGraphDraft] = useState(null);
+  const [graphError, setGraphError] = useState(null);
+  const sameGraphOp = (a, b) => !!a && !!b && a.algo === b.algo && String(a.edges).replace(/\s+/g, '') === String(b.edges).replace(/\s+/g, '') && !!a.directed === !!b.directed && String(a.start ?? 0) === String(b.start ?? 0);
+  const graphPending = isGraphPlayground && graphDraft != null && !sameGraphOp(graphDraft, graphRun.op);
+  const onGraphDraft = useCallback((d) => { setGraphDraft(d); setGraphError(null); }, []);
+  const runGraph = useCallback((op) => {
+    setGraphRun((prev) => ({ op, id: prev.id + 1 }));
+    try { localStorage.setItem(LS.graphRun, JSON.stringify(op)); } catch {}
+    setStepIndex(0);
+    setIsPlaying(true);
+  }, []);
+  // Tree playground: the learner's own values + tree algorithm. Same flow as the graph playground.
+  const isTreePlayground = activeId === 'tree-playground';
+  const [treeRun, setTreeRun] = useState(() => {
+    try {
+      const saved = JSON.parse(readLS(LS.treeRun, 'null'));
+      if (saved && saved.algo && !checkTreeOp(saved)) return { op: saved, id: 0 };
+    } catch {
+      /* fall through to the default values */
+    }
+    return { op: TREE_DEFAULT, id: 0 };
+  });
+  const treeOutcome = useMemo(() => (isTreePlayground ? runTreeOp(treeRun.op) : null), [isTreePlayground, treeRun]);
+  const treeTopic = useMemo(() => {
+    if (!isTreePlayground || !treeOutcome) return null;
+    const meta = TREE_ALGO_META[treeRun.op.algo];
+    return {
+      ...standardTopic,
+      description: { en: `Now running: ${meta.en}. ${standardTopic.description.en}`, bn: `এখন চলছে: ${meta.bn}। ${standardTopic.description.bn}` },
+      complexity: { ...standardTopic.complexity, time: meta.time },
+      code: treeOutcome.code,
+      lineMap: treeOutcome.lineMap
+    };
+  }, [isTreePlayground, treeOutcome, treeRun, standardTopic]);
+  const [treeDraft, setTreeDraft] = useState(null);
+  const [treeError, setTreeError] = useState(null);
+  const sameTreeOp = (a, b) => !!a && !!b && a.algo === b.algo && String(a.values).replace(/\s+/g, '') === String(b.values).replace(/\s+/g, '') && (a.shape || 'bst') === (b.shape || 'bst');
+  const treePending = isTreePlayground && treeDraft != null && !sameTreeOp(treeDraft, treeRun.op);
+  const onTreeDraft = useCallback((d) => { setTreeDraft(d); setTreeError(null); }, []);
+  const runTree = useCallback((op) => {
+    setTreeRun((prev) => ({ op, id: prev.id + 1 }));
+    try { localStorage.setItem(LS.treeRun, JSON.stringify(op)); } catch {}
+    setStepIndex(0);
+    setIsPlaying(true);
+  }, []);
+
+  const isPlayground = isBstPlayground || isGraphPlayground || isTreePlayground;
+  const playPending = bstPending || graphPending || treePending;
+
+  const activeTopic = isInteractiveTraversal && traversalTopic ? traversalTopic : isBstPlayground && bstTopic ? bstTopic : isGraphPlayground && graphTopic ? graphTopic : isTreePlayground && treeTopic ? treeTopic : standardTopic;
   const steps = isInteractiveTraversal && traversalSteps
     ? traversalSteps
-    : isBstPlayground && bstOutcome ? bstOutcome.steps : (standardTopic?.steps || []);
+    : isBstPlayground && bstOutcome ? bstOutcome.steps
+      : isGraphPlayground && graphOutcome ? graphOutcome.steps
+        : isTreePlayground && treeOutcome ? treeOutcome.steps : (standardTopic?.steps || []);
   const safeStep = Math.min(stepIndex, Math.max(0, steps.length - 1));
   const step = steps[safeStep];
 
@@ -210,8 +292,8 @@ function App() {
   // auto play
   useEffect(() => {
     if (!isPlaying) return;
-    // the BST playground plays many small moves, so it steps faster
-    const interval = (isBstPlayground ? 1300 : 2800) / speed;
+    // the playgrounds play many small moves, so they step faster
+    const interval = (isBstPlayground || isTreePlayground ? 1300 : isGraphPlayground ? 1800 : 2800) / speed;
     playTimerRef.current = setInterval(() => {
       setStepIndex((prev) => {
         if (prev >= steps.length - 1) {
@@ -223,7 +305,7 @@ function App() {
       });
     }, interval);
     return () => { if (playTimerRef.current) clearInterval(playTimerRef.current); };
-  }, [isPlaying, speed, steps.length, isBstPlayground]);
+  }, [isPlaying, speed, steps.length, isBstPlayground, isGraphPlayground, isTreePlayground]);
 
   // ▶ Play: in the BST playground it first runs a newly prepared operation,
   // and replays from the start when the animation already finished.
@@ -234,17 +316,29 @@ function App() {
       runBst(bstDraft);
       return;
     }
+    if (isGraphPlayground && graphPending) {
+      const err = checkGraphOp(graphDraft);
+      if (err) { setGraphError(err); return; }
+      runGraph({ ...graphDraft, start: Number(graphDraft.start) || 0 });
+      return;
+    }
+    if (isTreePlayground && treePending) {
+      const err = checkTreeOp(treeDraft);
+      if (err) { setTreeError(err); return; }
+      runTree(treeDraft);
+      return;
+    }
     if (safeStep >= steps.length - 1) {
-      if (!isBstPlayground) return;
+      if (!isPlayground) return;
       setStepIndex(0);
     }
     setIsPlaying(true);
-  }, [isBstPlayground, bstPending, bstOutcome, bstDraft, runBst, safeStep, steps.length]);
+  }, [isBstPlayground, bstPending, bstOutcome, bstDraft, runBst, isGraphPlayground, graphPending, graphDraft, runGraph, isTreePlayground, treePending, treeDraft, runTree, isPlayground, safeStep, steps.length]);
 
   // Setting up a new operation pauses the old animation, so ▶ Play is right there to run it.
   useEffect(() => {
-    if (bstPending) stopPlay();
-  }, [bstPending, stopPlay]);
+    if (playPending) stopPlay();
+  }, [playPending, stopPlay]);
 
   // keyboard shortcuts
   useEffect(() => {
@@ -319,7 +413,7 @@ function App() {
         <div className="canvas-area">
           <Stage
             scene={step?.scene}
-            stageKey={isInteractiveTraversal ? `${activeId}-${activeTraversal}-${treeInput}-${treeMode}` : isBstPlayground ? `${activeId}-run${bstRun.id}` : activeId}
+            stageKey={isInteractiveTraversal ? `${activeId}-${activeTraversal}-${treeInput}-${treeMode}` : isBstPlayground ? `${activeId}-run${bstRun.id}` : isGraphPlayground ? `${activeId}-run${graphRun.id}` : isTreePlayground ? `${activeId}-run${treeRun.id}` : activeId}
             step={step}
             lang={lang}
             speed={speed}
@@ -384,8 +478,8 @@ function App() {
         onPrev={() => { stopPlay(); handlePrev(); }}
         onNext={() => { stopPlay(); handleNext(); }}
         onPlay={handlePlay}
-        playReady={bstPending}
-        replayable={isBstPlayground}
+        playReady={playPending}
+        replayable={isPlayground}
         onPause={stopPlay}
         onReset={handleReset}
         onSpeedChange={setSpeed}
@@ -400,6 +494,24 @@ function App() {
             onDraftChange={onBstDraft}
             onPlay={handlePlay}
             error={bstError}
+          />
+        ) : isGraphPlayground ? (
+          <GraphToolbar
+            lastOp={graphRun.op}
+            lang={lang}
+            isMobile={isMobile}
+            onDraftChange={onGraphDraft}
+            onPlay={handlePlay}
+            error={graphError}
+          />
+        ) : isTreePlayground ? (
+          <TreeToolbar
+            lastOp={treeRun.op}
+            lang={lang}
+            isMobile={isMobile}
+            onDraftChange={onTreeDraft}
+            onPlay={handlePlay}
+            error={treeError}
           />
         ) : null}
         activeTraversal={activeTraversal}

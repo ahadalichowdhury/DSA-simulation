@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BookOpen, Layers, Search, ChevronDown, ChevronRight,
-  PanelLeftClose, PanelLeftOpen, CheckCircle2, Binary
+  PanelLeftClose, PanelLeftOpen, CheckCircle2, Binary, Network
 } from 'lucide-react';
 import { t } from '../visuals/utils.js';
 
 const categoryIcons = {
-  trees: Binary
+  trees: Binary,
+  graphs: Network
 };
 
 const Sidebar = ({
@@ -85,19 +86,14 @@ const Sidebar = ({
     return () => clearTimeout(timer);
   }, [activeId]);
 
-  /** Split a category's lessons into its sub-topics, numbered 1, 2, 3 … in course order. */
-  const allGroupKeys = useMemo(() => {
-    const keys = [];
-    for (const tp of topics) if (tp.subgroup && !keys.includes(tp.subgroup.key)) keys.push(tp.subgroup.key);
-    return keys;
-  }, [topics]);
+  /** Split a category's lessons into its sub-topics, numbered 1, 2, 3 … within that chapter. */
   const subgroupsOf = (items) => {
     const out = [];
     for (const s of items) {
       const key = s.subgroup?.key ?? null;
       let g = out.find((x) => (x.info?.key ?? null) === key);
       if (!g) {
-        g = { info: s.subgroup || null, number: allGroupKeys.indexOf(key) + 1, items: [] };
+        g = { info: s.subgroup || null, number: (s.subgroupIndex ?? -1) + 1, items: [] };
         out.push(g);
       }
       g.items.push(s);

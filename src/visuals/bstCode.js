@@ -15,7 +15,7 @@
 const LANGS = ['pseudo', 'js', 'java', 'python', 'cpp'];
 
 /* ------------------------------------------------------------ text (en / bn) */
-const TEXT = {
+export const TEXT = {
   // insert
   ip0: ['INSERT(root, value)', 'INSERT(root, value)'],
   ip1: ['1. If root is empty:', '১. root খালি হলে:'],
@@ -96,7 +96,7 @@ const TEXT = {
 };
 
 /* ------------------------------------------------------------ Node type */
-const NODE = {
+export const NODE = {
   js: `class Node {
     constructor(value) {
         this.data = value;
@@ -600,7 +600,7 @@ const FN = {
 };
 
 /** One traversal function; the order decides where "visit" sits. */
-function traversalFn(order, lang) {
+export function traversalFn(order, lang) {
   const title = { inorder: 'tin', preorder: 'tpre', postorder: 'tpost' }[order];
   const seq = { inorder: ['left', 'visit', 'right'], preorder: ['visit', 'left', 'right'], postorder: ['left', 'right', 'visit'] }[order];
   const P = order.toUpperCase();

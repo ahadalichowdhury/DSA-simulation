@@ -11,12 +11,13 @@ import { pathToFileURL } from 'node:url';
 const TOPICS_DIR = resolve('src/data/topics');
 const CATEGORY_KEYS = ['basics', 'arrays', 'searching', 'sorting', 'linked', 'linear', 'hashing', 'trees', 'graphs', 'recursion'];
 const LEVELS = ['beginner', 'intermediate', 'advanced'];
-const KINDS = ['array', 'bars', 'linkedlist', 'stack', 'queue', 'tree', 'graph', 'hash', 'chart', 'multiway', 'forest', 'catalan-calc', 'tree-memory', 'bst', 'none'];
+const KINDS = ['array', 'bars', 'linkedlist', 'stack', 'queue', 'tree', 'graph', 'hash', 'chart', 'multiway', 'forest', 'catalan-calc', 'tree-memory', 'bst', 'graphx', 'none'];
 const HL_KEYS = ['compare', 'swap', 'active', 'sorted', 'pivot', 'target', 'insert', 'remove', 'dim', 'mark', 'visited', 'frontier', 'ok', 'reject', 'current', 'path', 'overflow', 'promote', 'split'];
 const TONES = ['cyan', 'amber', 'green', 'purple', 'red', 'yellow', ''];
 const CODE_LANGS = ['pseudo', 'js', 'java', 'python', 'cpp'];
 const SUBGROUP_KEYS = {
-  trees: ['foundations', 'traversals', 'bst', 'avl', 'multiway', 'heaps', 'basics', 'advanced']
+  trees: ['foundations', 'traversals', 'bst', 'avl', 'multiway', 'heaps', 'playground', 'basics', 'advanced'],
+  graphs: ['g-basics', 'g-store', 'g-traverse', 'g-mst', 'g-shortest', 'g-topo', 'g-play']
 };
 
 let errors = 0;

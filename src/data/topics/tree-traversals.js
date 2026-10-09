@@ -472,8 +472,8 @@ export const traversalTopics = [
           "  root.right = buildTree(Arrays.copyOfRange(preorder, mid + 1, preorder.length), Arrays.copyOfRange(inorder, mid + 1, inorder.length));",
           "  return root;",
           "}",
-          "",
-          ""
+          "static int findIndex(int[] a, int x) {  // position of x in a",
+          "  for (int i = 0; i < a.length; i++) if (a[i] == x) return i; return -1; }"
         ],
         bn: [
           "// জাভা ট্রি রিকনস্ট্রাকশন",
@@ -487,8 +487,8 @@ export const traversalTopics = [
           "  root.right = buildTree(Arrays.copyOfRange(preorder, mid + 1, preorder.length), Arrays.copyOfRange(inorder, mid + 1, inorder.length));",
           "  return root;",
           "}",
-          "",
-          ""
+          "static int findIndex(int[] a, int x) {  // a-তে x কোথায়",
+          "  for (int i = 0; i < a.length; i++) if (a[i] == x) return i; return -1; }"
         ]
       },
       python: {
@@ -534,8 +534,8 @@ export const traversalTopics = [
           "",
           "  vector<int> leftPre(pre.begin() + 1, pre.begin() + 1 + mid), leftIn(in.begin(), in.begin() + mid);",
           "  vector<int> rightPre(pre.begin() + 1 + mid, pre.end()), rightIn(in.begin() + mid + 1, in.end());",
-          "  root->lchild = buildTree(leftPre, leftIn);",
-          "  root->rchild = buildTree(rightPre, rightIn);",
+          "  root->left = buildTree(leftPre, leftIn);",
+          "  root->right = buildTree(rightPre, rightIn);",
           "  return root;",
           "}"
         ],
@@ -549,8 +549,8 @@ export const traversalTopics = [
           "",
           "  vector<int> leftPre(pre.begin() + 1, pre.begin() + 1 + mid), leftIn(in.begin(), in.begin() + mid);",
           "  vector<int> rightPre(pre.begin() + 1 + mid, pre.end()), rightIn(in.begin() + mid + 1, in.end());",
-          "  root->lchild = buildTree(leftPre, leftIn);",
-          "  root->rchild = buildTree(rightPre, rightIn);",
+          "  root->left = buildTree(leftPre, leftIn);",
+          "  root->right = buildTree(rightPre, rightIn);",
           "  return root;",
           "}"
         ]
@@ -1072,10 +1072,10 @@ export const traversalTopics = [
           "  q.offer(root);",
           "  while (!q.isEmpty()) {",
           "    Node p = q.poll();",
-          "    int l = input.poll();",
-          "    if (l != -1) { p.lchild = new Node(l); q.offer(p.lchild); }",
-          "    int r = input.poll();",
-          "    if (r != -1) { p.rchild = new Node(r); q.offer(p.rchild); }",
+          "    Integer l = input.poll();",
+          "    if (l != null && l != -1) { p.lchild = new Node(l); q.offer(p.lchild); }",
+          "    Integer r = input.poll();",
+          "    if (r != null && r != -1) { p.rchild = new Node(r); q.offer(p.rchild); }",
           "  }",
           "  return root;",
           "}"
@@ -1091,10 +1091,10 @@ export const traversalTopics = [
           "  q.offer(root);",
           "  while (!q.isEmpty()) {",
           "    Node p = q.poll();",
-          "    int l = input.poll();",
-          "    if (l != -1) { p.lchild = new Node(l); q.offer(p.lchild); }",
-          "    int r = input.poll();",
-          "    if (r != -1) { p.rchild = new Node(r); q.offer(p.rchild); }",
+          "    Integer l = input.poll();",
+          "    if (l != null && l != -1) { p.lchild = new Node(l); q.offer(p.lchild); }",
+          "    Integer r = input.poll();",
+          "    if (r != null && r != -1) { p.rchild = new Node(r); q.offer(p.rchild); }",
           "  }",
           "  return root;",
           "}"
@@ -1109,13 +1109,13 @@ export const traversalTopics = [
           "  it = iter(values)",
           "  root = Node(next(it))",
           "  q = deque([root])",
-          "  for p in q:",
+          "  while q:",
+          "    p = q.popleft()",
           "    l = next(it, -1)",
           "    if l != -1: p.lchild = Node(l); q.append(p.lchild)",
           "    r = next(it, -1)",
           "    if r != -1: p.rchild = Node(r); q.append(p.rchild)",
           "  return root",
-          "",
           "",
           "",
           ""
@@ -1128,13 +1128,13 @@ export const traversalTopics = [
           "  it = iter(values)",
           "  root = Node(next(it))",
           "  q = deque([root])",
-          "  for p in q:",
+          "  while q:",
+          "    p = q.popleft()",
           "    l = next(it, -1)",
           "    if l != -1: p.lchild = Node(l); q.append(p.lchild)",
           "    r = next(it, -1)",
           "    if r != -1: p.rchild = Node(r); q.append(p.rchild)",
           "  return root",
-          "",
           "",
           "",
           ""

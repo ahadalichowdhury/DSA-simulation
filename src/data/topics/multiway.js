@@ -104,13 +104,13 @@ export const multiwayTopics = [
           "  Node23(int... k) { for (int x : k) keys.add(x); }",
           "  boolean isLeaf() { return children.isEmpty(); }",
           "}",
-          "class SplitResult {",
-          "  int median;",
-          "  Node23 left, right;",
-          "  SplitResult(int m, Node23 l, Node23 r) { median = m; left = l; right = r; }",
-          "}",
-          "",
-          ""
+          "record SplitResult(int median, Node23 left, Node23 right) {}",
+          "SplitResult split(Node23 node) {  // the middle key goes up",
+          "  int median = node.keys.get(1);",
+          "  Node23 left = new Node23(node.keys.get(0));",
+          "  Node23 right = new Node23(node.keys.get(2));",
+          "  return new SplitResult(median, left, right);",
+          "}"
         ],
         bn: [
           "// জাভা ২-৩ ট্রি নোড স্ট্রাকচার",
@@ -120,13 +120,13 @@ export const multiwayTopics = [
           "  Node23(int... k) { for (int x : k) keys.add(x); }",
           "  boolean isLeaf() { return children.isEmpty(); }",
           "}",
-          "class SplitResult {",
-          "  int median;",
-          "  Node23 left, right;",
-          "  SplitResult(int m, Node23 l, Node23 r) { median = m; left = l; right = r; }",
-          "}",
-          "",
-          ""
+          "record SplitResult(int median, Node23 left, Node23 right) {}",
+          "SplitResult split(Node23 node) {  // মাঝের কী ওপরে যায়",
+          "  int median = node.keys.get(1);",
+          "  Node23 left = new Node23(node.keys.get(0));",
+          "  Node23 right = new Node23(node.keys.get(2));",
+          "  return new SplitResult(median, left, right);",
+          "}"
         ]
       },
       python: {
@@ -172,13 +172,13 @@ export const multiwayTopics = [
           "  Node23(initializer_list<int> k) : keys(k) {}",
           "  bool isLeaf() const { return children.empty(); }",
           "};",
-          "struct SplitResult {",
-          "  int median;",
-          "  Node23 *left, *right;",
-          "  SplitResult(int m, Node23* l, Node23* r) : median(m), left(l), right(r) {}",
-          "};",
-          "",
-          ""
+          "// Split a 3-key node: the middle key goes up, the other two become nodes",
+          "tuple<int, Node23*, Node23*> split(Node23* node) {",
+          "  int median = node->keys[1];",
+          "  Node23* left = new Node23({node->keys[0]});",
+          "  Node23* right = new Node23({node->keys[2]});",
+          "  return {median, left, right};",
+          "}"
         ],
         bn: [
           "// সি++ ২-৩ ট্রি নোড স্ট্রাকচার",
@@ -188,13 +188,13 @@ export const multiwayTopics = [
           "  Node23(initializer_list<int> k) : keys(k) {}",
           "  bool isLeaf() const { return children.empty(); }",
           "};",
-          "struct SplitResult {",
-          "  int median;",
-          "  Node23 *left, *right;",
-          "  SplitResult(int m, Node23* l, Node23* r) : median(m), left(l), right(r) {}",
-          "};",
-          "",
-          ""
+          "// ৩-কী নোড ভাগ: মাঝের কী ওপরে যায়, বাকি দুটো আলাদা নোড হয়",
+          "tuple<int, Node23*, Node23*> split(Node23* node) {",
+          "  int median = node->keys[1];",
+          "  Node23* left = new Node23({node->keys[0]});",
+          "  Node23* right = new Node23({node->keys[2]});",
+          "  return {median, left, right};",
+          "}"
         ]
       }
     },
@@ -1031,7 +1031,7 @@ export const multiwayTopics = [
           "  return \"Red-Black Tree\";",
           "}",
           "// Production mappings: std::map -> Red-Black, SQLite -> B+ Tree",
-          "// File systems -> B-Tree, Gaming lookup -> AVL",
+          "// File systems -> B-Tree, read-heavy in-memory lookup -> AVL",
           "",
           "",
           "",

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { rich, t } from './utils.js';
+import { PANELS } from './GraphAlgoVisual.jsx';
 
 /**
  * Animated BST canvas (VisuAlgo-style) for the BST playground.
@@ -12,7 +13,8 @@ import { rich, t } from './utils.js';
  * scene = {
  *   kind: 'bst', root: {v,l,r}, cursor, keyBadge, states: {v: state}, lit: [[p, c]],
  *   pending: [values], pendingIndex, ghost: { value, from, to }, subs: {v: text},
- *   output: [values], outputLabel, status, label
+ *   output: [values], outputLabel, status, label,
+ *   panels: [ … ]   (memory boxes under the tree, same as the graph canvas)
  * }
  */
 
@@ -253,6 +255,15 @@ export default function BstAnimVisual({ scene, lang, speed = 1 }) {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {(scene.panels || []).length > 0 && (
+        <div className="ga-panels">
+          {scene.panels.map((p, i) => {
+            const Panel = PANELS[p.type];
+            return Panel ? <Panel key={`${p.type}-${i}`} p={p} lang={lang} /> : null;
+          })}
         </div>
       )}
 
