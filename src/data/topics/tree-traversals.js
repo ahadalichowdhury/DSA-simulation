@@ -11,8 +11,8 @@ export const traversalTopics = [
     id: 'tree-traversal-mechanics',
     name: { en: 'Tree Traversals (In, Pre, Post, BFS)', bn: 'ট্রি ট্রাভার্সাল (ইন, প্রি, পোস্ট, বিএফএস)' },
     description: {
-      en: 'Interactive In-Order, Pre-Order, Post-Order, and BFS Level-Order with live code',
-      bn: 'লাইভ কোডসহ ইন্টারঅ্যাক্টিভ ইন-অর্ডার, প্রি-অর্ডার, পোস্ট-অর্ডার ও BFS'
+      en: 'Visit every node: preorder, inorder, postorder, level order',
+      bn: 'সব নোড ভিজিট: প্রি-অর্ডার, ইন-অর্ডার, পোস্ট-অর্ডার, লেভেল অর্ডার'
     },
     categoryKey: 'trees',
     subgroupKey: 'traversals',
@@ -279,8 +279,8 @@ export const traversalTopics = [
       {
         title: { en: 'In-Order Traversal: Left → Root → Right', bn: 'ইন-অর্ডার ট্রাভার্সাল: বাম → রুট → ডান' },
         explanation: {
-          en: 'In **In-Order Traversal**, you recursively visit the entire left subtree, then process the current node, then visit the right subtree.\n\nOrder: `[D, B, E, A, F, C, G]`\n- **Golden BST Property**: When performed on a Binary Search Tree (BST), In-Order traversal visits keys in **strictly monotonically increasing sorted order**!',
-          bn: '**ইন-অর্ডার ট্রাভার্সালে (In-Order)** প্রথমে সম্পূর্ণ বাম সাব-ট্রি শেষ করা হয়, তারপর রুট প্রসেস করা হয়, এবং সবশেষে ডান সাব-ট্রিতে যাওয়া হয়।\n\nক্রম: `[D, B, E, A, F, C, G]`\n- **মহাসত্য উপপাদ্য**: যেকোনো বাইনারি সার্চ ট্রিতে (BST) ইন-অর্ডার চালালে উপাদানগুলো সর্বদা **ছোট থেকে বড় নিখুঁত সাজানো ক্রমে (sorted order)** প্রিন্ট হয়!'
+          en: '**Inorder**: first the whole left side, then the node, then the right side.\n\nOrder: `[D, B, E, A, F, C, G]`\n\n> On a **BST**, inorder prints the values in **sorted order**.',
+          bn: '**ইন-অর্ডার**: আগে পুরো বাম দিক, তারপর নোড, তারপর ডান দিক।\n\nক্রম: `[D, B, E, A, F, C, G]`\n\n> **BST**-তে ইন-অর্ডার মানগুলো **সাজানো ক্রমে** প্রিন্ট করে।'
         },
         line: 10,
         iteration: { i: 2, of: 5, label: { en: 'In-Order', bn: 'ইন-অর্ডার' } },
@@ -332,8 +332,8 @@ export const traversalTopics = [
       {
         title: { en: 'The 3-Point Boundary Flag Method', bn: '৩-পয়েন্ট বাউন্ডারি ফ্ল্যাগ ট্রিক' },
         explanation: {
-          en: '### Genius Pen-and-Paper Trick:\nImagine tracing a continuous outline around the outside of the tree from the left of the root:\n1. **Touch point on LEFT side** of node $\\implies$ **Pre-Order** visit.\n2. **Touch point on BOTTOM / MIDDLE** of node $\\implies$ **In-Order** visit.\n3. **Touch point on RIGHT side** of node $\\implies$ **Post-Order** visit.\n\nTrace the perimeter once with your pen — you can read off all 3 traversals effortlessly!',
-          bn: '### জাদুকরী খাতা-কলম ট্রিক:\nরুটের বাম পাশ থেকে শুরু করে ট্রির বাইরের সীমানা বরাবর একটি অবিচ্ছিন্ন রেখা কল্পনা করো:\n১. রেখাটি যখন নোডের **বাম পাশে** ছোঁয় $\\implies$ **প্রি-অর্ডার** ভিজিট।\n২. রেখাটি যখন নোডের **নিচে বা মাঝে** ছোঁয় $\\implies$ **ইন-অর্ডার** ভিজিট।\n৩. রেখাটি যখন নোডের **ডান পাশে** ছোঁয় $\\implies$ **পোস্ট-অর্ডার** ভিজিট।\n\nএকবার চারপাশ দিয়ে দাগ টেনে নিলেই কোনো কোড বা রিকারশন ছাড়াই ৩টি ট্রাভার্সাল নির্ভুলভাবে লিখে ফেলা যায়!'
+          en: '**A pen-and-paper trick:** draw one line around the outside of the tree, starting left of the root. Each node is passed three times:\n\n1. on its **left** side → that is its **preorder** moment;\n2. **underneath** it → its **inorder** moment;\n3. on its **right** side → its **postorder** moment.\n\nGo around once and you can read all three orders.',
+          bn: '**কাগজ-কলমের একটা কৌশল:** রুটের বাম পাশ থেকে শুরু করে ট্রির বাইরে দিয়ে একটা রেখা টানো। প্রতিটা নোড তিনবার পার হয়:\n\n১. তার **বাম** পাশে → এটা তার **প্রি-অর্ডার** মুহূর্ত;\n২. তার **নিচে** → **ইন-অর্ডার** মুহূর্ত;\n৩. তার **ডান** পাশে → **পোস্ট-অর্ডার** মুহূর্ত।\n\nএকবার ঘুরলেই তিনটা ক্রমই পড়া যায়।'
         },
         line: 0,
         iteration: { i: 4, of: 5, label: { en: 'Flag Trick', bn: 'ফ্ল্যাগ ট্রিক' } },
@@ -378,8 +378,8 @@ export const traversalTopics = [
     id: 'tree-reconstruction',
     name: { en: 'Unique Tree Reconstruction', bn: 'ট্রাভার্সাল থেকে ট্রি পুনর্গঠন' },
     description: {
-      en: 'Why In-Order is compulsory, and step-by-step reconstruction from Pre-Order + In-Order',
-      bn: 'কেন ইন-অর্ডার বাধ্যতামূলক, এবং প্রি ও ইন-অর্ডার দিয়ে ট্রি রিকনস্ট্রাকশন'
+      en: 'Rebuild a tree from its preorder and inorder lists',
+      bn: 'প্রি-অর্ডার আর ইন-অর্ডার লিস্ট থেকে ট্রি আবার বানানো'
     },
     categoryKey: 'trees',
     subgroupKey: 'traversals',
@@ -558,10 +558,13 @@ export const traversalTopics = [
     },
     steps: [
       {
-        title: { en: 'Why In-Order is Compulsory for Unique Reconstruction', bn: 'কেন ইন-অর্ডার ট্রাভার্সাল বাধ্যতামূলক' },
+        title: {
+          en: 'Can we rebuild a tree from its traversals?',
+          bn: 'ট্রাভার্সাল থেকে কি ট্রি আবার বানানো যায়?'
+        },
         explanation: {
-          en: 'Can we build a unique binary tree given only traversal arrays?\n- **Pre-Order alone**: Yields $T(N)$ Catalan ambiguous shapes.\n- **Pre-Order + Post-Order**: FAILS! A parent with one child looks identical whether it is a left or right child.\n\n> **Universal Law**: **In-Order traversal is COMPULSORY**! Because In-Order splits keys cleanly into left side vs right side.',
-          bn: 'শুধুমাত্র ট্রাভার্সাল লিস্ট দেখে কি একটি নির্দিষ্ট ট্রি ফিরিয়ে আনা সম্ভব?\n- **শুধু প্রি-অর্ডার**: কাতালান $T(N)$ সংখ্যক ভিন্ন আকৃতি তৈরি করতে পারে।\n- **প্রি-অর্ডার + পোস্ট-অর্ডার**: ব্যর্থ হয়! সন্তানটি বামে নাকি ডানে আছে তা বোঝা যায় না।\n\n> **বাধ্যতামূলক নিয়ম**: **ইন-অর্ডার থাকা বাধ্যতামূলক**! কারণ ইন-অর্ডার যেকোনো রুটের বাম ও ডান পাশকে দ্ব্যর্থহীনভাবে ভাগ করে দেয়।'
+          en: 'Suppose someone gives you only the **printed output** of a traversal. Can you draw the exact tree back?\n\n- **Only preorder?** No. Many different shapes print the same list (for 3 nodes there are 5 shapes!).\n- **Preorder + postorder?** Still no. If a node has one child, neither list tells you whether it is a **left** or a **right** child.\n- **Preorder (or postorder) + inorder?** **Yes**, always exactly one tree.\n\n> **Why inorder is the key:** inorder prints the left side, then the node, then the right side. So once you know the root, inorder tells you exactly **who is on the left and who is on the right**.',
+          bn: 'ধরো কেউ তোমাকে শুধু একটা ট্রাভার্সালের **প্রিন্ট করা আউটপুট** দিল। তুমি কি হুবহু ট্রিটা আবার আঁকতে পারবে?\n\n- **শুধু প্রি-অর্ডার?** না। অনেক আলাদা আকার একই লিস্ট প্রিন্ট করে (৩টা নোডেই ৫টা আকার!)।\n- **প্রি-অর্ডার + পোস্ট-অর্ডার?** তাও না। কোনো নোডের একটা চাইল্ড থাকলে কোনো লিস্টই বলে না সেটা **বাম** না **ডান** চাইল্ড।\n- **প্রি-অর্ডার (বা পোস্ট-অর্ডার) + ইন-অর্ডার?** **হ্যাঁ**, সবসময় ঠিক একটাই ট্রি।\n\n> **ইন-অর্ডার কেন চাবিকাঠি:** ইন-অর্ডার আগে বাম দিক, তারপর নোড, তারপর ডান দিক প্রিন্ট করে। তাই রুট জানা থাকলে ইন-অর্ডার একদম বলে দেয় **কে বামে আর কে ডানে**।'
         },
         line: 0,
         iteration: { i: 1, of: 4, label: { en: 'Compulsory Rule', bn: 'মূল নিয়ম' } },
@@ -578,10 +581,13 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Step 1: Identifying the Root from Pre-Order', bn: 'ধাপ ১: প্রি-অর্ডার থেকে রুট শনাক্তকরণ' },
+        title: {
+          en: 'Step 1: the first value of preorder is the root',
+          bn: 'ধাপ ১: প্রি-অর্ডারের প্রথম মানই রুট'
+        },
         explanation: {
-          en: 'Given:\n- `Pre-Order = [A, B, D, E, C, F]`\n- `In-Order  = [D, B, E, A, F, C]`\n\nBecause Pre-Order is `[Root, Left, Right]`, the **very first element is ALWAYS the root** of the current tree: **`A`**!',
-          bn: 'ধরি দেওয়া আছে:\n- `Pre-Order = [A, B, D, E, C, F]`\n- `In-Order  = [D, B, E, A, F, C]`\n\nযেহেতু প্রি-অর্ডারের নিয়ম `[রুট, বাম, ডান]`, তাই **সবার প্রথম উপাদানটিই সর্বদা ট্রির মূল রুট**: **`A`**!'
+          en: 'We are given:\n- `Preorder = [A, B, D, E, C, F]`\n- `Inorder  = [D, B, E, A, F, C]`\n\nPreorder always prints the **root first** (root → left → right). So the root of the whole tree is the first value: **`A`**.',
+          bn: 'আমাদের দেওয়া আছে:\n- `Preorder = [A, B, D, E, C, F]`\n- `Inorder  = [D, B, E, A, F, C]`\n\nপ্রি-অর্ডার সবসময় **রুট আগে** প্রিন্ট করে (রুট → বাম → ডান)। তাই পুরো ট্রির রুট হলো প্রথম মান: **`A`**।'
         },
         line: 3,
         iteration: { i: 2, of: 4, label: { en: 'Find Root', bn: 'রুট নির্বাচন' } },
@@ -597,10 +603,13 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Step 2: Partitioning Left and Right Subtrees in In-Order', bn: 'ধাপ ২: ইন-অর্ডারে বাম ও ডান সাব-ট্রি পৃথকীকরণ' },
+        title: {
+          en: 'Step 2: split inorder around the root',
+          bn: 'ধাপ ২: রুটের চারপাশে ইন-অর্ডার ভাগ করো'
+        },
         explanation: {
-          en: 'Now locate root **`A`** inside `In-Order = [D, B, E, A, F, C]`:\n- Everything to the **left** of `A` belongs to the **Left Subtree**: `[D, B, E]` (3 nodes).\n- Everything to the **right** of `A` belongs to the **Right Subtree**: `[F, C]` (2 nodes).\n\nNow we take 3 nodes from Pre-Order for the left (`[B, D, E]`) and 2 nodes for the right (`[C, F]`). Recurse!',
-          bn: 'এবার `In-Order = [D, B, E, A, F, C]`-এর মধ্যে রুট **`A`**-কে খুঁজে বের করো:\n- `A`-এর **বাম পাশের** সব নোড বাম সাব-ট্রির অংশ: `[D, B, E]` (৩টি নোড)।\n- `A`-এর **ডান পাশের** সব নোড ডান সাব-ট্রির অংশ: `[F, C]` (২টি নোড)।\n\nএখন প্রি-অর্ডারের পরবর্তী ৩টি নোড বাম সাব-ট্রিতে (`[B, D, E]`) এবং শেষ ২টি নোড ডান সাব-ট্রিতে (`[C, F]`) চলে যাবে। এবার রিকারশন চালাও!'
+          en: 'Find `A` inside inorder `[D, B, E, A, F, C]`:\n\n- everything **before** `A` → the **left** subtree: `D, B, E` (3 nodes);\n- everything **after** `A` → the **right** subtree: `F, C` (2 nodes).\n\nNow cut preorder the same way: after the root, the next **3** values belong to the left side (`B, D, E`) and the last **2** to the right side (`C, F`).\n\nThen **do the same thing again** for each side — it is the same small problem, just smaller (recursion).',
+          bn: 'ইন-অর্ডার `[D, B, E, A, F, C]`-এর ভেতরে `A` খোঁজো:\n\n- `A`-এর **আগে** সব → **বাম** সাব-ট্রি: `D, B, E` (৩টা নোড);\n- `A`-এর **পরে** সব → **ডান** সাব-ট্রি: `F, C` (২টা নোড)।\n\nএবার প্রি-অর্ডারও একইভাবে কাটো: রুটের পরের **৩টা** মান বাম দিকের (`B, D, E`), আর শেষ **২টা** ডান দিকের (`C, F`)।\n\nতারপর প্রতিটা দিকের জন্য **আবার একই কাজ** করো — একই ছোট সমস্যা, শুধু আরও ছোট (রিকার্শন)।'
         },
         line: 5,
         iteration: { i: 3, of: 4, label: { en: 'Partition', bn: 'বিভাজন' } },
@@ -622,10 +631,13 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Step 3: The Complete Reconstructed Unique Tree', bn: 'ধাপ ৩: সম্পূর্ণ পুনর্গঠিত একক বাইনারি ট্রি' },
+        title: {
+          en: 'Step 3: the rebuilt tree',
+          bn: 'ধাপ ৩: আবার বানানো ট্রি'
+        },
         explanation: {
-          en: 'By repeating this process recursively on each partition, the entire tree is reconstructed unambiguously:\n- Root `A` with Left child `B` and Right child `C`.\n- `B` has Left child `D` and Right child `E`.\n- `C` has Left child `F`.\n\nEvery node is placed in its exact unique position in $O(N)$ time!',
-          bn: 'প্রতিটি অংশে একই প্রক্রিয়া রিকারসিভভাবে চালিয়ে পুরো ট্রিটি নির্ভুলভাবে পুনর্গঠিত হয়:\n- রুট `A`-এর বাম সন্তান `B` এবং ডান সন্তান `C`।\n- `B`-এর বাম সন্তান `D` এবং ডান সন্তান `E`।\n- `C`-এর বাম সন্তান `F`।\n\nপ্রতিটি নোড তার নিজস্ব সঠিক জায়গায় বসে ঠিক $O(N)$ সময়ে!'
+          en: 'Repeating the two steps on every part gives exactly one tree:\n\n- `A` is the root, with left child `B` and right child `C`;\n- `B` has left child `D` and right child `E`;\n- `C` has left child `F`.\n\nCheck it: print this tree in preorder and inorder — you get back exactly the two lists we started with.\n\n> **For pros:** with a hash map from value → inorder index, each node is placed in O(1), so the whole rebuild is **O(N)**.',
+          bn: 'প্রতিটা অংশে দুটো ধাপ বারবার করলে ঠিক একটাই ট্রি পাওয়া যায়:\n\n- `A` রুট, বাম চাইল্ড `B` আর ডান চাইল্ড `C`;\n- `B`-এর বাম চাইল্ড `D` আর ডান চাইল্ড `E`;\n- `C`-এর বাম চাইল্ড `F`।\n\nমিলিয়ে দেখো: এই ট্রিটা প্রি-অর্ডার আর ইন-অর্ডারে প্রিন্ট করলে শুরুর দুটো লিস্টই হুবহু ফেরত আসে।\n\n> **অভিজ্ঞদের জন্য:** মান → ইন-অর্ডার ইনডেক্সের একটা হ্যাশ ম্যাপ রাখলে প্রতিটা নোড O(1)-এ বসে, তাই পুরো কাজটা **O(N)**।'
         },
         line: 8,
         iteration: { i: 4, of: 4, label: { en: 'Reconstructed', bn: 'সম্পূর্ণ ট্রি' } },
@@ -654,8 +666,8 @@ export const traversalTopics = [
     id: 'iterative-traversals',
     name: { en: 'Iterative Traversals (Explicit Stack & Queue)', bn: 'ইটারেটিভ ট্রাভার্সাল (স্ট্যাক ও কিউ)' },
     description: {
-      en: 'Iterative In-Order using explicit user stack and Level-Order BFS using FIFO queue',
-      bn: 'ইউজার স্ট্যাক দিয়ে ইটারেটিভ ইন-অর্ডার এবং ফিফো কিউ দিয়ে লেভেল-অর্ডার BFS'
+      en: 'Traversals without recursion, using a stack or a queue',
+      bn: 'রিকার্শন ছাড়া ট্রাভার্সাল, স্ট্যাক বা queue দিয়ে'
     },
     categoryKey: 'trees',
     subgroupKey: 'traversals',
@@ -854,10 +866,13 @@ export const traversalTopics = [
     },
     steps: [
       {
-        title: { en: 'Why Iterative Traversals? Eliminating Call Stack Overflow', bn: 'কেন ইটারেটিভ ট্রাভার্সাল? কল স্ট্যাক ওভারফ্লো প্রতিরোধ' },
+        title: {
+          en: 'Why traverse without recursion?',
+          bn: 'রিকার্শন ছাড়া ট্রাভার্স কেন?'
+        },
         explanation: {
-          en: 'Recursive functions use the OS function call stack implicitly. If a tree is skewed and has $100,000$ nodes, recursion causes **Stack Overflow crash**!\n\nBy managing our own explicit `Stack` data structure in heap memory, our code can process trees of arbitrary depth with zero risk of stack overflow.',
-          bn: 'রিকারসিভ ফাংশন অপারেটিং সিস্টেমের কল স্ট্যাকের উপর নির্ভরশীল। একটি স্কিউড ট্রিতে $১,০০,০০০$ নোড থাকলে রিকারশন **স্ট্যাক ওভারফ্লো ক্র্যাশ** ঘটাবে!\n\nহিপ মেমোরিতে নিজস্ব এক্সপ্লিসিট `Stack` ব্যবহার করলে মেমোরি ক্র্যাশের কোনো ভয় ছাড়াই যেকোনো আকারের ট্রি প্রসেস করা সম্ভব।'
+          en: 'A recursive function quietly uses the computer\'s **call stack**: every call waits on a pile until its children are done.\n\nThat pile has a limited size. A very deep tree (say, a line of 100,000 nodes) can make it overflow and the program **crashes** ("stack overflow").\n\nThe fix: keep the pile **ourselves**, in a normal `Stack` object. It does the same job, but it can grow as big as memory allows.',
+          bn: 'একটা রিকার্সিভ ফাংশন চুপচাপ কম্পিউটারের **কল স্ট্যাক** ব্যবহার করে: প্রতিটা কল একটা স্তূপে অপেক্ষা করে, যতক্ষণ না তার চাইল্ডদের কাজ শেষ হয়।\n\nসেই স্তূপের আকার সীমিত। খুব গভীর একটা ট্রি (ধরো ১,০০,০০০ নোডের একটা লাইন) এটা উপচে দিতে পারে, আর প্রোগ্রাম **ক্র্যাশ** করে ("stack overflow")।\n\nসমাধান: স্তূপটা **নিজেরাই** রাখো, একটা সাধারণ `Stack` অবজেক্টে। একই কাজ করে, কিন্তু মেমরি যতটা দেয় ততটা বড় হতে পারে।'
         },
         line: 2,
         iteration: { i: 1, of: 5, label: { en: 'Concept', bn: 'ধারণা' } },
@@ -872,10 +887,13 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Pushing Left Nodes into Stack', bn: 'বাম দিকের নোডগুলো স্ট্যাকে পুশ করা' },
+        title: {
+          en: 'Go left and remember the way back',
+          bn: 'বামে যাও আর ফেরার পথ মনে রাখো'
+        },
         explanation: {
-          en: 'Execution starts with `curr = 50` (root):\n1. `curr != null` $\\implies$ `stack.push(50)`, move to `curr = curr.lchild` (25).\n2. `curr != null` $\\implies$ `stack.push(25)`, move to `curr = curr.lchild` (10).\n3. `curr != null` $\\implies$ `stack.push(10)`, move to `curr = curr.lchild` (null).\n\nNow `curr == null`, and the stack holds `[50, 25, 10]` waiting to be visited in reverse!',
-          bn: 'শুরুতে `curr = 50` (রুট):\n১. `curr != null` $\\implies$ `stack.push(50)`, বামে যাও `curr = 25`।\n২. `curr != null` $\\implies$ `stack.push(25)`, বামে যাও `curr = 10`।\n৩. `curr != null` $\\implies$ `stack.push(10)`, বামে যাও `curr = null`।\n\nএখন `curr == null`, আর স্ট্যাকে উল্টো ক্রমে প্রিন্ট হওয়ার অপেক্ষায় আছে `[50, 25, 10]`!'
+          en: 'Inorder means "left side first". So we keep going **left**, and push every node we pass onto the stack — to come back to it later.\n\nStarting at the root `50`:\n1. push `50`, go left to `25`;\n2. push `25`, go left to `10`;\n3. push `10`, go left → nothing there (`null`).\n\nNow the stack holds `[50, 25, 10]` — the way back up, with the **most recent** node on top.',
+          bn: 'ইন-অর্ডার মানে "বাম দিক আগে"। তাই আমরা **বামে** যেতে থাকি, আর পথে প্রতিটা নোড স্ট্যাকে push করি — পরে সেখানে ফিরে আসার জন্য।\n\nরুট `50` থেকে শুরু:\n১. `50` push, বামে `25`-এ যাও;\n২. `25` push, বামে `10`-এ যাও;\n৩. `10` push, বামে যাও → সেখানে কিছু নেই (`null`)।\n\nএখন স্ট্যাকে `[50, 25, 10]` — ওপরে ফেরার পথ, **সবশেষেরটা** একদম ওপরে।'
         },
         line: 6,
         iteration: { i: 2, of: 5, label: { en: 'Push Left', bn: 'বামে পুশ' } },
@@ -890,10 +908,13 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Popping, Printing, and Moving Right', bn: 'পপ, প্রিন্ট এবং ডানে গমন' },
+        title: {
+          en: 'Pop, print, then go right',
+          bn: 'পপ, প্রিন্ট, তারপর ডানে'
+        },
         explanation: {
-          en: 'Because `curr == null`:\n1. Pop `curr = stack.pop()` $\\implies$ pops **`10`**.\n2. **Visit/Print `10`**! (Smallest element).\n3. Move `curr = curr.rchild` $\\implies$ 10 has no right child (`null`).\n4. Next loop: pop **`25`**, print `25`, move to its right child **`30`**.\n\nOutput so far: `10, 25`! In-order sorted property in action.',
-          bn: 'যেহেতু `curr == null`:\n১. পপ করো `curr = stack.pop()` $\\implies$ বের হলো **`10`**।\n২. **প্রিন্ট করো `10`**! (সবচেয়ে ছোট উপাদান)।\n৩. ডানে যাও `curr = curr.rchild` $\\implies$ ১০-এর ডান চাইল্ড নেই (`null`)।\n৪. পরের লুপে: পপ করো **`25`**, প্রিন্ট করো `25`, তারপর তার ডান সন্তান **`30`**-এ যাও।\n\nআউটপুট: `10, 25`! ইন-অর্ডার সর্টেড ক্রম বজায় থাকছে।'
+          en: 'We hit `null`, so there is nothing more on the left. Time to come back:\n\n1. **pop** the top → `10`, and **print** it (it is the smallest);\n2. go to its **right** child → `null`, nothing there;\n3. pop again → `25`, print it, go to its right child `30` — and start "go left" from `30`.\n\nOutput so far: `10, 25` — already sorted, just like recursive inorder.\n\n> **The whole loop in one sentence:** go left as far as you can (pushing), then pop, print, and step right.',
+          bn: '`null`-এ পৌঁছেছি, তাই বাম দিকে আর কিছু নেই। এবার ফেরার পালা:\n\n১. ওপর থেকে **pop** → `10`, আর **প্রিন্ট** করো (এটাই সবচেয়ে ছোট);\n২. তার **ডান** চাইল্ডে যাও → `null`, কিছু নেই;\n৩. আবার pop → `25`, প্রিন্ট করো, তার ডান চাইল্ড `30`-এ যাও — আর `30` থেকে আবার "বামে যাও" শুরু।\n\nএ পর্যন্ত আউটপুট: `10, 25` — রিকার্সিভ ইন-অর্ডারের মতোই সাজানো।\n\n> **পুরো লুপ এক বাক্যে:** যতদূর পারো বামে যাও (push করতে করতে), তারপর pop, প্রিন্ট, আর ডানে এক ধাপ।'
         },
         line: 10,
         iteration: { i: 3, of: 5, label: { en: 'Pop & Print', bn: 'পপ ও প্রিন্ট' } },
@@ -909,10 +930,13 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Level-Order Traversal with FIFO Queue', bn: 'FIFO কিউ দিয়ে লেভেল-অর্ডার ট্রাভার্সাল' },
+        title: {
+          en: 'Level order uses a queue',
+          bn: 'লেভেল অর্ডারে লাগে queue'
+        },
         explanation: {
-          en: '### Level-Order Traversal (Breadth-First Search):\nVisits nodes **level by level from top to bottom** and left to right within each level.\n\nBecause we must process nodes in First-In, First-Out order, we use a **`Queue`**:\n1. Enqueue root.\n2. While queue is not empty:\n   - Dequeue node `p`, print its value.\n   - If `p.lchild` exists, enqueue it.\n   - If `p.rchild` exists, enqueue it.\n\nOrder: `[50, 25, 75, 10, 30, 60, 90]`.',
-          bn: '### লেভেল-অর্ডার ট্রাভার্সাল (BFS):\nনোডগুলোকে **উপর থেকে নিচে লেভেল অনুযায়ী** এবং প্রতিটি লেভেলের ভেতর বাম থেকে ডানে ভিজিট করে।\n\nফার্স্ট-ইন ফার্স্ট-আউট (FIFO) নিয়ম নিশ্চিত করতে আমরা একটি **`Queue`** ব্যবহার করি:\n১. রুটের অ্যাড্রেস কিউতে এনকিউ (enqueue) করো।\n২. যতক্ষণ কিউ খালি না হয়:\n   - সামনের নোড `p` ডিকিউ (dequeue) করো ও প্রিন্ট করো।\n   - `p.lchild` থাকলে কিউতে ঢোকাও।\n   - `p.rchild` থাকলে কিউতে ঢোকাও।\n\nক্রম: `[50, 25, 75, 10, 30, 60, 90]`।'
+          en: '**Level order** prints the tree **row by row**, left to right. For that we need a **queue** (a fair waiting line: first in, first out):\n\n1. put the root in the queue;\n2. while the queue is not empty:\n   - take the node at the **front** and print it;\n   - put its left child (if any) at the **back**;\n   - put its right child (if any) at the **back**.\n\nOrder for this tree: `50, 25, 75, 10, 30, 60, 90`.\n\n> **Stack vs queue:** a stack (last in, first out) dives deep; a queue (first in, first out) spreads wide.',
+          bn: '**লেভেল অর্ডার** ট্রিটা **সারি ধরে**, বাম থেকে ডানে প্রিন্ট করে। এর জন্য লাগে একটা **queue** (ন্যায্য লাইন: যে আগে ঢোকে, সে আগে বের হয়):\n\n১. রুটকে queue-তে রাখো;\n২. যতক্ষণ queue খালি না:\n   - **সামনের** নোডটা নাও আর প্রিন্ট করো;\n   - তার বাম চাইল্ড (থাকলে) **পেছনে** রাখো;\n   - তার ডান চাইল্ড (থাকলে) **পেছনে** রাখো।\n\nএই ট্রির ক্রম: `50, 25, 75, 10, 30, 60, 90`।\n\n> **স্ট্যাক বনাম queue:** স্ট্যাক (শেষে ঢুকলে আগে বের) গভীরে ডুব দেয়; queue (আগে ঢুকলে আগে বের) চওড়ায় ছড়ায়।'
         },
         line: 4,
         iteration: { i: 4, of: 5, label: { en: 'Level-Order', bn: 'লেভেল-অর্ডার' } },
@@ -930,10 +954,13 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Complete Level-Order Visualization', bn: 'লেভেল-অর্ডার ট্রাভার্সালের পূর্ণ চিত্র' },
+        title: {
+          en: 'Level order, row by row',
+          bn: 'লেভেল অর্ডার, সারি ধরে ধরে'
+        },
         explanation: {
-          en: 'Visualizing the horizontal slice execution across all 3 levels:\n- **Level 1**: `50`\n- **Level 2**: `25, 75`\n- **Level 3**: `10, 30, 60, 90`\n\nEvery level is cleanly drained before moving to the next level down. $O(N)$ time, $O(W)$ max queue width space.',
-          bn: '৩টি লেভেলের অনুভূমিক ট্রাভার্সালের পূর্ণ দৃশ্য:\n- **লেভেল ১**: `50`\n- **লেভেল ২**: `25, 75`\n- **লেভেল ৩**: `10, 30, 60, 90`\n\nনিচের লেভেলে নামার আগে ওপরের লেভেলটি সম্পূর্ণ শেষ করা হয়। সময় $O(N)$, মেমোরি $O(W)$ (সর্বোচ্চ লেভেল প্রস্থ)।'
+          en: 'Look at how the queue empties one row before the next one starts:\n\n- **Row 1:** `50`\n- **Row 2:** `25, 75`\n- **Row 3:** `10, 30, 60, 90`\n\nWhen we print a node, its children join the **back** of the line — behind everyone from its own row. That is what keeps the rows in order.\n\n> **For pros:** O(N) time; the queue holds at most one row, so memory is O(width of the widest row).',
+          bn: 'দেখো, পরের সারি শুরুর আগে queue কীভাবে একটা সারি খালি করে:\n\n- **সারি ১:** `50`\n- **সারি ২:** `25, 75`\n- **সারি ৩:** `10, 30, 60, 90`\n\nএকটা নোড প্রিন্ট করলে তার চাইল্ডরা লাইনের **পেছনে** যোগ দেয় — তার নিজের সারির সবার পেছনে। এভাবেই সারির ক্রম ঠিক থাকে।\n\n> **অভিজ্ঞদের জন্য:** সময় O(N); queue-তে বড়জোর একটা সারি থাকে, তাই মেমরি O(সবচেয়ে চওড়া সারির প্রস্থ)।'
         },
         line: 11,
         iteration: { i: 5, of: 5, label: { en: 'BFS Result', bn: 'BFS ফলাফল' } },
@@ -963,8 +990,8 @@ export const traversalTopics = [
     id: 'queue-tree-creation',
     name: { en: 'Queue-Based Dynamic Tree Creation', bn: 'কিউ ভিত্তিক ডাইনামিক ট্রি গঠন' },
     description: {
-      en: 'Interactive level-order tree construction protocol using queue and sentinel -1 values',
-      bn: 'কিউ এবং সেন্টিনেল -১ মান ব্যবহার করে লেভেল-অর্ডারে যেকোনো ট্রি গঠনের অ্যালগরিদম'
+      en: 'Build any tree from user input, one node at a time',
+      bn: 'ব্যবহারকারীর ইনপুট থেকে যেকোনো ট্রি বানানো, একবারে একটা নোড'
     },
     categoryKey: 'trees',
     subgroupKey: 'traversals',
@@ -1183,10 +1210,13 @@ export const traversalTopics = [
     },
     steps: [
       {
-        title: { en: 'The Dynamic Tree Creation Protocol', bn: 'ডাইনামিক ট্রি তৈরির মূল প্রোটোকল' },
+        title: {
+          en: 'Building a tree from the user\'s answers',
+          bn: 'ব্যবহারকারীর উত্তর থেকে ট্রি বানানো'
+        },
         explanation: {
-          en: 'How can a program build an arbitrary binary tree from user input?\n\nUsing a **Queue**!\n1. User enters root value (e.g., `10`). Root is allocated in heap memory, and its address is pushed into the queue.\n2. In each iteration, dequeue front node `p` and ask for its **left child** and **right child**.\n3. `-1` serves as the sentinel indicator for `NULL` (no child). Non-negative values create a new child node, link it to `p`, and enqueue it.',
-          bn: 'ব্যবহারকারীর ইনপুট থেকে কীভাবে যেকোনো আকারের বাইনারি ট্রি স্বয়ংক্রিয়ভাবে তৈরি করা যায়?\n\nএকটি **Queue** ব্যবহার করে!\n১. ব্যবহারকারী রুটের মান দেন (যেমন `10`)। রুট নোডটি হিপ মেমোরিতে তৈরি করে তার অ্যাড্রেস কিউতে রাখা হয়।\n২. প্রতিটি ধাপে কিউ থেকে একটি নোড `p` বের করা হয় এবং তার **বাম সন্তান** ও **ডান সন্তানের** মান চাওয়া হয়।\n৩. `-1` দিলে তা `NULL` নির্দেশ করে। অন্য যেকোনো সংখ্যার জন্য নতুন নোড তৈরি করে `p`-এর সাথে লিঙ্ক করা হয় এবং কিউতে এনকিউ করা হয়।'
+          en: 'How can a program build **any** tree the user wants? It asks questions, one node at a time, and uses a **queue** to remember whose children it still has to ask about.\n\n1. Ask for the root (say `10`). Create it and put it in the queue.\n2. Take the node at the **front** of the queue and ask: "**left** child?" and "**right** child?"\n3. The answer **`-1` means "no child"**. Any other number creates a new node, links it, and puts it at the **back** of the queue.\n4. Repeat until the queue is empty.',
+          bn: 'একটা প্রোগ্রাম ব্যবহারকারীর ইচ্ছামতো **যেকোনো** ট্রি কীভাবে বানাবে? এটা প্রশ্ন করে, একবারে একটা নোড নিয়ে, আর একটা **queue** দিয়ে মনে রাখে এখনো কার চাইল্ডের কথা জিজ্ঞেস করা বাকি।\n\n১. রুট জিজ্ঞেস করো (ধরো `10`)। বানাও আর queue-তে রাখো।\n২. queue-এর **সামনের** নোডটা নাও আর জিজ্ঞেস করো: "**বাম** চাইল্ড?" আর "**ডান** চাইল্ড?"\n৩. উত্তর **`-1` মানে "চাইল্ড নেই"**। অন্য যেকোনো সংখ্যা নতুন নোড বানায়, জুড়ে দেয়, আর queue-এর **পেছনে** রাখে।\n৪. queue খালি না হওয়া পর্যন্ত চালিয়ে যাও।'
         },
         line: 4,
         iteration: { i: 1, of: 4, label: { en: 'Protocol', bn: 'প্রোটোকল' } },
@@ -1201,10 +1231,13 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Dequeuing p=10 and Attaching Children', bn: 'p=10 ডিকিউ করা এবং সন্তান যুক্ত করা' },
+        title: {
+          en: 'Ask about 10\'s children',
+          bn: '10-এর চাইল্ড জিজ্ঞেস করো'
+        },
         explanation: {
-          en: '1. Dequeue `p = Node(10)`.\n2. Prompt: *Left child of 10?* User enters **`20`** $\\implies$ `p.lchild = new Node(20)`, enqueue `20`.\n3. Prompt: *Right child of 10?* User enters **`30`** $\\implies$ `p.rchild = new Node(30)`, enqueue `30`.\n\nQueue now holds `[20, 30]`. Level 1 is completely built!',
-          bn: '১. কিউ থেকে বের হলো `p = Node(10)`।\n২. ইনপুট: *১০-এর বাম সন্তান?* ইউজার দিলেন **`20`** $\\implies$ `p.lchild = new Node(20)`, কিউতে ঢোকাও `20`।\n৩. ইনপুট: *১০-এর ডান সন্তান?* ইউজার দিলেন **`30`** $\\implies$ `p.rchild = new Node(30)`, কিউতে ঢোকাও `30`।\n\nকিউতে এখন আছে `[20, 30]`। লেভেল ১ সম্পূর্ণ গঠিত!'
+          en: 'Take `10` from the front of the queue:\n\n- "Left child of 10?" → user types **`20`** → create node 20, set it as the left child, add it to the queue.\n- "Right child of 10?" → user types **`30`** → create node 30, set it as the right child, add it to the queue.\n\nQueue now: `[20, 30]` — the next nodes to ask about, in row order.',
+          bn: 'queue-এর সামনে থেকে `10` নাও:\n\n- "10-এর বাম চাইল্ড?" → ব্যবহারকারী লেখে **`20`** → নোড 20 বানাও, বাম চাইল্ড করো, queue-তে যোগ করো।\n- "10-এর ডান চাইল্ড?" → ব্যবহারকারী লেখে **`30`** → নোড 30 বানাও, ডান চাইল্ড করো, queue-তে যোগ করো।\n\nএখন queue: `[20, 30]` — এরপর যাদের কথা জিজ্ঞেস করা হবে, সারির ক্রমে।'
         },
         line: 9,
         iteration: { i: 2, of: 4, label: { en: 'Add Children', bn: 'সন্তান সংযোগ' } },
@@ -1226,17 +1259,20 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Handling Sentinel -1 (NULL Child)', bn: 'সেন্টিনেল -১ (NULL) হ্যান্ডলিং' },
+        title: {
+          en: '-1 means "no child here"',
+          bn: '-1 মানে "এখানে চাইল্ড নেই"'
+        },
         explanation: {
-          en: '1. Dequeue `p = Node(20)`.\n2. *Left child of 20?* User enters **`40`** $\\implies$ `p.lchild = new Node(40)`, enqueue `40`.\n3. *Right child of 20?* User enters **`-1`** $\\implies$ sentinel detected! `p.rchild` remains `NULL`, nothing enqueued.\n\nThis gives complete freedom to shape any asymmetric or skewed tree!',
-          bn: '১. কিউ থেকে বের হলো `p = Node(20)`।\n২. *২০-এর বাম সন্তান?* ইউজার দিলেন **`40`** $\\implies$ `p.lchild = new Node(40)`, কিউতে ঢোকাও `40`।\n৩. *২০-এর ডান সন্তান?* ইউজার দিলেন **`-1`** $\\implies$ সেন্টিনেল পাওয়া গেছে! `p.rchild` থাকবে `NULL`, কিউতে কিছু ঢুকবে না।\n\nএর মাধ্যমে ব্যবহারকারী যেকোনো প্রকার অপ্রতিসম বা স্কিউড ট্রি বানাতে পারেন!'
+          en: 'Take `20` from the front:\n\n- "Left child of 20?" → **`40`** → create it, link it, add it to the queue.\n- "Right child of 20?" → **`-1`** → no node is created; 20 simply has no right child.\n\nUsing `-1` (or any value that cannot be real data) as a "no" answer lets the user build **any** shape — even lopsided ones.',
+          bn: 'সামনে থেকে `20` নাও:\n\n- "20-এর বাম চাইল্ড?" → **`40`** → বানাও, জুড়ে দাও, queue-তে যোগ করো।\n- "20-এর ডান চাইল্ড?" → **`-1`** → কোনো নোড বানানো হয় না; 20-এর শুধু ডান চাইল্ড নেই।\n\n`-1` (বা এমন কোনো মান যা আসল ডেটা হতে পারে না) "না" উত্তর হিসেবে ব্যবহার করলে ব্যবহারকারী **যেকোনো** আকার বানাতে পারে — একদিকে হেলানোও।'
         },
         line: 11,
         iteration: { i: 3, of: 4, label: { en: 'Sentinel -1', bn: 'সেন্টিনেল -১' } },
         state: { p: 20, left: 40, right: -1, rightChild: 'null' },
         scene: {
           kind: 'tree',
-          label: 'Node 20 gets left child 40, but right child is NULL (-1 sentinel)',
+          label: 'Node 20 gets left child 40, but right child is NULL (-1 means "no child")',
           root: {
             v: 10,
             l: { v: 20, l: { v: 40 } },
@@ -1252,10 +1288,13 @@ export const traversalTopics = [
         }
       },
       {
-        title: { en: 'Construction Complete: O(N) Linear Time', bn: 'ট্রি গঠন সমাপ্ত: O(N) লিনিয়ার সময়' },
+        title: {
+          en: 'Done when the queue is empty',
+          bn: 'queue খালি হলেই শেষ'
+        },
         explanation: {
-          en: 'The queue drains when all leaf nodes receive `-1` for both of their children.\n\nComplexity Analysis:\n- **Time**: Exactly $O(N)$, because every node is enqueued once and dequeued once.\n- **Space**: $O(N)$ queue memory at the widest level.\n\nThis is the verified C++ queue creation algorithm taught in university DSA courses.',
-          bn: 'যখন নিচের সব লিফ নোডের জন্য ইউজার `-1` দেন, তখন কিউটি শূন্য হয়ে লুপ সমাপ্ত হয়।\n\nজটিলতা বিশ্লেষণ:\n- **সময়**: ঠিক $O(N)$, কারণ প্রতিটি নোড ঠিক একবার কিউতে ঢোকে এবং একবার বের হয়।\n- **মেমোরি**: $O(N)$ কিউ স্পেস।\n\nএটি বিশ্বমানের বিশ্ববিদ্যালয়গুলোতে শেখানো পরীক্ষিত ও নির্ভুল C++ কিউ ট্রি কনস্ট্রাকশন অ্যালগরিদম।'
+          en: 'The program stops when the queue is empty — that happens once every leaf has answered `-1` for both children.\n\nEach node enters the queue once and leaves once, so building a tree of N nodes takes **O(N)** steps.',
+          bn: 'queue খালি হলে প্রোগ্রাম থামে — এটা হয় যখন প্রতিটা লিফ দুই চাইল্ডের জন্যই `-1` উত্তর দেয়।\n\nপ্রতিটা নোড একবার queue-তে ঢোকে আর একবার বের হয়, তাই N নোডের ট্রি বানাতে **O(N)** ধাপ লাগে।'
         },
         line: 13,
         iteration: { i: 4, of: 4, label: { en: 'Complete', bn: 'সমাপ্ত' } },

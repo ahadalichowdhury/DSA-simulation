@@ -1017,3 +1017,24 @@ export function randomTreeOp(algo, shape) {
   while (set.size < n) set.add(1 + Math.floor(Math.random() * 99));
   return { algo, values: [...set].join(', '), shape: TREE_ALGOS[algo].shape ? shape : 'bst' };
 }
+
+/* ================================================================ the traversal lesson */
+
+/**
+ * Steps for the "Tree Traversals" lesson. It shows its own short code (one
+ * function per order, numbered lines), so the named lines of the traced steps
+ * are translated to that code's line numbers.
+ */
+const LESSON_LINES = {
+  preorder: { call: 1, header: 1, ifNull: 2, visit: 3, left: 4, right: 5, done: 6 },
+  inorder: { call: 1, header: 1, ifNull: 2, left: 3, visit: 4, right: 5, done: 6 },
+  postorder: { call: 1, header: 1, ifNull: 2, left: 3, right: 4, visit: 5, done: 6 },
+  bfs: { call: 1, header: 1, init: 3, whileCheck: 4, pop: 5, visit: 6, pushL: 7, pushR: 8, done: 9 }
+};
+export function lessonTraversalSteps(root, kind) {
+  if (!root) return [];
+  const vals = allVals(root);
+  const steps = kind === 'bfs' ? genLevelOrder(root, vals) : genTraverse(root, kind).steps;
+  const map = LESSON_LINES[kind] || LESSON_LINES.inorder;
+  return steps.map((s) => ({ ...s, line: [...new Set([].concat(s.line).map((l) => map[l]).filter((l) => l != null))] }));
+}

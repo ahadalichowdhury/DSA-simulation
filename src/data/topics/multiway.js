@@ -10,8 +10,8 @@ export const multiwayTopics = [
     id: 'two-three-trees',
     name: { en: '2-3 Trees & Node Splitting', bn: '২-৩ ট্রি ও নোড স্প্লিটিং' },
     description: {
-      en: '2-nodes, 3-nodes, equal leaf depth invariant, and temporary 4-node median promotion',
-      bn: '২-নোড, ৩-নোড, সমান লিফ ডেপথ এবং অস্থায়ী ৪-নোড মিডিয়ান প্রমোশন'
+      en: 'Nodes with 1 or 2 keys, and how a full node splits',
+      bn: '১ বা ২ কী-ওয়ালা নোড, আর ভরা নোড কীভাবে ভাগ হয়'
     },
     categoryKey: 'trees',
     subgroupKey: 'multiway',
@@ -200,10 +200,13 @@ export const multiwayTopics = [
     },
     steps: [
       {
-        title: { en: 'Multiway Trees: Breaking the 2-Child Barrier', bn: 'মাল্টিওয়ে ট্রি: ২-সন্তানের সীমাবদ্ধতা অতিক্রম' },
+        title: {
+          en: 'More than one key per node',
+          bn: 'এক নোডে একাধিক কী'
+        },
         explanation: {
-          en: 'In standard binary trees, every node holds only **1 key** and can have at most **2 children**.\n\nA **Multiway Search Tree** breaks this limitation: a single node can store **multiple sorted keys** and have **multiple children**!\n\nIn a **2-3 Tree**:\n- **2-Node**: Holds **1 key**, has **2 children**.\n- **3-Node**: Holds **2 keys**, has **3 children**.\n- **Universal Rule**: All leaf nodes appear at the **exact same depth**!',
-          bn: 'সাধারণ বাইনারি ট্রিতে প্রতিটি নোডে কেবল **১টি কি** থাকে এবং সর্বোচ্চ **২টি সন্তান** থাকতে পারে।\n\nএকটি **মাল্টিওয়ে সার্চ ট্রি (Multiway Search Tree)** এই সীমাবদ্ধতা ভেঙে দেয়: এখানে একটি একক নোডের ভেতর **একাধিক সর্টেড কি** এবং **একাধিক সন্তান** থাকতে পারে!\n\nএকটি **২-৩ ট্রিতে (2-3 Tree)**:\n- **২-নোড**: এতে থাকে **১টি কি**, সন্তান থাকে **২টি**।\n- **৩-নোড**: এতে থাকে **২টি কি**, সন্তান থাকে **৩টি**।\n- **অলঙ্ঘনীয় নিয়ম**: সমস্ত লিফ নোড সর্বদা **একদম একই গভীরতায়** অবস্থান করে!',
+          en: 'In a binary tree each node holds **1 value** and has **at most 2 children**. A **multiway tree** lets one node hold **several sorted values** and have **more children**.\n\nThe simplest is the **2-3 tree**:\n- a **2-node** holds **1 key** and has **2 children**;\n- a **3-node** holds **2 keys** and has **3 children** (smaller than both · in between · bigger than both).\n\nIts special rule: **all leaves are always on the same level** — the tree is always perfectly balanced.',
+          bn: 'বাইনারি ট্রিতে প্রতিটা নোডে **১টা মান** আর **বড়জোর ২টা চাইল্ড**। **মাল্টিওয়ে ট্রি** একটা নোডকে **কয়েকটা সাজানো মান** রাখতে আর **বেশি চাইল্ড** নিতে দেয়।\n\nসবচেয়ে সহজটা **২-৩ ট্রি**:\n- **২-নোড**-এ **১টা কী** আর **২টা চাইল্ড**;\n- **৩-নোড**-এ **২টা কী** আর **৩টা চাইল্ড** (দুটোর চেয়েই ছোট · মাঝামাঝি · দুটোর চেয়েই বড়)।\n\nএর বিশেষ নিয়ম: **সব লিফ সবসময় একই লেভেলে** — ট্রি সবসময় পুরোপুরি ব্যালান্সড।'
         },
         line: 0,
         iteration: { i: 1, of: 4, label: { en: 'Invariants', bn: 'শর্তাবলী' } },
@@ -222,10 +225,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'Insertion into a 2-Node (Simple Case)', bn: '২-নোডে ইনসার্ট (সহজ ক্ষেত্র)' },
+        title: {
+          en: 'Insert into a node with room',
+          bn: 'জায়গা আছে এমন নোডে ইনসার্ট'
+        },
         explanation: {
-          en: 'Let\'s insert key **`15`** into the tree:\n1. Search down to leaf `[10]` (which is a 2-node with 1 key).\n2. Because a 2-node has room to hold up to 2 keys, we **insert 15 directly into the leaf** in sorted order!\n3. Leaf `[10]` smoothly expands into a 3-node **`[10, 15]`**.\n\nNo rotations, no tree height change! The operation takes $O(\\log N)$ time.',
-          bn: 'ধরি আমরা ট্রিতে **`15`** ইনসার্ট করতে চাই:\n১. নিচে নেমে লিফ নোড `[10]`-এ পৌঁছাও (যা ১টি কি বিশিষ্ট ২-নোড)।\n২. যেহেতু একটি ২-নোড ২টি কি পর্যন্ত ধারণ করতে পারে, তাই সরাসরি সর্টেড ক্রমে **১৫-কে ওই নোডেই ঢুকিয়ে দেওয়া হয়**!\n৩. লিফ `[10]` স্বাভাবিকভাবে প্রসারিত হয়ে ৩-নোড **`[10, 15]`**-এ পরিণত হয়।\n\nকোনো রোটেশন নেই, কোনো উচ্চতা পরিবর্তন নেই! মাত্র $O(\\log N)$ সময়ে কাজ সম্পন্ন।',
+          en: 'Insert **15**:\n\n1. walk down like a search and arrive at the leaf `[10]`;\n2. that leaf has only 1 key, so there is **room for one more**;\n3. put 15 inside, in order → the leaf becomes `[10, 15]`.\n\nNothing moves, no rotation, and the height does not change.',
+          bn: '**15** ইনসার্ট করো:\n\n১. সার্চের মতো নিচে নামো আর লিফ `[10]`-এ পৌঁছাও;\n২. সেই লিফে মাত্র ১টা কী, তাই **আরেকটার জায়গা আছে**;\n৩. 15 ভেতরে ক্রম মেনে বসাও → লিফ হয় `[10, 15]`।\n\nকিছুই সরে না, কোনো রোটেশন নেই, উচ্চতাও বদলায় না।'
         },
         line: 5,
         iteration: { i: 2, of: 4, label: { en: 'Insert into 2-Node', bn: '২-নোডে ইনসার্ট' } },
@@ -244,10 +250,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'Insertion into a 3-Node: Overflow & Splitting', bn: '৩-নোডে ইনসার্ট: ওভারফ্লো ও স্প্লিটিং' },
+        title: {
+          en: 'Insert into a full node: split it',
+          bn: 'ভরা নোডে ইনসার্ট: ভাগ করো'
+        },
         explanation: {
-          en: 'Now what happens if we insert **`35`** into leaf `[30, 40]` (already full)?\n\n1. **Temporary 4-Node**: Inserting 35 creates `[30, 35, 40]` (3 keys = overflow!).\n2. **The Split Operation**:\n   - The **Median key (`35`)** is **promoted UP** into the parent node!\n   - Left key (`30`) becomes its own separate 2-node `[30]`.\n   - Right key (`40`) becomes its own separate 2-node `[40]`.',
-          bn: 'এখন যদি আমরা পূর্ণ লিফ `[30, 40]`-এর ভেতর নতুন সংখ্যা **`35`** ইনসার্ট করি?\n\n১. **অস্থায়ী ৪-নোড**: ৩৫ ঢোকার ফলে তৈরি হয় `[30, 35, 40]` (৩টি কি = ওভারফ্লো!)।\n২. **স্প্লিট অপারেশন (Split)**:\n   - **মাঝখানের মিডিয়ান কি (`35`)** ধাক্কা খেয়ে **উপরে প্যারেন্টে প্রমোট** হয়ে যায়!\n   - বামের কি (`30`) আলাদা হয়ে নতুন ২-নোড `[30]` হয়।\n   - ডানের কি (`40`) আলাদা হয়ে নতুন ২-নোড `[40]` হয়।',
+          en: 'Insert **35** into the leaf `[30, 40]`, which is already full (2 keys).\n\n1. For a moment it holds **3 keys**: `[30, 35, 40]` — too many.\n2. **Split** it:\n   - the **middle** key `35` moves **up** into the parent;\n   - `30` becomes its own node `[30]`;\n   - `40` becomes its own node `[40]`.\n\nThe parent now has one more key, and one more child — exactly what it needs.',
+          bn: 'আগেই ভরা (২টা কী) লিফ `[30, 40]`-এ **35** ইনসার্ট করো।\n\n১. মুহূর্তের জন্য এতে **৩টা কী**: `[30, 35, 40]` — বেশি হয়ে গেল।\n২. **ভাগ** করো:\n   - **মাঝের** কী `35` **ওপরে** প্যারেন্টে চলে যায়;\n   - `30` নিজেই একটা নোড `[30]`;\n   - `40` নিজেই একটা নোড `[40]`।\n\nপ্যারেন্টে এখন একটা কী আর একটা চাইল্ড বেশি — ঠিক যা দরকার।'
         },
         line: 7,
         iteration: { i: 3, of: 4, label: { en: 'Node Split', bn: 'নোড স্প্লিট' } },
@@ -267,10 +276,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'Cascading Splits & Root Growth', bn: 'ক্যাসকেডিং স্প্লিট ও ট্রির ঊর্ধ্বমুখী বৃদ্ধি' },
+        title: {
+          en: 'Splits can climb to the top',
+          bn: 'ভাগ ওপর পর্যন্ত উঠতে পারে'
+        },
         explanation: {
-          en: 'What if the parent node was already full when receiving a promoted key?\n\nThe split **cascades upward**! The parent also splits and promotes its median to its parent.\n\n### How 2-3 Trees Grow:\nIf the **Root node splits**, a brand new root node is created containing only the promoted median key!\n\n> **Fundamental Property**: Unlike binary trees which grow downward, a 2-3 tree **grows uniformly UPWARD from the root**! This is why all leaves are guaranteed to stay at the exact same level forever.',
-          bn: 'প্যারেন্ট নোডটিও যদি আগে থেকেই পূর্ণ থাকে এবং নতুন প্রমোটেড কি গ্রহণ করে?\n\nস্প্লিট প্রক্রিয়াটি **উপরের দিকে ক্যাসকেড** করে! প্যারেন্টও একইভাবে বিভক্ত হয়ে তার মিডিয়ানকে আরও উপরে পাঠায়।\n\n### ২-৩ ট্রি কীভাবে বৃদ্ধি পায়:\nযদি **রুট নোড স্প্লিট হয়**, তবে প্রমোটেড মিডিয়ান কি নিয়ে সবার উপরে একটি সম্পূর্ণ নতুন রুট তৈরি হয়!\n\n> **অনন্য বৈশিষ্ট্য**: সাধারণ ট্রির মতো নিচের দিকে না বেড়ে, ২-৩ ট্রি **নিচ থেকে উপরের দিকে বৃদ্ধি পায়**! এই কারণেই সমস্ত লিফ সর্বদা অবিকল একই লেভেলে অবস্থান করে।',
+          en: 'What if the parent was already full too? Then the parent **splits as well** and pushes its middle key up — the split can climb all the way up.\n\nIf the **root** splits, a brand new root is made from the middle key. That is the only way a 2-3 tree gets taller.\n\n> **Key idea:** a BST grows **downward** (new leaves at the bottom); a 2-3 tree grows **upward** (a new root on top). That is why all its leaves always stay on the same level.',
+          bn: 'প্যারেন্টও আগে থেকে ভরা থাকলে? তখন প্যারেন্টও **ভাগ হয়** আর তার মাঝের কী ওপরে পাঠায় — ভাগটা একদম ওপর পর্যন্ত উঠতে পারে।\n\n**রুট** ভাগ হলে, মাঝের কী দিয়ে একদম নতুন একটা রুট বানানো হয়। ২-৩ ট্রি লম্বা হওয়ার এটাই একমাত্র উপায়।\n\n> **মূল ধারণা:** BST **নিচের দিকে** বাড়ে (নতুন লিফ নিচে); ২-৩ ট্রি বাড়ে **ওপরের দিকে** (ওপরে নতুন রুট)। এজন্যই এর সব লিফ সবসময় একই লেভেলে থাকে।'
         },
         line: 11,
         iteration: { i: 4, of: 4, label: { en: 'Tree Growth', bn: 'ট্রির বৃদ্ধি' } },
@@ -300,8 +312,8 @@ export const multiwayTopics = [
     id: 'b-trees',
     name: { en: 'B-Trees of Order m & Disk I/O', bn: 'অর্ডার m-এর B-ট্রি ও ডিস্ক I/O' },
     description: {
-      en: 'B-Tree invariants, order m properties, and why multiway branching optimizes disk block storage',
-      bn: 'B-ট্রির ৫টি শর্ত, অর্ডার m বৈশিষ্ট্য এবং কীভাবে এটি ডিস্ক ব্লক স্টোরেজ অপ্টিমাইজ করে'
+      en: 'Wide, short trees that need very few disk reads',
+      bn: 'চওড়া, খাটো ট্রি যাতে খুব কম ডিস্ক রিড লাগে'
     },
     categoryKey: 'trees',
     subgroupKey: 'multiway',
@@ -480,10 +492,13 @@ export const multiwayTopics = [
     },
     steps: [
       {
-        title: { en: 'Why B-Trees? The Disk I/O Bottleneck', bn: 'B-ট্রি কেন? ডিস্ক I/O-এর গতি সমস্যা' },
+        title: {
+          en: 'Why B-trees? Disks are slow',
+          bn: 'B-ট্রি কেন? ডিস্ক ধীর'
+        },
         explanation: {
-          en: 'Reading data from **RAM takes ~10 nanoseconds**, while fetching a block from a **hard disk or SSD takes ~1 to 10 milliseconds** ($1,000,000\\times$ slower!).\n\nIf we stored 1 billion database records in an AVL tree:\n- Height $= \\log_2(10^9) \\approx 30$.\n- Searching requires **30 disk accesses** $\\implies 30 \\times 10\\text{ms} = \\mathbf{300\\text{ milliseconds}}$ per query. Catastrophically slow!\n\nComputers read disks in **pages/blocks (typically 4KB or 8KB)**. A B-Tree designs each node to fit **exactly inside one disk block**, holding hundreds of keys!',
-          bn: '**RAM থেকে ডেটা পড়তে লাগে ~১০ ন্যানোসেকেন্ড**, আর **হার্ডডিস্ক বা SSD থেকে একটি ব্লক আনতে লাগে ~১ থেকে ১০ মিলিসেকেন্ড** (১০ লাখ গুণ ধীরগতির!).\n\nযদি আমরা ১০০ কোটি ডেটাবেস রেকর্ড একটি সাধারণ AVL ট্রিতে রাখতাম:\n- উচ্চতা $= \\log_2(10^9) \\approx 30$।\n- একটি রেকর্ড খুঁজতে **৩০টি ডিস্ক রিড** লাগত $\\implies 30 \\times 10\\text{ms} = \\mathbf{৩০০\\text{ মিলিসেকেন্ড}}$। অত্যন্ত ধীরগতির!\n\nকম্পিউটার ডিস্ক থেকে একবারে একটি **পেজ বা ব্লক (৪KB বা ৮KB)** পড়ে। B-ট্রি এমনভাবে ডিজাইন করা হয়েছে যাতে প্রতিটি নোড **হুবহু একটি ডিস্ক ব্লকে** এঁটে যায় এবং শত শত কি ধারণ করতে পারে!',
+          en: 'Big databases do not fit in memory; they live on **disk**. Reading from disk is **thousands of times slower** than reading from memory.\n\nA disk is read in **blocks** (for example 4 KB at a time). Reading 1 value costs about the same as reading a whole block.\n\nSo with a billion values in an AVL tree (height about 30), one search could mean **30 slow disk reads**. A **B-tree** fixes this by putting **hundreds of keys in each node** — one node fills one disk block — so the tree becomes very **short and wide**.',
+          bn: 'বড় ডেটাবেস মেমরিতে আঁটে না; থাকে **ডিস্কে**। ডিস্ক থেকে পড়া মেমরি থেকে পড়ার চেয়ে **হাজার হাজার গুণ ধীর**।\n\nডিস্ক পড়া হয় **ব্লকে ব্লকে** (যেমন একবারে 4 KB)। ১টা মান পড়তে প্রায় পুরো একটা ব্লক পড়ার সমান খরচ।\n\nতাই একশো কোটি মানের AVL ট্রিতে (উচ্চতা প্রায় ৩০) একটা সার্চে লাগতে পারে **৩০টা ধীর ডিস্ক রিড**। **B-ট্রি** এটা ঠিক করে **প্রতিটা নোডে শত শত কী** রেখে — একটা নোডে একটা ডিস্ক ব্লক ভরে — তাই ট্রিটা খুব **খাটো আর চওড়া** হয়।'
         },
         line: 0,
         iteration: { i: 1, of: 4, label: { en: 'Disk Bottleneck', bn: 'ডিস্ক সমস্যা' } },
@@ -500,10 +515,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'The 5 Invariants of a B-Tree of Order m', bn: 'অর্ডার m-এর B-ট্রির ৫টি কঠোর নিয়ম' },
+        title: {
+          en: 'The rules of a B-tree of order m',
+          bn: 'অর্ডার m-এর B-ট্রির নিয়ম'
+        },
         explanation: {
-          en: 'A **B-Tree of Order m** is a balanced multiway search tree satisfying 5 conditions:\n1. Every node has at most **$m$ children** and at most **$m - 1$ keys**.\n2. Every internal node (except root) has at least **$\\lceil m / 2 \\rceil$ children** and **$\\lceil m / 2 \\rceil - 1$ keys**.\n3. The **root has at least 2 children** (unless the tree has only 1 node).\n4. **All leaves appear at the exact same level**.\n5. A non-leaf node with $k$ children contains exactly $k - 1$ keys in sorted order, partitioning the child subtrees.',
-          bn: '**অর্ডার m-এর B-ট্রি** হলো একটি ব্যালান্সড মাল্টিওয়ে ট্রি যা ৫টি শর্ত পূরণ করে:\n১. প্রতিটি নোডে সর্বোচ্চ **$m$ টি সন্তান** এবং **$m - 1$ টি কি** থাকে।\n২. রুট বাদে সমস্ত ইন্টারনাল নোডে কমপক্ষে **$\\lceil m / 2 \\rceil$ টি সন্তান** এবং **$\\lceil m / 2 \\rceil - 1$ টি কি** থাকতে হবে।\n৩. **রুটে কমপক্ষে ২টি সন্তান** থাকে (যদি না ট্রিতে মোট ১টি নোড থাকে)।\n৪. **সমস্ত লিফ নোড ঠিক একই লেভেলে** অবস্থান করে।\n৫. $k$ সন্তান বিশিষ্ট নোডে $k - 1$ টি সর্টেড কি থাকে যা সন্তানদের মানকে সুনির্দিষ্টভাবে ভাগ করে।',
+          en: '**Order m** = the most children a node may have. The rules:\n\n1. a node has at most **m children** and **m − 1 keys**;\n2. every node except the root is **at least half full** (at least ⌈m/2⌉ children) — so no space is wasted;\n3. the root has at least 2 children (unless it is the only node);\n4. **all leaves are on the same level**;\n5. a node with k children holds k − 1 sorted keys that separate those children.\n\nA 2-3 tree is simply a B-tree of order 3.',
+          bn: '**অর্ডার m** = একটা নোড সর্বোচ্চ কয়টা চাইল্ড নিতে পারে। নিয়মগুলো:\n\n১. একটা নোডে বড়জোর **m টা চাইল্ড** আর **m − 1টা কী**;\n২. রুট ছাড়া প্রতিটা নোড **অন্তত অর্ধেক ভরা** (অন্তত ⌈m/2⌉টা চাইল্ড) — তাই জায়গা নষ্ট হয় না;\n৩. রুটের অন্তত ২টা চাইল্ড (যদি না এটাই একমাত্র নোড হয়);\n৪. **সব লিফ একই লেভেলে**;\n৫. k টা চাইল্ডওয়ালা নোডে k − 1টা সাজানো কী, যা চাইল্ডগুলোকে আলাদা করে।\n\n২-৩ ট্রি আসলে অর্ডার ৩-এর একটা B-ট্রি।'
         },
         line: 1,
         iteration: { i: 2, of: 4, label: { en: '5 Invariants', bn: '৫টি নিয়ম' } },
@@ -518,14 +536,17 @@ export const multiwayTopics = [
             { id: 'b2', keys: [40, 50], state: 'ok' },
             { id: 'b3', keys: [70, 80, 90], state: 'ok' }
           ],
-          note: 'Notice node b3 holds 3 keys (max allowed for m = 4). Every node satisfies order invariants.'
+          note: 'Notice node b3 holds 3 keys (max allowed for m = 4). Every node follows the B-tree rules.'
         }
       },
       {
-        title: { en: 'B-Tree Search Algorithm: Traversing Child Blocks', bn: 'B-ট্রি সার্চ: সাব-ট্রি ব্লক অনুসন্ধান' },
+        title: {
+          en: 'Searching a B-tree',
+          bn: 'B-ট্রিতে সার্চ'
+        },
         explanation: {
-          en: 'Searching in a B-Tree is lightning fast:\n1. Search for `key = 45`.\n2. Fetch root block `[30, 60]` from disk (1 disk seek).\n3. Inside the block (in fast RAM), binary search among keys: $30 < 45 < 60$.\n4. Follow the middle child pointer to block `[40, 50]` (2nd disk seek).\n5. Binary search inside block: 45 is not present $\\implies$ **Search terminates in only 2 disk seeks**!',
-          bn: 'B-ট্রিতে সার্চ প্রক্রিয়া অবিশ্বাস্য দ্রুত:\n১. আমরা `key = 45` খুঁজতে চাই।\n২. ডিস্ক থেকে রুট ব্লক `[30, 60]` আনা হলো (১টি ডিস্ক সিক)।\n৩. দ্রুতগতির RAM-এ ব্লকের ভেতরের কি-গুলোর মধ্যে বাইনারি সার্চ করো: $30 < 45 < 60$।\n৪. মাঝখানের চাইল্ড পয়েন্টার ধরে ব্লক `[40, 50]`-এ নামো (২য় ডিস্ক সিক)।\n৫. ব্লকের ভেতরে ৪৫ নেই $\\implies$ **মাত্র ২টি ডিস্ক সিকেই সার্চ শেষ**!',
+          en: 'Search for **45**:\n\n1. Read the root block `[30, 60]` from disk (**1 disk read**).\n2. Inside it (fast, in memory): 30 < 45 < 60 → follow the **middle** child.\n3. Read block `[40, 50]` (**2nd disk read**).\n4. 45 is not there, and this is a leaf → **not found**.\n\nOnly **2** disk reads. Comparing keys inside a block is cheap; the slow part is the reads, and the tree keeps them few.',
+          bn: '**45** খোঁজো:\n\n১. ডিস্ক থেকে রুট ব্লক `[30, 60]` পড়ো (**১টা ডিস্ক রিড**)।\n২. এর ভেতরে (দ্রুত, মেমরিতে): 30 < 45 < 60 → **মাঝের** চাইল্ড ধরো।\n৩. ব্লক `[40, 50]` পড়ো (**২য় ডিস্ক রিড**)।\n৪. 45 সেখানে নেই, আর এটা লিফ → **পাওয়া যায়নি**।\n\nমাত্র **২টা** ডিস্ক রিড। ব্লকের ভেতরে কী তুলনা সস্তা; ধীর অংশ হলো রিড, আর ট্রি সেগুলো কম রাখে।'
         },
         line: 8,
         iteration: { i: 3, of: 4, label: { en: 'B-Tree Search', bn: 'B-ট্রি সার্চ' } },
@@ -544,10 +565,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'Logarithmic Drop: 1 Billion Keys in 3 Disk Seeks', bn: 'লগারিদমের শক্তি: ১০০ কোটি ডেটা মাত্র ৩টি সিকে' },
+        title: {
+          en: 'A billion records in about 4 reads',
+          bn: 'একশো কোটি রেকর্ড প্রায় ৪টা রিডে'
+        },
         explanation: {
-          en: 'Let\'s calculate the tree height for $N = 1,000,000,000$ (1 billion) records with block order $m = 1000$:\n$$\\text{Height} \\approx \\log_{m/2} N = \\log_{500}(10^9) = \\frac{\\log_{10}(10^9)}{\\log_{10}(500)} = \\frac{9}{2.699} \\approx \\mathbf{3.33}$$\n\n### The Miracle:\nA tree of **1 billion records** has a height of only **3 or 4**! Even the worst-case search requires only 3 or 4 disk seeks ($\approx 0.03\\text{ seconds}$). This is why every modern file system (NTFS, ext4, APFS) and database is powered by B-Trees.',
-          bn: 'ব্লক অর্ডার $m = 1000$ হলে $N = ১,০০,০০,০০,০০০$ (১০০ কোটি) রেকর্ডের জন্য ট্রির উচ্চতা হিসাব করি:\n$$\\text{উচ্চতা} \\approx \\log_{m/2} N = \\log_{500}(10^9) = \\frac{9}{2.699} \\approx \\mathbf{৩.৩৩}$$\n\n### অভূতপূর্ব সাফল্য:\n**১০০ কোটি ডেটা** থাকা সত্ত্বেও ট্রির উচ্চতা মাত্র **৩ বা ৪**! যেকোনো ডেটা খুঁজতে সর্বোচ্চ মাত্র ৩-৪টি ডিস্ক অ্যাক্সেস লাগে ($\approx ০.০৩$ সেকেন্ড)। এই কারণেই পৃথিবীর সমস্ত ফাইল সিস্টেম (NTFS, ext4, APFS) এবং ডেটাবেস ইঞ্জিন B-ট্রি দিয়ে তৈরি।',
+          en: 'Take **1,000,000,000** records and order **m = 1000**. Each node has at least 500 children, so every level multiplies the reach by at least 500:\n\n500 → 250,000 → 125,000,000 → 62,500,000,000.\n\nSo the tree is only about **4 levels** tall: any record is found in **3–4 disk reads**, instead of about 30 for a binary tree. This is why databases and file systems are built on B-trees.',
+          bn: '**১০০,০০,০০,০০০** (একশো কোটি) রেকর্ড আর অর্ডার **m = 1000** নাও। প্রতিটা নোডে অন্তত ৫০০টা চাইল্ড, তাই প্রতিটা লেভেল নাগাল অন্তত ৫০০ গুণ বাড়ায়:\n\n500 → 2,50,000 → 12,50,00,000 → 62,50,00,00,000।\n\nতাই ট্রিটা মাত্র প্রায় **৪ লেভেল** লম্বা: যেকোনো রেকর্ড পাওয়া যায় **৩–৪টা ডিস্ক রিডে**, বাইনারি ট্রির প্রায় ৩০টার বদলে। এজন্যই ডেটাবেস আর ফাইল সিস্টেম B-ট্রির ওপর বানানো।'
         },
         line: 12,
         iteration: { i: 4, of: 4, label: { en: 'Disk Seeks', bn: 'ডিস্ক সিক' } },
@@ -572,8 +596,8 @@ export const multiwayTopics = [
     id: 'b-plus-trees',
     name: { en: 'B+ Trees & Range Queries', bn: 'B+ ট্রি ও রেঞ্জ কোয়েরি' },
     description: {
-      en: 'Routing keys vs data records, linked leaves sequence, and O(1) sequential range query scans',
-      bn: 'রাউটিং কি বনাম ডেটা রেকর্ড, লিঙ্কড লিফ সিকোয়েন্স এবং O(1) রেঞ্জ কোয়েরি স্ক্যান'
+      en: 'The database index: data in linked leaves, fast ranges',
+      bn: 'ডেটাবেস ইনডেক্স: জোড়া লিফে ডেটা, দ্রুত রেঞ্জ'
     },
     categoryKey: 'trees',
     subgroupKey: 'multiway',
@@ -782,10 +806,13 @@ export const multiwayTopics = [
     },
     steps: [
       {
-        title: { en: 'B+ Tree Architecture: Internal Index vs Leaf Data', bn: 'B+ ট্রি আর্কিটেকচার: ইন্টারনাল ইনডেক্স বনাম লিফ ডেটা' },
+        title: {
+          en: 'B+ tree: data only in the leaves',
+          bn: 'B+ ট্রি: ডেটা শুধু লিফে'
+        },
         explanation: {
-          en: 'A **B+ Tree** is an optimized variation of the B-Tree created specifically for database query engines:\n\n1. **Internal Nodes**: Contain **only routing keys (indices) and child pointers** — NO record data! Because indices take very little memory, an internal node can hold thousands of child pointers.\n2. **Leaf Nodes**: Contain **all actual data records** (or record pointers) and duplicates of index keys.\n3. **Sequential Leaf Chaining**: All leaf nodes are linked together in a continuous **Linked List** (`leaf.next`)!',
-          bn: '**B+ ট্রি (B+ Tree)** হলো ডেটাবেস কোয়েরি ইঞ্জিনের জন্য বিশেষভাবে তৈরি B-ট্রির একটি উন্নত সংস্করণ:\n\n১. **ইন্টারনাল নোড**: এতে থাকে **কেবলমাত্র রাউটিং ইনডেক্স এবং চাইল্ড পয়েন্টার** — কোনো আসল রেকর্ড ডেটা থাকে না! ইনডেক্স খুব কম মেমোরি নেয় বলে প্রতিটি নোড হাজার হাজার সন্তান ধারণ করতে পারে।\n২. **লিফ নোড**: সমস্ত **আসল ডেটা রেকর্ড** এবং সূচক কি-গুলোর একটি ডুপ্লিকেট কপি ধারণ করে।\n৩. **লিঙ্কড লিফ চেইন**: সমস্ত লিফ নোড নিজেদের মধ্যে একটি অবিচ্ছিন্ন **লিঙ্কড লিস্টের** মাধ্যমে যুক্ত থাকে (`leaf.next`)!',
+          en: 'A **B+ tree** is a B-tree tuned for databases. Two changes:\n\n1. **Upper nodes hold only signposts** (keys that say which way to go), never the actual records. Signposts are small, so each upper node fits even more children → the tree is even shorter.\n2. **All records live in the leaves**, and every leaf has a `next` link to the leaf on its right — the leaves form one **sorted chain**.',
+          bn: '**B+ ট্রি** হলো ডেটাবেসের জন্য সাজানো একটা B-ট্রি। দুটো পরিবর্তন:\n\n১. **ওপরের নোডে শুধু দিকনির্দেশক** (কোন দিকে যেতে হবে বলে এমন কী), কখনো আসল রেকর্ড নয়। দিকনির্দেশক ছোট, তাই প্রতিটা ওপরের নোডে আরও বেশি চাইল্ড আঁটে → ট্রি আরও খাটো।\n২. **সব রেকর্ড থাকে লিফে**, আর প্রতিটা লিফের ডানের লিফে একটা `next` লিংক — লিফগুলো মিলে একটা **সাজানো চেইন**।'
         },
         line: 0,
         iteration: { i: 1, of: 4, label: { en: 'Architecture', bn: 'কাঠামো' } },
@@ -805,10 +832,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'B-Tree vs B+ Tree Comparison', bn: 'B-ট্রি বনাম B+ ট্রির তুলনামূলক পার্থক্য' },
+        title: {
+          en: 'B-tree vs B+ tree',
+          bn: 'B-ট্রি বনাম B+ ট্রি'
+        },
         explanation: {
-          en: 'Why did database architects replace B-Trees with B+ Trees?\n\n| Feature | Standard B-Tree | B+ Tree (MySQL InnoDB / Postgres) |\n|---|---|---|\n| **Data Storage** | Records stored in *every* node (internal + leaf) | Records stored **strictly in leaf nodes** |\n| **Branching Factor** | Lower (large record payloads take space) | **Massive** (internal nodes only store small keys) |\n| **Range Queries** | In-Order tree traversal (slow disk jumping) | **Sequential leaf scan** via linked list ($O(1)$ block jumps) |\n| **Search Stability** | Can terminate early at root or deep at leaf | **Consistent $O(\\log N)$** (every search reaches leaf) |',
-          bn: 'ডেটাবেস ইঞ্জিনিয়াররা B-ট্রির জায়গায় B+ ট্রি কেন বেছে নিলেন?\n\n| বৈশিষ্ট্য | সাধারণ B-ট্রি | B+ ট্রি (MySQL InnoDB / Postgres) |\n|---|---|---|\n| **ডেটা সংরক্ষণ** | সব নোডেই রেকর্ড সংরক্ষিত থাকে | রেকর্ড থাকে **কেবলমাত্র লিফ নোডগুলোতে** |\n| **ব্রাঞ্চিং ফ্যাক্টর** | কম (রেকর্ড বেশি জায়গা দখল করে) | **অত্যন্ত বিশাল** (ইন্টারনাল নোডে শুধু ছোট কি থাকে) |\n| **রেঞ্জ কোয়েরি** | ট্রির ভেতর ইন-অর্ডার লাফিয়ে চলা (ধীর) | লিঙ্কড লিস্ট ধরে **সোজা স্ক্যান** ($O(1)$ ব্লক জাম্প) |\n| **সার্চ ধারাবাহিকতা** | রুট বা লিফে থামতে পারে | **একটানা ধারাবাহিক $O(\\log N)$** (সব সার্চ লিফে পৌঁছায়) |',
+          en: '| | B-tree | B+ tree |\n|---|---|---|\n| Where records live | in every node | **only in the leaves** |\n| Children per node | fewer | **many more** (upper nodes are small) |\n| "All values from 25 to 60" | jump up and down the tree | **walk along the leaf chain** |\n| Every search | may stop early | always reaches a leaf (predictable speed) |\n\nThat is why MySQL, PostgreSQL and SQLite all store their indexes as B+ trees.',
+          bn: '| | B-ট্রি | B+ ট্রি |\n|---|---|---|\n| রেকর্ড কোথায় | প্রতিটা নোডে | **শুধু লিফে** |\n| নোডপ্রতি চাইল্ড | কম | **অনেক বেশি** (ওপরের নোড ছোট) |\n| "25 থেকে 60-এর সব মান" | ট্রিতে ওঠানামা | **লিফ চেইন ধরে হাঁটা** |\n| প্রতিটা সার্চ | আগেই থামতে পারে | সবসময় লিফে পৌঁছায় (নির্ভরযোগ্য গতি) |\n\nএজন্যই MySQL, PostgreSQL আর SQLite তাদের ইনডেক্স B+ ট্রি হিসেবে রাখে।'
         },
         line: 4,
         iteration: { i: 2, of: 4, label: { en: 'Comparison', bn: 'তুলনা' } },
@@ -829,10 +859,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'Executing Range Query: SELECT WHERE key BETWEEN 25 AND 60', bn: 'রেঞ্জ কোয়েরি সম্পাদন: ২৫ থেকে ৬০ পর্যন্ত রেকর্ড' },
+        title: {
+          en: 'A range query: ids from 25 to 60',
+          bn: 'রেঞ্জ কোয়েরি: id 25 থেকে 60'
+        },
         explanation: {
-          en: 'Let\'s execute SQL query: `SELECT * FROM users WHERE id BETWEEN 25 AND 60`:\n\n1. **Step 1 (Binary Search to minKey)**: Traverse from root `[25, 50]` to find the starting leaf `[25, 30, 40]`. Takes $O(\\log N)$ time.\n2. **Step 2 (Sequential Scan via `leaf.next`)**: Once in leaf `[25, 30, 40]`, collect `25, 30, 40`. Then simply follow **`leaf.next` pointer** to sibling leaf `[50, 60, 70]` and collect `50, 60`!\n\n**Zero tree backtracking**! The internal nodes are never visited again.',
-          bn: 'ধরি আমরা SQL কোয়েরি চালালাম: `SELECT * FROM users WHERE id BETWEEN 25 AND 60`:\n\n১. **ধাপ ১ (শুরুর নোড খোঁজা)**: রুট `[25, 50]` থেকে নিচে নেমে প্রারম্ভিক লিফ `[25, 30, 40]` খুঁজে নাও। সময় $O(\\log N)$।\n২. **ধাপ ২ (লিঙ্কড লিস্ট ধরে সোজা স্ক্যান)**: ওই লিফে `25, 30, 40` সংগ্রহ করো। তারপর আর উপরে না উঠে সরাসরি **`leaf.next` পয়েন্টার** ধরে পাশের লিফে যাও এবং `50, 60` তুলে নাও!\n\n**কোনো ব্যাকট্র্যাকিং নেই!** ইন্টারনাল নোডগুলোতে পুনরায় আর ফিরে যাওয়ার কোনো প্রয়োজনই পড়ে না।',
+          en: 'SQL: `SELECT * FROM users WHERE id BETWEEN 25 AND 60`\n\n1. **Find the start:** go down from the root to the leaf that holds 25 → leaf `[25, 30, 40]`. Collect 25, 30, 40.\n2. **Walk the chain:** follow `next` to leaf `[50, 60, 70]`. Collect 50 and 60; 70 is too big → stop.\n\nAfter finding the start, we never go back up the tree — we just walk right along the leaves.',
+          bn: 'SQL: `SELECT * FROM users WHERE id BETWEEN 25 AND 60`\n\n১. **শুরু খোঁজো:** রুট থেকে নিচে 25-ওয়ালা লিফে যাও → লিফ `[25, 30, 40]`। 25, 30, 40 নাও।\n২. **চেইন ধরে হাঁটো:** `next` ধরে লিফ `[50, 60, 70]`-এ যাও। 50 আর 60 নাও; 70 বেশি বড় → থামো।\n\nশুরু পাওয়ার পর আর কখনো ট্রিতে ওপরে উঠি না — শুধু লিফ ধরে ডানে হাঁটি।'
         },
         line: 9,
         iteration: { i: 3, of: 4, label: { en: 'Range Scan', bn: 'রেঞ্জ স্ক্যান' } },
@@ -852,10 +885,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'Complete Query Result in O(K) Time', bn: 'O(K) সময়ে সম্পূর্ণ কোয়েরির ফলাফল' },
+        title: {
+          en: 'Result and cost',
+          bn: 'ফলাফল আর খরচ'
+        },
         explanation: {
-          en: 'Result set extracted: `[25, 30, 40, 50, 60]` (5 records).\n\nTotal Complexity:\n$$\\text{Time} = O(\\log_m N + K)$$\nwhere $K$ is the number of records in the range query.\n\nBecause adjacent leaf nodes reside consecutively on disk sectors, modern operating systems pre-fetch them with high-throughput sequential disk reads!',
-          bn: 'ফলাফল পাওয়া গেল: `[25, 30, 40, 50, 60]` (৫টি রেকর্ড)।\n\nমোট জটিলতা:\n$$\\text{সময়} = O(\\log_m N + K)$$\nযেখানে $K$ হলো রেঞ্জের ভেতরের মোট রেকর্ডের সংখ্যা।\n\nযেহেতু পাশাপাশি লিফ নোডগুলো ডিস্কে পরপর ব্লকে থাকে, তাই অপারেটিং সিস্টেম হাই-থ্রুপুট সিকোয়েনশিয়াল রিডের মাধ্যমে চোখের পলকে ডেটা লোড করে!',
+          en: 'Result: `25, 30, 40, 50, 60` — 5 records.\n\nCost = **finding the start** (a few steps, the height of the tree) **+ one step per record returned**. Written as **O(log N + K)**, where K is how many records match.\n\nBonus: neighbouring leaves are usually stored next to each other on disk, so walking the chain is very fast.',
+          bn: 'ফলাফল: `25, 30, 40, 50, 60` — ৫টা রেকর্ড।\n\nখরচ = **শুরু খোঁজা** (কয়েক ধাপ, ট্রির উচ্চতা) **+ প্রতিটা ফেরত রেকর্ডে এক ধাপ**। লেখা হয় **O(log N + K)**, যেখানে K হলো কয়টা রেকর্ড মিলেছে।\n\nবোনাস: পাশাপাশি লিফগুলো সাধারণত ডিস্কেও পাশাপাশি থাকে, তাই চেইন ধরে হাঁটা খুব দ্রুত।'
         },
         line: 14,
         iteration: { i: 4, of: 4, label: { en: 'Query Output', bn: 'কোয়েরি আউটপুট' } },
@@ -876,8 +912,8 @@ export const multiwayTopics = [
     id: 'tree-comparison',
     name: { en: 'Comprehensive Search Tree Comparison', bn: 'সার্চ ট্রির পূর্ণাঙ্গ তুলনামূলক গাইড' },
     description: {
-      en: 'Standard BST, AVL, 2-3 Tree, B-Tree, B+ Tree, and Red-Black tree head-to-head comparison',
-      bn: 'সাধারণ BST, AVL, ২-৩ ট্রি, B-ট্রি, B+ ট্রি এবং রেড-ব্ল্যাক ট্রির মুখোমুখি বিশ্লেষণ'
+      en: 'Which search tree to use, and when',
+      bn: 'কোন সার্চ ট্রি কখন ব্যবহার করবে'
     },
     categoryKey: 'trees',
     subgroupKey: 'multiway',
@@ -1056,10 +1092,13 @@ export const multiwayTopics = [
     },
     steps: [
       {
-        title: { en: 'The Master Search Tree Comparison Table', bn: 'মাস্টার সার্চ ট্রি তুলনামূলক ছক' },
+        title: {
+          en: 'All search trees side by side',
+          bn: 'সব সার্চ ট্রি পাশাপাশি'
+        },
         explanation: {
-          en: 'Here is the comprehensive head-to-head comparison of all search trees:\n\n| Data Structure | Search Time | Insert Time | Delete Time | Max Height Bound | Primary Application |\n|---|---|---|---|---|---|\n| **Standard BST** | $O(N)$ worst | $O(N)$ worst | $O(N)$ worst | $N - 1$ (skewed) | Simple lookup tables |\n| **AVL Tree** | **$O(\\log N)$** | **$O(\\log N)$** | **$O(\\log N)$** | **$1.44 \\log_2 N$** | Read-heavy in-memory data |\n| **2-3 Tree** | $O(\\log N)$ | $O(\\log N)$ | $O(\\log N)$ | $\\log_3 N$ to $\\log_2 N$ | Conceptual model for B-Trees |\n| **B-Tree ($m$)** | $O(\\log_m N)$ | $O(\\log_m N)$ | $O(\\log_m N)$ | $\\log_{\\lceil m/2 \\rceil} N$ | File systems, block storage |\n| **B+ Tree** | $O(\\log_m N)$ | $O(\\log_m N)$ | $O(\\log_m N)$ | $\\log_{\\lceil m/2 \\rceil} N$ | **Relational DB range indexing** |\n| **Red-Black Tree** | $O(\\log N)$ | $O(\\log N)$ | $O(\\log N)$ | $2 \\log_2(N + 1)$ | **`std::map`, Java `TreeMap`** |',
-          bn: 'সমস্ত সার্চ ট্রির মুখোমুখি তুলনামূলক ছক:\n\n| ডেটা স্ট্রাকচার | সার্চ সময় | ইনসার্ট সময় | ডিলিট সময় | সর্বোচ্চ উচ্চতার সীমা | প্রধান বাস্তব প্রয়োগ |\n|---|---|---|---|---|---|\n| **সাধারণ BST** | $O(N)$ খারাপ | $O(N)$ খারাপ | $O(N)$ খারাপ | $N - 1$ (স্কিউড) | সাধারণ ছোট টেবিল |\n| **AVL ট্রি** | **$O(\\log N)$** | **$O(\\log N)$** | **$O(\\log N)$** | **১.৪৪ $\\log_2 N$** | রিড-প্রধান মেমোরি ডেটা |\n| **২-৩ ট্রি** | $O(\\log N)$ | $O(\\log N)$ | $O(\\log N)$ | $\\log_3 N$ হতে $\\log_2 N$ | B-ট্রির মৌলিক মডেল |\n| **B-ট্রি ($m$)** | $O(\\log_m N)$ | $O(\\log_m N)$ | $O(\\log_m N)$ | $\\log_{\\lceil m/2 \\rceil} N$ | ফাইল সিস্টেম ও ডিস্ক ব্লকিং |\n| **B+ ট্রি** | $O(\\log_m N)$ | $O(\\log_m N)$ | $O(\\log_m N)$ | $\\log_{\\lceil m/2 \\rceil} N$ | **ডেটাবেস রেঞ্জ ইনডেক্সিং** |\n| **রেড-ব্ল্যাক ট্রি** | $O(\\log N)$ | $O(\\log N)$ | $O(\\log N)$ | ২ $\\log_2(N + 1)$ | **`std::map`, Java `TreeMap`** |',
+          en: '| Tree | Search / insert / delete | Worst height | Used for |\n|---|---|---|---|\n| Plain BST | can be **N** | N − 1 (a line) | small, simple tables |\n| AVL | **log N** | about 1.44 log₂ N | many reads, few changes |\n| Red-Black | **log N** | about 2 log₂ N | `std::map`, Java `TreeMap` |\n| 2-3 tree | **log N** | log₂ N | the idea behind B-trees |\n| B-tree | **log N** (few disk reads) | tiny (wide nodes) | file systems |\n| B+ tree | **log N** + fast ranges | tiny | database indexes |',
+          bn: '| ট্রি | সার্চ / ইনসার্ট / ডিলিট | সবচেয়ে খারাপ উচ্চতা | কোথায় ব্যবহার |\n|---|---|---|---|\n| সাধারণ BST | **N** হতে পারে | N − 1 (একটা লাইন) | ছোট, সহজ টেবিল |\n| AVL | **log N** | প্রায় 1.44 log₂ N | বেশি পড়া, কম বদল |\n| রেড-ব্ল্যাক | **log N** | প্রায় 2 log₂ N | `std::map`, Java `TreeMap` |\n| ২-৩ ট্রি | **log N** | log₂ N | B-ট্রির পেছনের ধারণা |\n| B-ট্রি | **log N** (কম ডিস্ক রিড) | খুব ছোট (চওড়া নোড) | ফাইল সিস্টেম |\n| B+ ট্রি | **log N** + দ্রুত রেঞ্জ | খুব ছোট | ডেটাবেস ইনডেক্স |'
         },
         line: 0,
         iteration: { i: 1, of: 4, label: { en: 'Master Table', bn: 'মাস্টার ছক' } },
@@ -1078,10 +1117,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'AVL vs Red-Black: The In-Memory Battle', bn: 'AVL বনাম রেড-ব্ল্যাক: মেমোরির লড়াই' },
+        title: {
+          en: 'AVL or Red-Black?',
+          bn: 'AVL না রেড-ব্ল্যাক?'
+        },
         explanation: {
-          en: 'Both trees guarantee $O(\\log N)$ worst-case time, but they make different engineering trade-offs:\n\n- **AVL Tree**: More **rigidly balanced** ($h \\le 1.44 \\log_2 N$). Search requires fewer comparisons. However, insertions and deletions do more rotation work.\n  - *Pick AVL when*: Your application does **many reads and few writes** (e.g. dictionary lookups, game asset caches).\n\n- **Red-Black Tree**: Slightly looser balance ($h \\le 2 \\log_2(N+1)$). But insertions require at most 2 rotations, and deletions at most 3 rotations!\n  - *Pick Red-Black when*: Your application has **frequent insertions and deletions** (e.g. dynamic symbol tables, process schedulers).',
-          bn: 'উভয় ট্রিই $O(\\log N)$ সময়ের নিশ্চয়তা দেয়, কিন্তু তাদের মধ্যে সূক্ষ্ম পার্থক্য রয়েছে:\n\n- **AVL ট্রি**: অনেক বেশি **কঠোরভাবে ব্যালান্সড** ($h \\le 1.44 \\log_2 N$)। অনুসন্ধানে কম তুলনা লাগে। কিন্তু ইনসার্ট ও ডিলিটে রোটেশন বেশি করতে হয়।\n  - *AVL বেছে নাও যখন*: তোমার প্রোগ্রামে **পড়ার কাজ (Read) বেশি এবং লেখার কাজ কম** (যেমন অভিধান সার্চ, গেমিং ক্যাশ)।\n\n- **রেড-ব্ল্যাক ট্রি**: সামান্য ঢিলেঢালা ব্যালান্স ($h \\le 2 \\log_2(N+1)$)। কিন্তু ইনসার্টে সর্বোচ্চ ২টি এবং ডিলিটে সর্বোচ্চ ৩টি রোটেশন লাগে!\n  - *রেড-ব্ল্যাক বেছে নাও যখন*: প্রোগ্রামে **ঘনঘন নতুন ডেটা আসে এবং মোছা হয়** (যেমন প্রসেস শিডিউলার, `std::map`)।',
+          en: 'Both are always fast (log N). The difference is small but real:\n\n- **AVL** is kept more tightly balanced → searches are a little faster, but changes do more rotations. Pick it when you **read much more than you change** (like a dictionary lookup).\n- **Red-Black** is a bit looser → searches a little slower, but changes are cheaper (at most 2 rotations per insert, 3 per delete). Pick it when data **changes often**.',
+          bn: 'দুটোই সবসময় দ্রুত (log N)। পার্থক্য ছোট কিন্তু আসল:\n\n- **AVL** আরও কড়াভাবে ব্যালান্সড → খোঁজা একটু দ্রুত, কিন্তু বদলে বেশি রোটেশন। বেছে নাও যখন **বদলের চেয়ে পড়া অনেক বেশি** (যেমন অভিধানে শব্দ খোঁজা)।\n- **রেড-ব্ল্যাক** একটু ঢিলা → খোঁজা একটু ধীর, কিন্তু বদল সস্তা (প্রতি ইনসার্টে বড়জোর ২টা, ডিলিটে ৩টা রোটেশন)। বেছে নাও যখন ডেটা **প্রায়ই বদলায়**।'
         },
         line: 8,
         iteration: { i: 2, of: 4, label: { en: 'In-Memory Battle', bn: 'মেমোরির লড়াই' } },
@@ -1100,10 +1142,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'B-Tree vs B+ Tree: The Storage Engine Standard', bn: 'B-ট্রি বনাম B+ ট্রি: ডেটাবেস ইঞ্জিনের পছন্দ' },
+        title: {
+          en: 'B-tree or B+ tree?',
+          bn: 'B-ট্রি না B+ ট্রি?'
+        },
         explanation: {
-          en: 'Why do all major database systems (**MySQL InnoDB, PostgreSQL, SQLite, Oracle**) implement **B+ Trees** rather than standard B-Trees?\n\n1. **Range Queries**: Relational databases exist to run queries like `WHERE age > 21`. In a B+ Tree, this scans along the **horizontal leaf linked list** without revisiting upper tree nodes.\n2. **Cache Density**: Because B+ tree internal nodes don\'t store records, the top levels of the index can be kept **permanently in RAM buffer pool**, meaning only 1 physical disk read is needed for the leaf!',
-          bn: 'পৃথিবীর প্রায় সমস্ত বিখ্যাত ডেটাবেস (**MySQL InnoDB, PostgreSQL, SQLite, Oracle**) কেন সাধারণ B-ট্রির বদলে **B+ ট্রি** ব্যবহার করে?\n\n১. **রেঞ্জ কোয়েরি**: ডেটাবেসের বেশিরভাগ কোয়েরি রেঞ্জ সংক্রান্ত (`WHERE age > 21`)। B+ ট্রিতে এটি লিফের **অনুভূমিক লিঙ্কড লিস্ট** ধরে স্ক্যান করে, ট্রির ওপরে উঠতে হয় না।\n২. **ক্যাশ ঘনত্ব**: B+ ট্রির ইন্টারনাল নোডগুলো কোনো ভারী রেকর্ড না রাখায়, ট্রির ওপরের লেভেলগুলো **RAM-এর বাফার পুলে স্থায়ীভাবে** রেখে দেওয়া যায়! ফলে ডিস্ক থেকে শুধু নিচের লিফটি পড়তে হয়।',
+          en: 'Databases (MySQL, PostgreSQL, SQLite, Oracle) choose **B+ trees** for two reasons:\n\n1. **Range queries** like `WHERE age > 21` just walk along the linked leaves.\n2. The small upper nodes fit **in memory**, so a lookup usually needs only **one** real disk read — for the leaf.',
+          bn: 'ডেটাবেস (MySQL, PostgreSQL, SQLite, Oracle) দুটো কারণে **B+ ট্রি** বেছে নেয়:\n\n১. `WHERE age > 21`-এর মতো **রেঞ্জ কোয়েরি** শুধু জোড়া লিফ ধরে হাঁটে।\n২. ছোট ওপরের নোডগুলো **মেমরিতে** আঁটে, তাই একটা খোঁজে সাধারণত মাত্র **১টা** আসল ডিস্ক রিড লাগে — লিফের জন্য।'
         },
         line: 9,
         iteration: { i: 3, of: 4, label: { en: 'Storage Engines', bn: 'স্টোরেজ ইঞ্জিন' } },
@@ -1124,10 +1169,13 @@ export const multiwayTopics = [
         }
       },
       {
-        title: { en: 'Summary: You Mastered Advanced Tree Architecture', bn: 'সারসংক্ষেপ: উন্নত ট্রি আর্কিটেকচার আয়ত্ত' },
+        title: {
+          en: 'What you learned in the tree chapter',
+          bn: 'ট্রি অধ্যায়ে কী শিখলে'
+        },
         explanation: {
-          en: '### You have completed the complete Trees curriculum!\nYou now understand:\n- **Foundations**: Terminology, Strict/Complete/Perfect/Skewed binary trees, Catalan numbers, height proofs ($N_0 = N_2 + 1$).\n- **Traversals & Construction**: Pre/In/Post DFS, 3-point boundary flag trick, $2N+1$ calls, Queue creation.\n- **BST Operations**: Trailing-pointer insertion, all 3 deletion cases, post-order metrics.\n- **Self-Balancing Trees**: AVL balance factors, LL/RR/LR/RL animated rotations, $1.44 \\log N$ height proof, Red-Black 5 invariants.\n- **Multiway & Database Structures**: 2-3 tree median splitting, order-$m$ B-Trees, B+ tree leaf linked range queries.\n\nYou are fully equipped to implement, analyze, and optimize any tree data structure in C++, Java, Python, or JavaScript!',
-          bn: '### অভিনন্দন! তুমি সম্পূর্ণ ট্রি কারিকুলাম সম্পন্ন করেছো!\nতুমি এখন গভীর ও সুস্পষ্টভাবে জানো:\n- **ফাউন্ডেশন**: পরিভাষা, স্ট্রিক্ট/কমপ্লিট/পারফেক্ট/স্কিউড ট্রি, কাতালান সংখ্যা, উচ্চতা প্রমাণ ($N_0 = N_2 + 1$)।\n- **ট্রাভার্সাল ও গঠন**: Pre/In/Post DFS, ৩-পয়েন্ট ফ্ল্যাগ ট্রিক, $2N+1$ ফাংশন কল, কিউ দিয়ে ডাইনামিক গঠন।\n- **BST অপারেশন**: ট্রেইলিং পয়েন্টার ইনসার্ট, ৩টি ডিলিট কেস, পোস্ট-অর্ডার মেট্রিক্স।\n- **সেলফ-ব্যালান্সিং**: AVL ব্যালান্স ফ্যাক্টর, LL/RR/LR/RL অ্যানিমেটেড রোটেশন, ১.৪৪ $\\log N$ প্রমাণ, রেড-ব্ল্যাকের ৫ শর্ত।\n- **মাল্টিওয়ে ও ডেটাবেস**: ২-৩ ট্রি মিডিয়ান স্প্লিট, অর্ডার-$m$ B-ট্রি, B+ ট্রির লিঙ্কড লিফ রেঞ্জ কোয়েরি।\n\nএখন যেকোনো কোডিং ইন্টারভিউ বা বাস্তব প্রজেক্টে C++, Java, Python, কিংবা JavaScript-এ যেকোনো ট্রি ডেটা স্ট্রাকচার বাস্তবায়ন করতে তুমি শতভাগ প্রস্তুত!',
+          en: '- **Basics:** root, parent, child, leaf, height; full / complete / perfect / skewed trees; how to count tree shapes.\n- **Traversals:** preorder, inorder, postorder, level order — with recursion, a stack or a queue.\n- **BST:** search, insert and delete (all 3 cases) by going left or right.\n- **Balancing:** AVL balance factors and the 4 rotations; Red-Black colour rules.\n- **Multiway trees:** 2-3 splits, B-trees and B+ trees for disks and databases.\n\nNow try your own values in the **Tree Playgrounds** at the end of this chapter.',
+          bn: '- **বেসিক:** রুট, প্যারেন্ট, চাইল্ড, লিফ, উচ্চতা; ফুল / কমপ্লিট / পারফেক্ট / স্কিউড ট্রি; ট্রির আকার গোনা।\n- **ট্রাভার্সাল:** প্রি-অর্ডার, ইন-অর্ডার, পোস্ট-অর্ডার, লেভেল অর্ডার — রিকার্শন, স্ট্যাক বা queue দিয়ে।\n- **BST:** বামে-ডানে গিয়ে সার্চ, ইনসার্ট আর ডিলিট (৩টা কেসই)।\n- **ব্যালান্সিং:** AVL ব্যালান্স ফ্যাক্টর আর ৪টা রোটেশন; রেড-ব্ল্যাকের রঙের নিয়ম।\n- **মাল্টিওয়ে ট্রি:** ২-৩ ভাগ, ডিস্ক আর ডেটাবেসের জন্য B-ট্রি ও B+ ট্রি।\n\nএবার এই অধ্যায়ের শেষে **ট্রি প্লেগ্রাউন্ডে** নিজের মান দিয়ে চেষ্টা করো।'
         },
         line: 12,
         iteration: { i: 4, of: 4, label: { en: 'Mastery', bn: 'মাস্টারি' } },

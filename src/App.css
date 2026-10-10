@@ -2104,3 +2104,7 @@ code{font-family:var(--font-mono);font-size:.92em;padding:0 4px;border-radius:4p
 .mfrac>span:last-child{padding-top:.1em}
 .mfrac.mbinom>span:first-child{border-bottom:none}
 .math-block{display:block;text-align:center;margin:.6em 0;font-size:1.18em;overflow-x:auto;padding:.2em 0}
+/* tables inside lesson explanations */
+.info-explanation table{border-collapse:collapse;width:100%;margin:.6em 0;font-size:.88em}
+.info-explanation th,.info-explanation td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+.info-explanation th{background:var(--bg-card);font-weight:700}

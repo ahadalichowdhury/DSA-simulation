@@ -10,8 +10,8 @@ export const foundationTopics = [
     id: 'tree-fundamentals',
     name: { en: 'Tree Terminology & Hierarchy', bn: 'ট্রি টার্মিনোলজি ও হায়ারার্কি' },
     description: {
-      en: 'Root, parent, child, degrees, levels, height and forest terminology',
-      bn: 'রুট, প্যারেন্ট, চাইল্ড, ডিগ্রি, লেভেল, হাইট ও ফরেস্টের পরিচিতি'
+      en: 'The words for trees: root, parent, child, leaf, height',
+      bn: 'ট্রির শব্দগুলো: রুট, প্যারেন্ট, চাইল্ড, লিফ, উচ্চতা'
     },
     categoryKey: 'trees',
     subgroupKey: 'foundations',
@@ -200,10 +200,13 @@ export const foundationTopics = [
     },
     steps: [
       {
-        title: { en: 'What is a Tree Data Structure?', bn: 'ট্রি ডেটা স্ট্রাকচার কী?' },
+        title: {
+          en: 'What is a tree?',
+          bn: 'ট্রি কী?'
+        },
         explanation: {
-          en: 'A **Tree** is a non-linear, hierarchical data structure composed of **nodes** connected by directed **edges** without any cycles.\n\nKey Invariant: A tree with **N nodes** always contains exactly **N - 1 edges**. If there are loops or disconnected components, it is not a tree.\n\nEvery node (except the root) has exactly **one incoming edge** (one parent).',
-          bn: 'একটি **ট্রি (Tree)** হলো একটি নন-লিনিয়ার হায়ারার্কিকাল ডেটা স্ট্রাকচার যা **নোড** ও দিকনির্দেশক **এজ** দিয়ে গঠিত, যেখানে কোনো সাইকেল বা লুপ থাকে না।\n\nপ্রধান বৈশিষ্ট্য: **N সংখ্যক নোড** থাকলে ট্রিতে ঠিক **N - 1 টি এজ** থাকবে। যদি লুপ থাকে বা কোনো নোড বিচ্ছিন্ন থাকে, তবে তা ট্রি নয়।\n\nরুট বাদে প্রতিটি নোডের ঠিক **একটি ইনকামিং এজ** (একটি প্যারেন্ট) থাকে।'
+          en: 'Think of a **family tree** or the **folders on your computer**: one thing at the top, and everything else branches out below it.\n\nA **tree** stores data the same way. Each circle is a **node** (it holds one value) and each line is an **edge** (a link from a parent down to a child).\n\nTwo rules make something a tree:\n- every node except the top one has **exactly one parent**;\n- there are **no loops** — you can never walk down and come back to where you started.\n\n> **Quick fact:** a tree with **N nodes** always has **N − 1 edges** (every node except the top has one line coming down into it). This tree has 7 nodes and 6 edges.',
+          bn: '**ফ্যামিলি ট্রি** বা **কম্পিউটারের ফোল্ডারগুলো** ভাবো: ওপরে একটা জিনিস, বাকি সব তার নিচে ডালপালার মতো ছড়ানো।\n\n**ট্রি (tree)** ডেটাকে ঠিক এভাবে রাখে। প্রতিটা বৃত্ত একটা **নোড (node)** — এতে একটা মান থাকে; আর প্রতিটা রেখা একটা **এজ (edge)** — প্যারেন্ট থেকে নিচে চাইল্ডের দিকে একটা সংযোগ।\n\nদুটো নিয়ম মানলে তবেই সেটা ট্রি:\n- ওপরেরটা ছাড়া প্রতিটা নোডের **ঠিক একজন প্যারেন্ট**;\n- কোনো **লুপ নেই** — নিচে নেমে কখনো শুরুর জায়গায় ফেরা যায় না।\n\n> **ছোট তথ্য:** **N টা নোডের** ট্রিতে সবসময় **N − 1 টা এজ** থাকে (ওপরেরটা ছাড়া প্রতিটা নোডে একটা করে রেখা নামে)। এই ট্রিতে ৭টা নোড, ৬টা এজ।'
         },
         line: 0,
         iteration: { i: 1, of: 6, label: { en: 'Concept', bn: 'ধারণা' } },
@@ -226,10 +229,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Root, Parent, Child & Siblings', bn: 'রুট, প্যারেন্ট, চাইল্ড ও সিবলিং' },
+        title: {
+          en: 'Root, parent, child, siblings',
+          bn: 'রুট, প্যারেন্ট, চাইল্ড, সিবলিং'
+        },
         explanation: {
-          en: '- **Root**: The topmost node with no parent (`A`). Every non-empty tree has exactly 1 root.\n- **Parent**: A node that has directed links to lower nodes. `A` is parent of `B` and `C`.\n- **Child**: A node directly descended from a parent. `B` and `C` are children of `A`.\n- **Siblings**: Nodes that share the exact same parent node. `D` and `E` are siblings (both children of `B`).',
-          bn: '- **রুট (Root)**: সবার উপরের নোড যার কোনো প্যারেন্ট নেই (`A`)। প্রতিটি ট্রিতে ঠিক ১টি রুট থাকে।\n- **প্যারেন্ট (Parent)**: যে নোড থেকে নিচের নোডে এজ যায়। `A` হলো `B` ও `C`-এর প্যারেন্ট।\n- **চাইল্ড (Child)**: প্যারেন্ট নোডের নিচের নোড। `B` ও `C` হলো `A`-এর চাইল্ড।\n- **সিবলিং (Siblings)**: যাদের প্যারেন্ট একই নোড। `D` ও `E` সিবলিং (উভয়েই `B`-এর সন্তান)।'
+          en: 'These words come straight from a family:\n\n- **Root** — the node at the very top, with no parent. Here it is `A`. A tree has only one root.\n- **Parent** — a node directly above another. `A` is the parent of `B` and `C`.\n- **Child** — a node directly below another. `B` and `C` are children of `A`.\n- **Siblings** — children of the same parent, like brothers and sisters. `D` and `E` are siblings (both children of `B`).\n\n> **Tip:** "parent" and "child" always mean **one step** up or down — `A` is not the parent of `D`.',
+          bn: 'এই শব্দগুলো সরাসরি পরিবার থেকে এসেছে:\n\n- **রুট (root)** — একদম ওপরের নোড, যার কোনো প্যারেন্ট নেই। এখানে `A`। একটা ট্রিতে রুট একটাই।\n- **প্যারেন্ট (parent)** — অন্য একটা নোডের ঠিক ওপরের নোড। `A` হলো `B` আর `C`-এর প্যারেন্ট।\n- **চাইল্ড (child)** — অন্য নোডের ঠিক নিচের নোড। `B` আর `C` হলো `A`-এর চাইল্ড।\n- **সিবলিং (siblings)** — একই প্যারেন্টের চাইল্ড, ভাইবোনের মতো। `D` আর `E` সিবলিং (দুজনেই `B`-এর চাইল্ড)।\n\n> **টিপ:** "প্যারেন্ট" আর "চাইল্ড" মানে সবসময় **এক ধাপ** ওপরে বা নিচে — `A` কিন্তু `D`-এর প্যারেন্ট নয়।'
         },
         line: 2,
         iteration: { i: 2, of: 6, label: { en: 'Relations', bn: 'সম্পর্ক' } },
@@ -251,10 +257,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Ancestors vs Descendants', bn: 'পূর্বপুরুষ (Ancestors) বনাম বংশধর (Descendants)' },
+        title: {
+          en: 'Ancestors, descendants, subtree',
+          bn: 'অ্যানসেস্টর, ডিসেন্ড্যান্ট, সাব-ট্রি'
+        },
         explanation: {
-          en: '- **Ancestors**: All nodes on the direct path from the node up to the root. For node `D`, its ancestors are `B` and `A`.\n- **Descendants**: All nodes reachable by following edges downward from a node. For node `A`, all other nodes (`B, C, D, E, F, G`) are its descendants.\n- **Subtree**: Any node together with all of its descendants forms a complete subtree.',
-          bn: '- **পূর্বপুরুষ (Ancestors)**: কোনো নোড থেকে রুটের দিকে যাওয়ার পথের সব নোড। `D` নোডের পূর্বপুরুষ হলো `B` এবং `A`।\n- **বংশধর (Descendants)**: কোনো নোড থেকে নিচের দিকে নেমে যত নোডে যাওয়া যায়। `A`-এর বংশধর হলো ট্রির অন্য সব নোড।\n- **সাব-ট্রি (Subtree)**: একটি নোড এবং তার নিচের সব বংশধর নোড মিলে একটি পূর্ণ সাব-ট্রি গঠন করে।'
+          en: 'Now look further than one step:\n\n- **Ancestors** of a node — everyone on the way **up** to the root (parent, grandparent, …). For `D` that is `B` and `A`.\n- **Descendants** of a node — everyone you can reach going **down** (children, grandchildren, …). For `A` that is every other node.\n- **Subtree** — pick any node; that node **plus all its descendants** is a smaller tree of its own. `B` with `D` and `E` is the subtree of `B`.\n\n> **Why it matters:** most tree code works on subtrees — "solve the left subtree, solve the right subtree, combine". You will see this again and again.',
+          bn: 'এবার এক ধাপের চেয়ে দূরে দেখো:\n\n- কোনো নোডের **অ্যানসেস্টর (ancestors)** — রুট পর্যন্ত **ওপরের** পথে সবাই (প্যারেন্ট, দাদা/নানা …)। `D`-এর জন্য `B` আর `A`।\n- কোনো নোডের **ডিসেন্ড্যান্ট (descendants)** — **নিচে** নেমে যাদের কাছে পৌঁছানো যায় (চাইল্ড, নাতি-নাতনি …)। `A`-এর জন্য বাকি সব নোড।\n- **সাব-ট্রি (subtree)** — যেকোনো একটা নোড নাও; সেই নোড **আর তার সব ডিসেন্ড্যান্ট** মিলে নিজেই একটা ছোট ট্রি। `D` আর `E` সহ `B` হলো `B`-এর সাব-ট্রি।\n\n> **কেন গুরুত্বপূর্ণ:** ট্রির বেশিরভাগ কোড সাব-ট্রি নিয়ে কাজ করে — "বাম সাব-ট্রি সমাধান করো, ডান সাব-ট্রি সমাধান করো, মিলিয়ে নাও"। এটা বারবার দেখবে।'
         },
         line: 4,
         iteration: { i: 3, of: 6, label: { en: 'Paths', bn: 'পথ' } },
@@ -276,10 +285,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Degree of Node & Leaf vs Internal Nodes', bn: 'নোডের ডিগ্রি ও লিফ বনাম ইন্টারনাল নোড' },
+        title: {
+          en: 'Degree, leaf and internal node',
+          bn: 'ডিগ্রি, লিফ আর ইন্টারনাল নোড'
+        },
         explanation: {
-          en: '- **Degree of a Node**: The number of direct children it has. `A` has degree 2; `B` has degree 2; `D` has degree 0.\n- **Degree of a Tree**: The maximum degree of any node in the tree. Here, Degree = 2.\n- **Leaf (External) Node**: A node with **degree 0** (no children). `D, E, F, G` are leaves.\n- **Internal (Non-Leaf) Node**: Any node with **degree > 0** (has at least 1 child). `A, B, C` are internal nodes.',
-          bn: '- **ডিগ্রি (Degree)**: একটি নোডের সরাসরি সন্তানের সংখ্যা। `A`-এর ডিগ্রি ২; `D`-এর ডিগ্রি ০।\n- **ট্রির ডিগ্রি**: পুরো ট্রির যেকোনো নোডের সর্বোচ্চ ডিগ্রি। এই ট্রির ডিগ্রি = ২।\n- **লিফ / এক্সটারনাল নোড (Leaf)**: যে নোডের কোনো সন্তান নেই (**ডিগ্রি ০**)। `D, E, F, G` হলো লিফ নোড।\n- **ইন্টারনাল নোড (Internal)**: যে নোডের অন্তত একটি সন্তান আছে (**ডিগ্রি > ০**)। `A, B, C` হলো ইন্টারনাল নোড।'
+          en: '- **Degree of a node** = how many **children** it has. `A` has 2, `B` has 2, `D` has 0.\n- **Leaf** = a node with **no children** (degree 0) — the ends of the branches. Here: `D, E, F, G`.\n- **Internal node** = a node with **at least one child**. Here: `A, B, C`.\n- **Degree of the tree** = the biggest degree of any node. Here it is 2.\n\n> **Tip:** in graphs, "degree" counts all lines touching a vertex; in trees it usually counts only the children. Do not mix them up.',
+          bn: '- **নোডের ডিগ্রি (degree)** = তার কয়টা **চাইল্ড** আছে। `A`-এর 2, `B`-এর 2, `D`-এর 0।\n- **লিফ (leaf)** = যে নোডের **কোনো চাইল্ড নেই** (ডিগ্রি 0) — ডালের শেষ মাথা। এখানে `D, E, F, G`।\n- **ইন্টারনাল নোড (internal)** = যার **অন্তত একটা চাইল্ড** আছে। এখানে `A, B, C`।\n- **ট্রির ডিগ্রি** = কোনো নোডের সবচেয়ে বড় ডিগ্রি। এখানে 2।\n\n> **টিপ:** গ্রাফে "ডিগ্রি" মানে একটা ভার্টেক্সকে ছোঁয়া সব রেখা; ট্রিতে সাধারণত শুধু চাইল্ড গোনা হয়। গুলিয়ে ফেলো না।'
         },
         line: 6,
         iteration: { i: 4, of: 6, label: { en: 'Degrees', bn: 'ডিগ্রি' } },
@@ -302,10 +314,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Levels, Depth, and Height', bn: 'লেভেল, ডেপথ ও হাইট' },
+        title: {
+          en: 'Level, depth and height',
+          bn: 'লেভেল, ডেপথ আর হাইট'
+        },
         explanation: {
-          en: '- **Level**: Measured level-by-level from top to bottom. Root `A` is at **Level 1** (or 0); `B, C` at Level 2; `D, E, F, G` at Level 3.\n- **Depth of a Node**: Number of edges from root to the node. Depth of root = 0; Depth of `D` = 2.\n- **Height of a Node**: Number of edges on the longest downward path from node to a leaf.\n- **Height of Tree**: Height of the root node. In this tree, height $h = 2$ (or 3 levels).',
-          bn: '- **লেভেল (Level)**: উপর থেকে নিচে গোনা হয়। রুট `A` হলো **লেভেল ১** (বা ০); `B, C` লেভেল ২; `D, E, F, G` লেভেল ৩।\n- **ডেপথ (Depth)**: রুট থেকে ওই নোড পর্যন্ত এজের সংখ্যা। রুটের ডেপথ = ০; `D`-এর ডেপথ = ২।\n- **হাইট (Height)**: নোড থেকে সবচেয়ে দূরের লিফ পর্যন্ত এজের সংখ্যা।\n- **ট্রির হাইট**: রুট নোডের হাইট। এই ট্রিতে হাইট $h = 2$ (অথবা ৩টি লেভেল)।'
+          en: 'Three ways to say "how high or low" something is:\n\n- **Level** — which "floor" a node is on. The root is on the first floor; `B, C` on the next; `D, E, F, G` on the last. (Some books start counting at 0, some at 1.)\n- **Depth of a node** — how many edges you walk **down from the root** to reach it. Root = 0, `B` = 1, `D` = 2.\n- **Height of a node** — how many edges on the **longest way down** from it to a leaf. Leaves have height 0.\n- **Height of the tree** — the height of the root. Here it is **2**.\n\n> **Memory trick:** depth is measured **from the top**, height is measured **from the bottom**.',
+          bn: 'কোনো কিছু কতটা "ওপরে বা নিচে" — বলার তিনটা উপায়:\n\n- **লেভেল (level)** — নোডটা কোন "তলায়"। রুট প্রথম তলায়; `B, C` পরের তলায়; `D, E, F, G` শেষ তলায়। (কিছু বই 0 থেকে গোনে, কিছু 1 থেকে।)\n- **নোডের ডেপথ (depth)** — **রুট থেকে নিচে** নামতে কয়টা এজ লাগে। রুট = 0, `B` = 1, `D` = 2।\n- **নোডের হাইট (height)** — তার থেকে কোনো লিফ পর্যন্ত **সবচেয়ে লম্বা পথে** কয়টা এজ। লিফের হাইট 0।\n- **ট্রির হাইট** — রুটের হাইট। এখানে **2**।\n\n> **মনে রাখার কৌশল:** ডেপথ মাপা হয় **ওপর থেকে**, হাইট মাপা হয় **নিচ থেকে**।'
         },
         line: 9,
         iteration: { i: 5, of: 6, label: { en: 'Metrics', bn: 'পরিমাপ' } },
@@ -329,10 +344,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Forest: Collection of Disjoint Trees', bn: 'ফরেস্ট: একাধিক বিচ্ছিন্ন ট্রির সংগ্রহ' },
+        title: {
+          en: 'Forest: several trees together',
+          bn: 'ফরেস্ট: কয়েকটা ট্রি একসাথে'
+        },
         explanation: {
-          en: 'A **Forest** is a set of zero or more disjoint trees.\n\nKey Property: If you **delete the root node** of any tree, the remaining subtrees immediately become a **Forest**!\n\nConversely, adding a common parent root node over a forest merges it into a single larger tree.',
-          bn: '**ফরেস্ট (Forest)** হলো একাধিক বিচ্ছিন্ন (disjoint) ট্রির সমষ্টি।\n\nমজার নিয়ম: যেকোনো ট্রির **রুট নোড কেটে ফেললে**, তার নিচের প্রতিটি সাব-ট্রি আলাদা হয়ে একটি **ফরেস্ট** গঠন করে!\n\nআবার, একটি ফরেস্টের সব ট্রির উপরে একটি সাধারণ রুট নোড যুক্ত করলে একটি একক ট্রি গঠিত হয়।'
+          en: 'A **forest** is simply a group of separate trees — like many trees standing in a real forest, not connected to each other.\n\nEasy way to make one: **remove the root** of a tree. Its children become the tops of their own trees, and together they form a forest.\n\nIt works the other way too: put one new node **above** all the trees of a forest, connect it to each top, and you get one big tree again.',
+          bn: '**ফরেস্ট (forest)** মানে আলাদা আলাদা কয়েকটা ট্রির একটা দল — আসল বনের অনেক গাছের মতো, যেগুলো একে অপরের সঙ্গে যুক্ত নয়।\n\nবানানোর সহজ উপায়: একটা ট্রির **রুট সরিয়ে দাও**। তার চাইল্ডরা নিজ নিজ ট্রির মাথা হয়ে যায়, আর সবাই মিলে একটা ফরেস্ট।\n\nউল্টোটাও হয়: ফরেস্টের সব ট্রির **ওপরে** একটা নতুন নোড বসাও, প্রতিটা মাথার সঙ্গে জুড়ে দাও — আবার একটা বড় ট্রি পেয়ে যাবে।'
         },
         line: 13,
         iteration: { i: 6, of: 6, label: { en: 'Forest', bn: 'ফরেস্ট' } },
@@ -359,8 +377,8 @@ export const foundationTopics = [
     id: 'binary-tree-types',
     name: { en: 'Binary Tree Classifications', bn: 'বাইনারি ট্রির প্রকারভেদ' },
     description: {
-      en: 'Strict/Full, Complete, Perfect and Skewed binary tree structures',
-      bn: 'স্ট্রিক্ট/ফুল, কমপ্লিট, পারফেক্ট এবং স্কিউড ট্রির তুলনামূলক বিশ্লেষণ'
+      en: 'Full, complete, perfect and skewed binary trees',
+      bn: 'ফুল, কমপ্লিট, পারফেক্ট আর স্কিউড বাইনারি ট্রি'
     },
     categoryKey: 'trees',
     subgroupKey: 'foundations',
@@ -519,10 +537,13 @@ export const foundationTopics = [
     },
     steps: [
       {
-        title: { en: 'Definition of a Binary Tree', bn: 'বাইনারি ট্রির মূল সংজ্ঞা' },
+        title: {
+          en: 'What is a binary tree?',
+          bn: 'বাইনারি ট্রি কী?'
+        },
         explanation: {
-          en: 'A **Binary Tree** is a tree where every node can have **at most two children**, explicitly designated as the **Left Child** and the **Right Child**.\n\nEvery node has degree 0, 1, or 2. Unlike general trees, the position matters: left is distinct from right.',
-          bn: '**বাইনারি ট্রি (Binary Tree)** হলো এমন একটি ট্রি যেখানে প্রতিটি নোডের **সর্বোচ্চ দুটি সন্তান** থাকতে পারে, যাদের সুনির্দিষ্টভাবে **বাম সন্তান (Left Child)** এবং **ডান সন্তান (Right Child)** বলা হয়।\n\nপ্রতিটি নোডের ডিগ্রি ০, ১, বা ২। সাধারণ ট্রির মতো নয় — এখানে বাম ও ডানের অবস্থান অত্যন্ত গুরুত্বপূর্ণ।'
+          en: 'A **binary tree** is a tree where every node has **at most two children** — a **left** child and a **right** child. ("Bi" means two.)\n\nSo a node can have 0, 1 or 2 children. And **left and right are different places**: a node with only a left child is a different tree from one with only a right child.\n\n> **Why it matters:** almost every famous tree — BST, AVL, heap — is a binary tree with an extra rule added on top.',
+          bn: '**বাইনারি ট্রি (binary tree)** হলো এমন ট্রি যেখানে প্রতিটা নোডের **সর্বোচ্চ দুটো চাইল্ড** — একটা **বাম (left)** আর একটা **ডান (right)**। ("বাই" মানে দুই।)\n\nতাই একটা নোডের 0, 1 বা 2টা চাইল্ড থাকতে পারে। আর **বাম আর ডান আলাদা জায়গা**: শুধু বাম চাইল্ডওয়ালা নোড আর শুধু ডান চাইল্ডওয়ালা নোড দুটো আলাদা ট্রি।\n\n> **কেন গুরুত্বপূর্ণ:** প্রায় সব বিখ্যাত ট্রি — BST, AVL, হিপ — আসলে বাইনারি ট্রি, ওপরে একটা বাড়তি নিয়ম যোগ করা।'
         },
         line: 0,
         iteration: { i: 1, of: 5, label: { en: 'Classification', bn: 'শ্রেণিবিভাগ' } },
@@ -544,10 +565,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Full / Strict / Proper Binary Tree', bn: 'ফুল / স্ট্রিক্ট বাইনারি ট্রি' },
+        title: {
+          en: 'Full (strict) binary tree',
+          bn: 'ফুল (স্ট্রিক্ট) বাইনারি ট্রি'
+        },
         explanation: {
-          en: 'In a **Full (Strict / Proper) Binary Tree**, every single node has **either 0 or 2 children**.\n\n> **Strict Rule**: No node is ever allowed to have exactly 1 child!\n\nIf a node has children, it must have **both** left and right children.',
-          bn: 'একটি **ফুল বা স্ট্রিক্ট বাইনারি ট্রিতে (Full / Strict Binary Tree)** প্রতিটি নোডের **ঠিক ০ অথবা ২ টি সন্তান** থাকে।\n\n> **কঠোর নিয়ম**: কোনো নোডের কখনোই ঠিক ১টি সন্তান থাকতে পারবে না!\n\nসন্তান থাকলে অবশ্যই **উভয় সন্তানই (বাম ও ডান)** থাকতে হবে।'
+          en: 'In a **full** binary tree (also called **strict** or **proper**), every node has **either 0 or 2 children** — never just one.\n\nLook at the picture: each node either has both a left and a right child, or it is a leaf.\n\n> **Easy check:** find any node with exactly **one** child. If there is one, the tree is **not** full.',
+          bn: '**ফুল (full)** বাইনারি ট্রিতে (একে **স্ট্রিক্ট** বা **প্রপার**-ও বলে) প্রতিটা নোডের **হয় 0টা, নয় 2টা চাইল্ড** — কখনো শুধু একটা নয়।\n\nছবিটা দেখো: প্রতিটা নোডের হয় বাম আর ডান দুটোই আছে, নয়তো সেটা লিফ।\n\n> **সহজ যাচাই:** ঠিক **একটা** চাইল্ডওয়ালা কোনো নোড খোঁজো। পেলে ট্রিটা ফুল **নয়**।'
         },
         line: 1,
         iteration: { i: 2, of: 5, label: { en: 'Strict Tree', bn: 'স্ট্রিক্ট ট্রি' } },
@@ -570,10 +594,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Complete Binary Tree', bn: 'কমপ্লিট বাইনারি ট্রি' },
+        title: {
+          en: 'Complete binary tree',
+          bn: 'কমপ্লিট বাইনারি ট্রি'
+        },
         explanation: {
-          en: 'A **Complete Binary Tree** satisfies two conditions:\n1. All levels are completely filled, except possibly the last level.\n2. The last level is filled **strictly from left to right** without any gaps!\n\nWhy it matters: Complete binary trees can be stored in a **contiguous array** with zero wasted memory slots (foundation of Heaps!).',
-          bn: '**কমপ্লিট বাইনারি ট্রি (Complete Binary Tree)** দুটি শর্ত পূরণ করে:\n১. শেষ লেভেল বাদে বাকি সব লেভেল পুরোপুরি পূর্ণ থাকে।\n২. শেষ লেভেলে নোডগুলো **কঠোরভাবে বাম থেকে ডানে পরপর** বসে, কোনো ফাঁক থাকে না!\n\nকেন গুরুত্বপূর্ণ: কমপ্লিট ট্রিকে কোনো মেমোরি নষ্ট না করে সরাসরি **অ্যারেতে** রাখা যায় (হিপের ভিত্তি)।'
+          en: 'A **complete** binary tree is filled **row by row, left to right**, like seats in a cinema:\n\n1. every row is completely full, except maybe the last one;\n2. the last row is filled **from the left with no gaps**.\n\n> **Why it matters:** because there are no gaps, a complete tree fits perfectly into a plain **array** — that is exactly how a **heap** is stored.',
+          bn: '**কমপ্লিট (complete)** বাইনারি ট্রি ভরা হয় **সারি ধরে, বাম থেকে ডানে** — সিনেমা হলের সিটের মতো:\n\n১. শেষ সারি ছাড়া বাকি সব সারি পুরো ভরা;\n২. শেষ সারি **বাম থেকে, কোনো ফাঁক ছাড়া** ভরা।\n\n> **কেন গুরুত্বপূর্ণ:** কোনো ফাঁক নেই বলে কমপ্লিট ট্রি একটা সাধারণ **অ্যারেতে** নিখুঁতভাবে আঁটে — **হিপ** ঠিক এভাবেই রাখা হয়।'
         },
         line: 8,
         iteration: { i: 3, of: 5, label: { en: 'Complete Tree', bn: 'কমপ্লিট ট্রি' } },
@@ -595,10 +622,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Perfect Binary Tree', bn: 'পারফেক্ট বাইনারি ট্রি' },
+        title: {
+          en: 'Perfect binary tree',
+          bn: 'পারফেক্ট বাইনারি ট্রি'
+        },
         explanation: {
-          en: 'A **Perfect Binary Tree** is completely filled at every single level:\n- All internal nodes have **exactly 2 children**.\n- All leaf nodes appear at the **exact same depth**.\n\nA perfect tree of height $h$ contains exactly **$2^{h+1} - 1$** nodes. (e.g., $h=2 \\implies 2^3 - 1 = 7$ nodes).',
-          bn: '**পারফেক্ট বাইনারি ট্রি (Perfect Binary Tree)** প্রতিটি লেভেলে সম্পূর্ণভাবে পূর্ণ থাকে:\n- সমস্ত ইন্টারনাল নোডের **ঠিক ২টি সন্তান** থাকে।\n- সমস্ত লিফ নোড **একদম একই গভীরতায় (same depth)** থাকে।\n\n$h$ হাইটের পারফেক্ট ট্রিতে মোট নোড থাকে ঠিক **$2^{h+1} - 1$** টি (যেমন $h=2$ হলে $2^3 - 1 = 7$ টি নোড)।'
+          en: 'A **perfect** binary tree is completely full: every internal node has **2 children** and **all leaves are on the same bottom row**. It looks like a perfect triangle.\n\nCount the nodes row by row: 1, then 2, then 4, then 8 … (each row doubles). A perfect tree of height **h** therefore has **2ʰ⁺¹ − 1** nodes.\n\nExample: height 2 → 1 + 2 + 4 = **7** nodes (and 2³ − 1 = 7 ✓).',
+          bn: '**পারফেক্ট (perfect)** বাইনারি ট্রি পুরোপুরি ভরা: প্রতিটা ইন্টারনাল নোডের **2টা চাইল্ড**, আর **সব লিফ একই নিচের সারিতে**। দেখতে একদম নিখুঁত ত্রিভুজ।\n\nসারি ধরে নোড গোনো: 1, তারপর 2, তারপর 4, তারপর 8 … (প্রতি সারিতে দ্বিগুণ)। তাই **h** উচ্চতার পারফেক্ট ট্রিতে **2ʰ⁺¹ − 1**টা নোড।\n\nউদাহরণ: উচ্চতা 2 → 1 + 2 + 4 = **7**টা নোড (আর 2³ − 1 = 7 ✓)।'
         },
         line: 9,
         iteration: { i: 4, of: 5, label: { en: 'Perfect Tree', bn: 'পারফেক্ট ট্রি' } },
@@ -621,17 +651,20 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Skewed Binary Tree (Degenerate Case)', bn: 'স্কিউড বাইনারি ট্রি (ডিজেনারেট কেস)' },
+        title: {
+          en: 'Skewed tree: the bad case',
+          bn: 'স্কিউড ট্রি: খারাপ অবস্থা'
+        },
         explanation: {
-          en: 'A **Skewed Binary Tree** occurs when every internal node has only **one child**, causing the tree to lean entirely to one side:\n- **Left-Skewed**: Every node has only a left child.\n- **Right-Skewed**: Every node has only a right child.\n\nWorst-Case Disaster: Height becomes **$h = N - 1$**. Searching degrades from $O(\\log N)$ to **$O(N)$** linear time, behaving identically to a Linked List!',
-          bn: '**স্কিউড বাইনারি ট্রিতে (Skewed Binary Tree)** প্রতিটি নোডের কেবল **একটি সন্তান** থাকে, যার ফলে ট্রিটি একপাশে কাত হয়ে যায়:\n- **লেফট-স্কিউড**: প্রতিটি নোডের শুধু বাম সন্তান থাকে।\n- **রাইট-স্কিউড**: প্রতিটি নোডের শুধু ডান সন্তান থাকে।\n\nসবচেয়ে খারাপ অবস্থা: হাইট হয়ে যায় **$h = N - 1$**। সার্চিং $O(\\log N)$ থেকে নেমে **$O(N)$** লিনিয়ার টাইম হয়ে যায়, যা হুবহু একটি লিঙ্কড লিস্টের মতো কাজ করে!'
+          en: 'In a **skewed** tree every node has only **one child**, so the whole tree leans to one side — it is really just a **line** of nodes.\n\n- **Left-skewed**: every node has only a left child.\n- **Right-skewed**: every node has only a right child.\n\nWhy is this bad? A tree is fast because each step down skips a big part of it. A line skips nothing: with N nodes the height is **N − 1**, so searching can take **N** steps — as slow as a linked list.\n\n> **This is the problem** that self-balancing trees (AVL, Red-Black) were invented to solve.',
+          bn: '**স্কিউড (skewed)** ট্রিতে প্রতিটা নোডের শুধু **একটা চাইল্ড**, তাই পুরো ট্রি এক দিকে হেলে থাকে — আসলে এটা নোডের একটা **লাইন** মাত্র।\n\n- **লেফট-স্কিউড**: প্রতিটা নোডের শুধু বাম চাইল্ড।\n- **রাইট-স্কিউড**: প্রতিটা নোডের শুধু ডান চাইল্ড।\n\nএটা খারাপ কেন? ট্রি দ্রুত কারণ প্রতিটা ধাপে নিচে নামলে একটা বড় অংশ বাদ যায়। লাইনে কিছুই বাদ যায় না: N টা নোডে উচ্চতা **N − 1**, তাই খুঁজতে **N** ধাপ লাগতে পারে — লিংকড লিস্টের মতোই ধীর।\n\n> **এই সমস্যাটা** সমাধান করতেই নিজে-ব্যালান্স-হওয়া ট্রি (AVL, Red-Black) আবিষ্কার হয়েছে।'
         },
         line: 10,
         iteration: { i: 5, of: 5, label: { en: 'Skewed Tree', bn: 'স্কিউড ট্রি' } },
         state: { height: 3, nodes: 4, complexity: 'O(N) search' },
         scene: {
           kind: 'tree',
-          label: 'Right-Skewed Binary Tree: Height = N - 1 = 3 (Degenerates into Linked List)',
+          label: 'Right-Skewed Binary Tree: Height = N - 1 = 3 (just a line, like a linked list)',
           root: {
             v: 10,
             r: {
@@ -656,8 +689,8 @@ export const foundationTopics = [
     id: 'catalan-and-tree-math',
     name: { en: 'Catalan Numbers & Tree Math', bn: 'কাতালান সংখ্যা ও ট্রির গণিত' },
     description: {
-      en: 'Catalan counting formulas, all 5 shapes for N=3, height vs nodes proofs',
-      bn: 'কাতালান সূত্র, ৩ নোডের ৫টি গঠন, হাইট বনাম নোডের গাণিতিক প্রমাণ'
+      en: 'How many tree shapes exist, and how tall a tree can be',
+      bn: 'কয়টা ট্রির আকার হয়, আর একটা ট্রি কত লম্বা হতে পারে'
     },
     categoryKey: 'trees',
     subgroupKey: 'foundations',
@@ -841,10 +874,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'All 5 Distinct Shapes for N = 3 Nodes', bn: '৩টি নোডের জন্য ৫টি ভিন্ন গঠন' },
+        title: {
+          en: 'All 5 shapes with 3 nodes',
+          bn: '৩ নোডের সব ৫টা আকার'
+        },
         explanation: {
-          en: 'Here are the **exact 5 distinct tree shapes** guaranteed by $T(3) = 5$:\n1. **Straight Left Skewed**: Root → Left → Left\n2. **Zig-Zag Left-Right**: Root → Left → Right\n3. **Balanced Full Tree**: Root with both Left and Right children\n4. **Zig-Zag Right-Left**: Root → Right → Left\n5. **Straight Right Skewed**: Root → Right → Right\n\nEvery possible binary tree of 3 nodes is isomorphic to one of these 5!',
-          bn: 'এখানে $T(3) = 5$ সূত্রের প্রমাণ হিসেবে **হুবহু ৫টি ভিন্ন গঠন** প্রদর্শিত হলো:\n১. **সোজা লেফট স্কিউড**: রুট → বাম → বাম\n২. **জিগ-জ্যাগ লেফট-রাইট**: রুট → বাম → ডান\n৩. **ব্যালান্সড ট্রি**: রুটের বাম ও ডান দুই পাশেই নোড\n৪. **জিগ-জ্যাগ রাইট-লেফট**: রুট → ডান → বাম\n৫. **সোজা রাইট স্কিউড**: রুট → ডান → ডান\n\n৩টি নোড বিশিষ্ট পৃথিবীর যেকোনো বাইনারি ট্রি এই ৫টি গঠনের যেকোনো একটির হুবহু অনুরূপ!'
+          en: 'The formula said **5** shapes for 3 nodes. Here they all are — try to draw a sixth one, you will not find it:\n\n1. a straight line going **left, left**;\n2. go **left**, then **right** (a zig-zag);\n3. the **balanced** one — root with a left and a right child;\n4. go **right**, then **left** (the other zig-zag);\n5. a straight line going **right, right**.\n\n> We only care about the **shape** here, not which value sits where.',
+          bn: 'সূত্র বলেছিল ৩ নোডে **৫টা** আকার। এই হলো সবগুলো — ষষ্ঠটা আঁকার চেষ্টা করো, পাবে না:\n\n১. **বামে, বামে** যাওয়া একটা সোজা লাইন;\n২. **বামে**, তারপর **ডানে** (আঁকাবাঁকা);\n৩. **ব্যালান্সড**টা — রুটের একটা বাম আর একটা ডান চাইল্ড;\n৪. **ডানে**, তারপর **বামে** (অন্য আঁকাবাঁকা);\n৫. **ডানে, ডানে** যাওয়া একটা সোজা লাইন।\n\n> এখানে শুধু **আকার** গুরুত্বপূর্ণ, কোন মান কোথায় বসেছে তা নয়।'
         },
         line: 5,
         iteration: { i: 2, of: 5, label: { en: '5 Shapes', bn: '৫টি রূপ' } },
@@ -868,10 +904,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Labeled Nodes & Maximum Height Trees', bn: 'লেবেলযুক্ত নোড ও সর্বোচ্চ উচ্চতার ট্রি' },
+        title: {
+          en: 'Labeled trees and the tallest trees',
+          bn: 'লেবেলড ট্রি আর সবচেয়ে লম্বা ট্রি'
+        },
         explanation: {
-          en: '- **Labeled Nodes**: If the $N$ nodes have distinct values (e.g., keys A, B, C), each of the $T(N)$ structural shapes can be filled in $N!$ permutations:\n$$\\text{Total labeled trees} = T(N) \\times N!$$\nFor $N = 3$: $5 \\times 3! = 5 \\times 6 = \\mathbf{30\\text{ distinct labeled trees}}$.\n\n- **Maximum Height Trees ($h = N - 1$)**: The number of trees having maximum possible height is given by **$2^{N - 1}$**. For $N = 3$, $2^{3-1} = 4$ trees (shapes 1, 2, 4, 5).',
-          bn: '- **লেবেলযুক্ত নোড (Labeled Nodes)**: নোডগুলোতে যদি নাম বা মান থাকে (যেমন A, B, C), তবে প্রতিটি কাঠামোর ভেতর নোডগুলোকে $N!$ ভাবে সাজানো যায়:\n$$\\text{মোট লেবেলড ট্রি} = T(N) \\times N!$$\n$N = 3$ হলে: $5 \\times 3! = 5 \\times 6 = \\mathbf{30টি\\text{ পৃথক ট্রি}}$।\n\n- **সর্বোচ্চ উচ্চতার ট্রি ($h = N - 1$)**: $N$ নোডের জন্য সর্বোচ্চ উচ্চতা ($h = N-1$) বিশিষ্ট ট্রি সংখ্যা হলো **$2^{N - 1}$**। $N=3$ হলে $2^{3-1} = 4$ টি (আগের স্লাইডের ১, ২, ৪ ও ৫ নং গঠন)।'
+          en: '**Labeled trees.** Now give the 3 nodes names, A, B, C. Each of the 5 shapes can be filled in **3! = 6** ways (ABC, ACB, BAC, …). So:\n\n$$\\text{labeled trees} = T(N) \\times N! = 5 \\times 6 = \\mathbf{30}$$\n\n**Tallest trees.** How many of the 5 shapes are as tall as possible (a straight or zig-zag line, height N − 1)? Every node except the last can send its child **left or right** — 2 choices, N − 1 times — so **2ᴺ⁻¹** shapes. For N = 3: 2² = **4** (shapes 1, 2, 4 and 5; only the balanced one is shorter).',
+          bn: '**লেবেলড ট্রি।** এবার ৩টা নোডের নাম দাও A, B, C। ৫টা আকারের প্রতিটা **3! = 6** ভাবে ভরা যায় (ABC, ACB, BAC, …)। তাই:\n\n$$\\text{লেবেলড ট্রি} = T(N) \\times N! = 5 \\times 6 = \\mathbf{30}$$\n\n**সবচেয়ে লম্বা ট্রি।** ৫টা আকারের কয়টা যতটা সম্ভব লম্বা (সোজা বা আঁকাবাঁকা লাইন, উচ্চতা N − 1)? শেষটা ছাড়া প্রতিটা নোড চাইল্ডকে **বামে বা ডানে** পাঠাতে পারে — ২টা পছন্দ, N − 1 বার — তাই **2ᴺ⁻¹**টা আকার। N = 3 হলে 2² = **4**টা (আকার ১, ২, ৪ আর ৫; শুধু ব্যালান্সডটা খাটো)।'
         },
         line: 6,
         iteration: { i: 3, of: 5, label: { en: 'Permutations', bn: 'পারমিউটেশন' } },
@@ -890,10 +929,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Height vs Node Bounds & Proof', bn: 'হাইট বনাম নোড উপপাদ্যের প্রমাণ' },
+        title: {
+          en: 'Height ↔ number of nodes',
+          bn: 'উচ্চতা ↔ নোডের সংখ্যা'
+        },
         explanation: {
-          en: 'Rigorous formulas link tree height $h$ and node count $N$:\n\n1. **Given Height $h$ → Min & Max Nodes**:\n   - **Minimum Nodes**: $N_{min} = h + 1$ (occurs in a skewed tree).\n   - **Maximum Nodes**: $N_{max} = 2^{h + 1} - 1$ (occurs in a perfect tree).\n   - *Proof*: Level 0 has 1 node, Level 1 has 2, ..., Level $h$ has $2^h$. Summing Geometric Progression: $S = 1 + 2 + 4 + \\dots + 2^h = 1 \\cdot \\frac{2^{h+1}-1}{2-1} = \\mathbf{2^{h+1}-1}$.\n\n2. **Given $N$ Nodes → Min & Max Height**:\n   - **Maximum Height**: $h_{max} = N - 1$\n   - **Minimum Height**: $h_{min} = \\lfloor \\log_2 N \\rfloor$',
-          bn: 'ট্রির উচ্চতা $h$ এবং নোড সংখ্যা $N$-এর মধ্যে সম্পর্ক:\n\n১. **উচ্চতা $h$ জানা থাকলে → সর্বনিম্ন ও সর্বোচ্চ নোড**:\n   - **সর্বনিম্ন নোড**: $N_{min} = h + 1$ (স্কিউড ট্রির ক্ষেত্রে)।\n   - **সর্বোচ্চ নোড**: $N_{max} = 2^{h + 1} - 1$ (পারফেক্ট ট্রির ক্ষেত্রে)।\n   - *প্রমাণ*: লেভেল ০-এ ১টি, লেভেল ১-এ ২টি, ..., লেভেল $h$-এ $2^h$ টি নোড। গুণোত্তর ধারা যোগ করে পাই: $1 + 2 + 4 + \\dots + 2^h = \\mathbf{2^{h+1}-1}$।\n\n২. **$N$ নোড জানা থাকলে → সর্বনিম্ন ও সর্বোচ্চ উচ্চতা**:\n   - **সর্বোচ্চ উচ্চতা**: $h_{max} = N - 1$\n   - **সর্বনিম্ন উচ্চতা**: $h_{min} = \\lfloor \\log_2 N \\rfloor$।'
+          en: 'If you know the **height h**, how many nodes can the tree have?\n\n- **Fewest:** a straight line → **h + 1** nodes.\n- **Most:** a perfect triangle → 1 + 2 + 4 + … + 2ʰ = **2ʰ⁺¹ − 1** nodes.\n\nTurn it around — if you have **N nodes**, how tall can the tree be?\n\n- **Tallest:** a straight line → height **N − 1**.\n- **Shortest:** as full as possible → height **⌊log₂ N⌋** (about how many times you can halve N).\n\n> **Why it matters:** search time follows the height. A good tree stays near **log₂ N**; a bad one drifts toward **N**.',
+          bn: '**উচ্চতা h** জানলে ট্রিতে কয়টা নোড থাকতে পারে?\n\n- **সবচেয়ে কম:** একটা সোজা লাইন → **h + 1**টা নোড।\n- **সবচেয়ে বেশি:** একটা নিখুঁত ত্রিভুজ → 1 + 2 + 4 + … + 2ʰ = **2ʰ⁺¹ − 1**টা নোড।\n\nউল্টো করে — **N টা নোড** থাকলে ট্রি কত উঁচু হতে পারে?\n\n- **সবচেয়ে উঁচু:** সোজা লাইন → উচ্চতা **N − 1**।\n- **সবচেয়ে খাটো:** যতটা সম্ভব ভরা → উচ্চতা **⌊log₂ N⌋** (N-কে মোটামুটি কতবার অর্ধেক করা যায়)।\n\n> **কেন গুরুত্বপূর্ণ:** খোঁজার সময় উচ্চতার সঙ্গে চলে। ভালো ট্রি **log₂ N**-এর কাছে থাকে; খারাপটা **N**-এর দিকে চলে যায়।'
         },
         line: 8,
         iteration: { i: 4, of: 5, label: { en: 'GP Proof', bn: 'ধারার প্রমাণ' } },
@@ -916,10 +958,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'The Leaf Node Theorem: N0 = N2 + 1', bn: 'লিফ নোড উপপাদ্য: N0 = N2 + 1' },
+        title: {
+          en: 'Leaves = two-child nodes + 1',
+          bn: 'লিফ = দুই-চাইল্ডের নোড + 1'
+        },
         explanation: {
-          en: '### Universal Binary Tree Theorem:\nIn **any** binary tree whatsoever, the number of leaf nodes (degree 0, denoted $N_0$) is always **exactly one more** than the number of degree-2 nodes ($N_2$):\n$$\\mathbf{N_0 = N_2 + 1}$$\n\n*Proof*:\n- Total nodes $N = N_0 + N_1 + N_2$\n- Total edges $E = N - 1 = 0 \\cdot N_0 + 1 \\cdot N_1 + 2 \\cdot N_2$\n- Subtracting: $(N_0 + N_1 + N_2) - 1 = N_1 + 2N_2 \\implies \\mathbf{N_0 = N_2 + 1}$.\n\nAlso, for Strict Binary Trees, External nodes $E = I + 1$ (Leaf nodes = Internal nodes + 1).',
-          bn: '### সার্বজনীন বাইনারি ট্রি উপপাদ্য:\nযেকোনো বাইনারি ট্রিতে লিফ নোডের সংখ্যা ($N_0$) সর্বদা ২-ডিগ্রি সম্পন্ন নোডের সংখ্যার ($N_2$) চেয়ে **ঠিক ১ বেশি** হয়:\n$$\\mathbf{N_0 = N_2 + 1}$$\n\n*সহজ গাণিতিক প্রমাণ*:\n- মোট নোড: $N = N_0 + N_1 + N_2$\n- মোট এজ: $E = N - 1 = 0 \\cdot N_0 + 1 \\cdot N_1 + 2 \\cdot N_2$\n- মান বসিয়ে বিয়োগ করলে পাওয়া যায়: $(N_0 + N_1 + N_2) - 1 = N_1 + 2N_2 \\implies \\mathbf{N_0 = N_2 + 1}$।\n\nঅনুরূপভাবে, স্ট্রিক্ট ট্রিতে এক্সটারনাল নোড $E = I + 1$ (লিফ = ইন্টারনাল + ১)।'
+          en: 'A surprising rule that works for **every** binary tree:\n\n$$\\textbf{number of leaves} = \\textbf{number of nodes with 2 children} + 1$$\n\nCheck it on any picture: a perfect tree of 7 nodes has 3 nodes with two children and 4 leaves — 4 = 3 + 1 ✓.\n\n> **Why (for the curious):** count edges two ways. There are N − 1 edges (one above every node but the root). Also, each 1-child node gives 1 edge and each 2-child node gives 2. Setting the two counts equal leaves exactly: leaves = two-child nodes + 1.',
+          bn: 'একটা অবাক করা নিয়ম, যা **প্রতিটা** বাইনারি ট্রিতে খাটে:\n\n$$\\textbf{লিফের সংখ্যা} = \\textbf{২-চাইল্ডওয়ালা নোডের সংখ্যা} + 1$$\n\nযেকোনো ছবিতে মিলিয়ে দেখো: ৭ নোডের পারফেক্ট ট্রিতে ২-চাইল্ডওয়ালা নোড ৩টা আর লিফ ৪টা — 4 = 3 + 1 ✓।\n\n> **কেন (আগ্রহীদের জন্য):** এজ দুইভাবে গোনো। এজ আছে N − 1টা (রুট ছাড়া প্রতিটা নোডের ওপরে একটা)। আবার, প্রতিটা ১-চাইল্ডের নোড ১টা আর প্রতিটা ২-চাইল্ডের নোড ২টা এজ দেয়। দুটো গোনা সমান ধরলে ঠিক এটাই বাকি থাকে: লিফ = ২-চাইল্ডের নোড + 1।'
         },
         line: 10,
         iteration: { i: 5, of: 5, label: { en: 'Theorem', bn: 'উপপাদ্য' } },
@@ -948,8 +993,8 @@ export const foundationTopics = [
     id: 'tree-representations',
     name: { en: 'Tree Memory Representations', bn: 'ট্রির মেমোরি রিপ্রেজেন্টেশন' },
     description: {
-      en: 'Sequential array representation, index math, linked pointers and NULL pointer theorem',
-      bn: 'সিকোয়েনশিয়াল অ্যারে, ইনডেক্স সূত্র, লিঙ্কড পয়েন্টার এবং নাল পয়েন্টার উপপাদ্য'
+      en: 'Two ways to store a tree: an array, or linked nodes',
+      bn: 'ট্রি রাখার দুটো উপায়: অ্যারে, বা লিংকড নোড'
     },
     categoryKey: 'trees',
     subgroupKey: 'foundations',
@@ -1138,10 +1183,13 @@ export const foundationTopics = [
     },
     steps: [
       {
-        title: { en: 'Sequential Array Representation (1-Based)', bn: 'সিকোয়েনশিয়াল অ্যারে রিপ্রেজেন্টেশন (১-ভিত্তিক)' },
+        title: {
+          en: 'Storing a tree in an array',
+          bn: 'অ্যারেতে ট্রি রাখা'
+        },
         explanation: {
-          en: 'Nodes are stored in an array indexed from 1 level-by-level.\nFor any node at index **$i$**:\n- **Left Child Index**: $2 \\times i$\n- **Right Child Index**: $2 \\times i + 1$\n- **Parent Index**: $\\lfloor i / 2 \\rfloor$\n\nExample: Root `A` is at index 1. Its left child `B` is at $2 \\times 1 = 2$, and right child `C` is at $2 \\times 1 + 1 = 3$. Click any node or array slot to inspect live index formulas!',
-          bn: 'নোডগুলোকে লেভেল অনুযায়ী উপর থেকে নিচে ১ থেকে শুরু হওয়া অ্যারেতে রাখা হয়।\nযেকোনো **$i$** তম ইনডেক্সের জন্য:\n- **বাম সন্তানের ইনডেক্স**: $2 \\times i$\n- **ডান সন্তানের ইনডেক্স**: $2 \\times i + 1$\n- **প্যারেন্ট ইনডেক্স**: $\\lfloor i / 2 \\rfloor$\n\nউদাহরণ: রুট `A` আছে ইনডেক্স ১-এ। তার বাম সন্তান `B` যাবে $2 \\times 1 = 2$-এ এবং ডান সন্তান `C` যাবে $2 \\times 1 + 1 = 3$-এ। যেকোনো নোডে ক্লিক করে সরাসরি সূত্রগুলো দেখুন!'
+          en: 'The simplest way to store a tree is a plain **array**: write the nodes **row by row, left to right**, starting at index **1**.\n\nThen you never need arrows — simple math finds the family of the node at index **i**:\n- **left child** at **2 × i**\n- **right child** at **2 × i + 1**\n- **parent** at **i ÷ 2** (round down)\n\nExample: root `A` is at 1, so its left child `B` is at 2 and its right child `C` is at 3. For `B` (index 2): children at 4 and 5.\n\n> **Try it:** click any node or array slot — the formulas update for that position.',
+          bn: 'ট্রি রাখার সবচেয়ে সহজ উপায় একটা সাধারণ **অ্যারে**: নোডগুলো **সারি ধরে, বাম থেকে ডানে** লেখো, ইনডেক্স **1** থেকে শুরু করে।\n\nতখন কোনো তীর লাগে না — সহজ অঙ্কেই ইনডেক্স **i**-এর নোডের পরিবার পাওয়া যায়:\n- **বাম চাইল্ড** **2 × i**-এ\n- **ডান চাইল্ড** **2 × i + 1**-এ\n- **প্যারেন্ট** **i ÷ 2**-এ (নিচের দিকে রাউন্ড)\n\nউদাহরণ: রুট `A` আছে 1-এ, তাই বাম চাইল্ড `B` 2-এ আর ডান চাইল্ড `C` 3-এ। `B`-এর (ইনডেক্স 2) চাইল্ড 4 আর 5-এ।\n\n> **চেষ্টা করো:** যেকোনো নোড বা অ্যারের ঘরে ক্লিক করো — সেই জায়গার সূত্রগুলো দেখাবে।'
         },
         line: 2,
         iteration: { i: 1, of: 4, label: { en: 'Array Indexing', bn: 'অ্যারে ইনডেক্স' } },
@@ -1154,10 +1202,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Array Suitability: Complete Trees vs Skewed Waste', bn: 'অ্যারের উপযোগিতা: কমপ্লিট বনাম স্কিউড অপচয়' },
+        title: {
+          en: 'When the array wastes space',
+          bn: 'কখন অ্যারে জায়গা নষ্ট করে'
+        },
         explanation: {
-          en: '- **Complete Binary Trees**: Pack the array with **zero wasted cells**. It is extremely cache-friendly and compact.\n- **Skewed Binary Trees**: Cause massive memory wastage! A right-skewed tree of height $h = 4$ needs an array of size $2^{h+1} - 1 = 31$, but holds only 5 nodes! $84\\%$ of the array is empty garbage holes ($O(2^h)$ space).',
-          bn: '- **কমপ্লিট বাইনারি ট্রি**: অ্যারের কোনো ঘর নষ্ট না করে শতভাগ পূরণ করে। এটি ক্যাশ-ফ্রেন্ডলি এবং নিরেট।\n- **স্কিউড বাইনারি ট্রি**: ভয়াবহ মেমোরি অপচয় ঘটায়! $h = 4$ উচ্চতার একটি স্কিউড ট্রির জন্য অ্যারে লাগে $2^{h+1} - 1 = 31$ আকারের, অথচ নোড থাকে মাত্র ৫টি! অ্যারের ৮৪% জায়গা ফাঁকা অপচয় হয় ($O(2^h)$ মেমোরি নষ্ট)।'
+          en: 'The array trick works beautifully when the tree is **complete** (no gaps): every cell is used.\n\nBut a **skewed** tree leaves huge holes. Each missing child still gets its own empty cell. A right-leaning line of just **5 nodes** (height 4) needs **31 cells** — 26 of them stay empty (about 84% wasted).\n\n> **Rule of thumb:** use an array for complete trees (like heaps); use linked nodes for everything else.',
+          bn: 'ট্রি **কমপ্লিট** (কোনো ফাঁক নেই) হলে অ্যারের কৌশল দারুণ কাজ করে: প্রতিটা ঘর ব্যবহার হয়।\n\nকিন্তু **স্কিউড** ট্রি বিশাল ফাঁক রেখে যায়। প্রতিটা না-থাকা চাইল্ডের জন্যও একটা খালি ঘর লাগে। মাত্র **৫টা নোডের** ডানে-হেলানো লাইনের (উচ্চতা 4) জন্য **৩১টা ঘর** লাগে — তার ২৬টাই খালি (প্রায় ৮৪% অপচয়)।\n\n> **মোটা দাগের নিয়ম:** কমপ্লিট ট্রির (যেমন হিপ) জন্য অ্যারে; বাকি সবকিছুর জন্য লিংকড নোড।'
         },
         line: 4,
         iteration: { i: 2, of: 4, label: { en: 'Storage Waste', bn: 'মেমোরি অপচয়' } },
@@ -1170,10 +1221,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'Linked Pointer Representation (3-Field Heap Struct)', bn: 'লিঙ্কড পয়েন্টার রিপ্রেজেন্টেশন (৩-ফিল্ড হিপ স্ট্রাক্ট)' },
+        title: {
+          en: 'Storing a tree with linked nodes',
+          bn: 'লিংকড নোড দিয়ে ট্রি রাখা'
+        },
         explanation: {
-          en: 'In dynamic memory (heap), each node is represented as an independent structure containing:\n1. `*lchild`: 64-bit pointer storing the RAM address of left child\n2. `data`: The payload value\n3. `*rchild`: 64-bit pointer storing the RAM address of right child\n\nUnlike arrays, nodes can live anywhere in RAM and are connected dynamically by pointers without wasting a single byte on gaps.',
-          bn: 'ডাইনামিক মেমোরিতে (হিপ) প্রতিটি নোড একটি স্বাধীন স্ট্রাকচার হিসেবে সংরক্ষিত থাকে যাতে থাকে:\n১. `*lchild`: বাম সন্তানের মেমোরি অ্যাড্রেস ধারণকারী পয়েন্টার\n২. `data`: নোডের আসল মান বা ডেটা\n৩. `*rchild`: ডান সন্তানের মেমোরি অ্যাড্রেস ধারণকারী পয়েন্টার\n\nঅ্যারের মতো নোডগুলোকে পাশাপাশি থাকতে হয় না; মেমোরির যেকোনো স্থান থেকে পয়েন্টার দিয়ে এগুলো চমৎকারভাবে সংযুক্ত থাকে।'
+          en: 'The usual way: every node is a small box in memory with **three parts**:\n\n1. `left` (or `lchild`) — the **address** of the left child, or `null` if there is none;\n2. `data` — the value itself;\n3. `right` (or `rchild`) — the address of the right child, or `null`.\n\nAn address is just "where in memory the other box lives". Following it is like following an arrow in the picture.\n\n> **Why it is popular:** boxes can live anywhere in memory and nothing is wasted on gaps — a skewed tree costs no more than a balanced one.',
+          bn: 'সাধারণ উপায়: প্রতিটা নোড মেমরিতে একটা ছোট বক্স, যার **তিনটা অংশ**:\n\n১. `left` (বা `lchild`) — বাম চাইল্ডের **ঠিকানা**, না থাকলে `null`;\n২. `data` — মানটা নিজে;\n৩. `right` (বা `rchild`) — ডান চাইল্ডের ঠিকানা, বা `null`।\n\nঠিকানা মানে শুধু "অন্য বক্সটা মেমরির কোথায় আছে"। ঠিকানা ধরে যাওয়া মানে ছবির তীর ধরে যাওয়া।\n\n> **কেন জনপ্রিয়:** বক্সগুলো মেমরির যেকোনো জায়গায় থাকতে পারে আর ফাঁকে কিছু নষ্ট হয় না — স্কিউড ট্রিতেও ব্যালান্সডের চেয়ে বেশি খরচ নেই।'
         },
         line: 7,
         iteration: { i: 3, of: 4, label: { en: 'Linked Node', bn: 'লিঙ্কড নোড' } },
@@ -1186,10 +1240,13 @@ export const foundationTopics = [
         }
       },
       {
-        title: { en: 'The NULL Pointer Theorem: Exactly N + 1 NULLs', bn: 'নাল পয়েন্টার উপপাদ্য: ঠিক N + 1 টি NULL' },
+        title: {
+          en: 'N nodes always have N + 1 null links',
+          bn: 'N নোডে সবসময় N + 1টা null লিংক'
+        },
         explanation: {
-          en: '### Famous NULL Pointer Theorem:\nIn any binary tree with **$N$ nodes**, there are exactly **$N + 1$ NULL pointers**!\n\n*Rigorous Mathematical Proof*:\n- Each node has 2 child pointers $\\implies$ Total pointer slots $= 2N$.\n- Every node except the root has exactly 1 incoming pointer from its parent $\\implies$ Assigned pointers $= N - 1$.\n- Remaining unassigned (NULL) pointers:\n$$\\text{NULL Pointers} = 2N - (N - 1) = \\mathbf{N + 1}$$\n\nNotice the 6 explicit red grounded terminals below: for $N = 5$, exactly $5 + 1 = 6$ NULL pointers exist!',
-          bn: '### বিখ্যাত নাল পয়েন্টার উপপাদ্য:\nযেকোনো **$N$ টি নোড** বিশিষ্ট বাইনারি ট্রিতে ঠিক **$N + 1$ টি NULL পয়েন্টার** থাকে!\n\n*সহজ ও নির্ভুল গাণিতিক প্রমাণ*:\n- প্রতিটি নোডের ২টি চাইল্ড পয়েন্টার স্লট থাকে $\\implies$ মোট পয়েন্টার $= 2N$ টি।\n- রুট বাদে অন্য সব নোডে প্যারেন্ট থেকে ১টি পয়েন্টার এসে যুক্ত হয় $\\implies$ ব্যবহৃত পয়েন্টার $= N - 1$ টি।\n- অবশিষ্ট অব্যবহৃত (NULL) পয়েন্টারের সংখ্যা:\n$$\\text{NULL পয়েন্টার} = 2N - (N - 1) = \\mathbf{N + 1}$$\n\nনিচের ৬টি লাল গ্রাউন্ডেড টার্মিনাল লক্ষ্য করুন: $N = 5$ হলে ঠিক $5 + 1 = 6$ টি NULL পয়েন্টার বিদ্যমান!'
+          en: 'Every node has **2 child links** (left and right), so N nodes have **2N** links in total.\n\nHow many of them actually point at a node? Every node except the root has exactly one parent pointing at it → **N − 1** links are used.\n\nThe rest point to nothing (`null`):\n\n$$2N - (N - 1) = \\mathbf{N + 1}$$\n\nIn the picture: **5** nodes and exactly **6** red "null" ends. ✓\n\n> **Why it matters:** this is why a traversal makes exactly 2N + 1 calls — N calls on real nodes plus N + 1 calls that hit `null` and return.',
+          bn: 'প্রতিটা নোডের **২টা চাইল্ড লিংক** (বাম আর ডান), তাই N টা নোডে মোট **2N**টা লিংক।\n\nএর কয়টা আসলে কোনো নোডকে নির্দেশ করে? রুট ছাড়া প্রতিটা নোডের দিকে ঠিক একজন প্যারেন্ট নির্দেশ করে → **N − 1**টা লিংক ব্যবহার হয়।\n\nবাকিগুলো কিছুই নির্দেশ করে না (`null`):\n\n$$2N - (N - 1) = \\mathbf{N + 1}$$\n\nছবিতে: **৫**টা নোড আর ঠিক **৬**টা লাল "null" মাথা। ✓\n\n> **কেন গুরুত্বপূর্ণ:** এই কারণেই একটা ট্রাভার্সাল ঠিক 2N + 1 বার কল করে — আসল নোডে N বার, আর `null`-এ পৌঁছে ফিরে আসা N + 1 বার।'
         },
         line: 13,
         iteration: { i: 4, of: 4, label: { en: 'NULL Proof', bn: 'নাল প্রমাণ' } },

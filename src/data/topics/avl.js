@@ -12,8 +12,8 @@ export const avlTopics = [
     id: 'avl-fundamentals',
     name: { en: 'AVL Balance Factor & Height Bound', bn: 'AVL ব্যালান্স ফ্যাক্টর ও উচ্চতার সীমা' },
     description: {
-      en: 'Height-balanced property BF ∈ {-1, 0, +1} and the strict 1.44 log2 N mathematical proof',
-      bn: 'ব্যালান্স ফ্যাক্টর BF ∈ {-১, ০, +১} এবং ১.৪৪ log2 N উচ্চতা সীমার গাণিতিক প্রমাণ'
+      en: 'A BST that never leans too much: the balance factor',
+      bn: 'যে BST কখনো বেশি হেলে না: ব্যালান্স ফ্যাক্টর'
     },
     categoryKey: 'trees',
     subgroupKey: 'avl',
@@ -202,10 +202,13 @@ export const avlTopics = [
     },
     steps: [
       {
-        title: { en: 'What is an AVL Tree? Height-Balanced Invariant', bn: 'AVL ট্রি কী? হাইট-ব্যালান্সড শর্ত' },
+        title: {
+          en: 'What is an AVL tree?',
+          bn: 'AVL ট্রি কী?'
+        },
         explanation: {
-          en: 'Invented in 1962 by Georgy Adelson-Velsky and Evgenii Landis, the **AVL Tree** was the first self-balancing BST in history.\n\n### The AVL Invariant:\nFor **every single node** in the tree, the difference between the height of its left subtree and the height of its right subtree (the **Balance Factor**) must be strictly **-1, 0, or +1**:\n$$\\mathbf{BF(N) = \\text{Height}(N.\\text{left}) - \\text{Height}(N.\\text{right}) \\in \\{-1, 0, +1\\}}$$\n\nIf $BF(N)$ becomes $+2$ or $-2$, the node is **imbalanced** and triggers immediate programmatic rebalancing (rotations)!',
-          bn: '১৯৬২ সালে বিজ্ঞানী জর্জ আডেলসন-ভেলস্কি এবং ইভজেনি ল্যান্ডিস কর্তৃক উদ্ভাবিত **AVL ট্রি** ছিল কম্পিউটার বিজ্ঞানের ইতিহাসের প্রথম সেলফ-ব্যালান্সিং বাইনারি সার্চ ট্রি।\n\n### AVL-এর মূল শর্ত:\nট্রির **প্রতিটি নোডের** ক্ষেত্রে তার বাম সাব-ট্রির উচ্চতা এবং ডান সাব-ট্রির উচ্চতার ব্যবধান (যাকে **ব্যালান্স ফ্যাক্টর** বলা হয়) অবশ্যই **-১, ০, অথবা +১** হতে হবে:\n$$\\mathbf{BF(N) = \\text{Height}(N.\\text{বাম}) - \\text{Height}(N.\\text{ডান}) \\in \\{-1, 0, +1\\}}$$\n\nযদি কখনো কোনো নোডের $BF(N)$ এর মান $+2$ বা $-2$ হয়, তবে নোডটি ভারসাম্য হারায় এবং সাথে সাথে রোটেশনের মাধ্যমে তা ব্যালান্স করা হয়!',
+          en: 'An **AVL tree** is a BST that **refuses to lean**. After every insert or delete it checks itself and fixes any side that has grown too tall. (Named after its inventors, Adelson-Velsky and Landis, 1962.)\n\nThe rule, at **every** node: the left side and the right side may differ in height by **at most 1**.\n\nThat difference is called the **balance factor**:\n\n**balance factor = height(left) − height(right)**\n\nIt must be **−1, 0 or +1**. If it ever becomes **+2 or −2**, the tree **rotates** to fix it.',
+          bn: '**AVL ট্রি** হলো এমন BST যা **হেলে পড়তে দেয় না**। প্রতিটা ইনসার্ট বা ডিলিটের পর এটা নিজেকে যাচাই করে আর বেশি লম্বা হয়ে যাওয়া দিকটা ঠিক করে। (আবিষ্কারকদের নামে: অ্যাডেলসন-ভেলস্কি আর ল্যান্ডিস, ১৯৬২।)\n\nনিয়ম, **প্রতিটা** নোডে: বাম আর ডান দিকের উচ্চতার পার্থক্য **বড়জোর 1**।\n\nএই পার্থক্যকে বলে **ব্যালান্স ফ্যাক্টর (balance factor)**:\n\n**ব্যালান্স ফ্যাক্টর = height(left) − height(right)**\n\nএটা হতে হবে **−1, 0 বা +1**। কখনো **+2 বা −2** হলে ট্রি ঠিক করতে **রোটেট** করে।'
         },
         line: 0,
         iteration: { i: 1, of: 4, label: { en: 'AVL Invariant', bn: 'AVL শর্ত' } },
@@ -229,10 +232,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'Calculating the Balance Factor BF = HL - HR', bn: 'ব্যালান্স ফ্যাক্টর নির্ণয়: BF = HL - HR' },
+        title: {
+          en: 'Computing the balance factor',
+          bn: 'ব্যালান্স ফ্যাক্টর হিসাব'
+        },
         explanation: {
-          en: 'Let\'s compute the Balance Factor for root `50`:\n- Height of Left Subtree (`30`): $H_L = 2$.\n- Height of Right Subtree (`70`): $H_R = 2$.\n- $BF(50) = H_L - H_R = 2 - 2 = \\mathbf{0}$.\n\nIf a child has no subtree (NULL), its height is `0`:\n- Node `80` has no children: $H_L = 0, H_R = 0 \\implies BF(80) = \\mathbf{0}$.',
-          bn: 'রুট `50`-এর ব্যালান্স ফ্যাক্টর হিসাব করি:\n- বাম সাব-ট্রির উচ্চতা (`30`): $H_L = 2$।\n- ডান সাব-ট্রির উচ্চতা (`70`): $H_R = 2$।\n- $BF(50) = H_L - H_R = 2 - 2 = \\mathbf{0}$।\n\nযদি কোনো নোডের সন্তান না থাকে (NULL), তবে তার উচ্চতা ধরা হয় `0`:\n- নোড `80`-এর কোনো সন্তান নেই: $H_L = 0, H_R = 0 \\implies BF(80) = \\mathbf{0}$।',
+          en: 'For the root `50`:\n- the left side (rooted at `30`) has height **2**;\n- the right side (rooted at `70`) has height **2**;\n- balance factor = 2 − 2 = **0** → perfectly balanced.\n\nFor a leaf like `80`: both sides are empty (height 0), so its balance factor is 0 − 0 = **0**.\n\n> **Note:** this lesson counts the height of an empty side as **0** and of a single node as **1** — that is the usual way in AVL code.',
+          bn: 'রুট `50`-এর জন্য:\n- বাম দিকের (`30`-এ শুরু) উচ্চতা **2**;\n- ডান দিকের (`70`-এ শুরু) উচ্চতা **2**;\n- ব্যালান্স ফ্যাক্টর = 2 − 2 = **0** → একদম ব্যালান্সড।\n\n`80`-এর মতো লিফের জন্য: দুই দিকই খালি (উচ্চতা 0), তাই ব্যালান্স ফ্যাক্টর 0 − 0 = **0**।\n\n> **নোট:** এই লেসনে খালি দিকের উচ্চতা **0** আর একটা নোডের উচ্চতা **1** ধরা হয় — AVL কোডে সাধারণত এভাবেই হয়।'
         },
         line: 8,
         iteration: { i: 2, of: 4, label: { en: 'Calculate BF', bn: 'BF হিসাব' } },
@@ -255,10 +261,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'Mathematical Proof: Maximum Height ≤ 1.44 log2 N', bn: 'গাণিতিক প্রমাণ: সর্বোচ্চ উচ্চতা ≤ ১.৪৪ log2 N' },
+        title: {
+          en: 'How tall can an AVL tree get?',
+          bn: 'AVL ট্রি কত লম্বা হতে পারে?'
+        },
         explanation: {
-          en: '### How tall can an AVL tree grow in the worst case?\nTo build the tallest (most sparse) AVL tree of height $h$, one subtree must have height $h-1$ and the other must have height $h-2$:\n$$N(h) = N(h - 1) + N(h - 2) + 1$$\n\nNotice this is identical to the **Fibonacci recurrence**! Solving this recurrence yields:\n$$N(h) \\approx \\frac{1}{\\sqrt{5}} \\left(\\frac{1 + \\sqrt{5}}{2}\\right)^{h+3} - 1$$\nTaking logarithms on both sides gives the celebrated theorem:\n$$\\mathbf{h < 1.4404 \\log_2(N + 2) - 0.328 \\approx 1.44 \\log_2 N}$$\nAn AVL tree is at most only **$44\\%$ taller** than a theoretically perfect tree!',
-          bn: '### সবচেয়ে খারাপ পরিস্থিতিতেও AVL ট্রি কতটা উঁচু হতে পারে?\nউচ্চতা $h$-এর সবচেয়ে পাতলা (ন্যূনতম নোড বিশিষ্ট) AVL ট্রি বানাতে হলে, একটি সাব-ট্রির উচ্চতা হতে হবে $h-1$ এবং অন্যটির $h-2$:\n$$N(h) = N(h - 1) + N(h - 2) + 1$$\n\nলক্ষ করো, এটি অবিকল **ফিবোনাচ্চি ধারার (Fibonacci)** মতো! এই সমীকরণটি সমাধান করে পাওয়া যায়:\n$$N(h) \\approx \\frac{1}{\\sqrt{5}} \\left(\\frac{1 + \\sqrt{5}}{2}\\right)^{h+3} - 1$$\nউভয় পাশে লগারিদম নিলে কালজয়ী উপপাদ্যটি প্রমাণিত হয়:\n$$\\mathbf{h < 1.4404 \\log_2(N + 2) - 0.328 \\approx 1.44 \\log_2 N}$$\nঅর্থাৎ, একটি AVL ট্রি নিখুঁত পারফেক্ট ট্রির চেয়ে সর্বোচ্চ মাত্র **৪৪% বেশি উঁচু** হতে পারে!',
+          en: 'Short answer: **never much taller than a perfect tree** — at most about **1.44 × log₂ N**.\n\nFor 1,000,000 values a perfect tree has height about 20, and an AVL tree at most about **29**. A plain BST could be **999,999** tall!\n\n> **For pros — where 1.44 comes from:** the thinnest AVL tree of height h has one side of height h − 1 and the other h − 2, so its node count grows like the Fibonacci numbers: N(h) = N(h − 1) + N(h − 2) + 1. Fibonacci numbers grow by a factor of about 1.618 per step, which gives h < 1.44 · log₂(N + 2).',
+          bn: 'ছোট উত্তর: **পারফেক্ট ট্রির চেয়ে কখনো খুব বেশি লম্বা নয়** — বড়জোর প্রায় **1.44 × log₂ N**।\n\n১০,০০,০০০টা মানে পারফেক্ট ট্রির উচ্চতা প্রায় ২০, আর AVL ট্রির বড়জোর প্রায় **২৯**। সাধারণ BST হতে পারত **৯,৯৯,৯৯৯** লম্বা!\n\n> **অভিজ্ঞদের জন্য — 1.44 কোথা থেকে:** h উচ্চতার সবচেয়ে পাতলা AVL ট্রির এক দিকের উচ্চতা h − 1 আর অন্য দিকের h − 2, তাই নোডের সংখ্যা ফিবোনাচির মতো বাড়ে: N(h) = N(h − 1) + N(h − 2) + 1। ফিবোনাচি প্রতি ধাপে প্রায় 1.618 গুণ বাড়ে, তা থেকে আসে h < 1.44 · log₂(N + 2)।'
         },
         line: 12,
         iteration: { i: 3, of: 4, label: { en: 'Height Proof', bn: 'উচ্চতার প্রমাণ' } },
@@ -277,14 +286,17 @@ export const avlTopics = [
             { label: 'h = 5', v: 20, color: 'var(--green)' },
             { label: 'h = 6', v: 33, color: 'var(--green)' }
           ],
-          note: 'Because nodes grow exponentially according to the Golden Ratio (1.618), height is strictly logarithmic.'
+          note: 'Because nodes grow exponentially by about 1.618× per level, height is strictly logarithmic.'
         }
       },
       {
-        title: { en: 'When Imbalance Occurs: |BF| > 1 Triggers Rebalance', bn: 'ভারসাম্যহীনতা: |BF| > ১ হলে রোটেশন' },
+        title: {
+          en: 'When it breaks: four shapes',
+          bn: 'কখন ভাঙে: চারটা আকার'
+        },
         explanation: {
-          en: 'When a new key is inserted, heights change backtracking up the tree. If any node gets **$BF = +2$ (Left Heavy)** or **$BF = -2$ (Right Heavy)**, the AVL invariant is broken!\n\nThis imbalance falls into one of **4 distinct patterns**:\n1. **LL Imbalance**: New key inserted into Left subtree of Left child.\n2. **RR Imbalance**: New key inserted into Right subtree of Right child.\n3. **LR Imbalance**: New key inserted into Right subtree of Left child.\n4. **RL Imbalance**: New key inserted into Left subtree of Right child.\n\nEach case is cured by a specific **Single or Double Rotation**.',
-          bn: 'যখন একটি নতুন সংখ্যা ইনসার্ট করা হয়, তখন নিচ থেকে উপরে উচ্চতা পরিবর্তিত হয়। যদি কোনো নোডের **$BF = +2$ (বামে ভারী)** বা **$BF = -2$ (ডানে ভারী)** হয়ে যায়, তবে AVL শর্ত ভঙ্গ হয়!\n\nএই ভারসাম্যহীনতাটি **৪টি সুনির্দিষ্ট প্যাটার্নের** যেকোনো একটিতে পড়ে:\n১. **LL ইমব্যালান্স**: বাম সন্তানের বাম সাব-ট্রিতে মান ঢোকানো হয়েছে।\n২. **RR ইমব্যালান্স**: ডান সন্তানের ডান সাব-ট্রিতে মান ঢোকানো হয়েছে।\n৩. **LR ইমব্যালান্স**: বাম সন্তানের ডান সাব-ট্রিতে মান ঢোকানো হয়েছে।\n৪. **RL ইমব্যালান্স**: ডান সন্তানের বাম সাব-ট্রিতে মান ঢোকানো হয়েছে।\n\nপ্রতিটি কেস নির্দিষ্ট **সিঙ্গেল অথবা ডাবল রোটেশনের** মাধ্যমে সমাধান করা হয়।',
+          en: 'After an insert, heights change on the way back up. If some node reaches balance factor **+2** (left too tall) or **−2** (right too tall), we name the problem by **where the new value went** below that node:\n\n- **LL** — went **L**eft, then **L**eft again (a straight line leaning left);\n- **RR** — went **R**ight, then **R**ight again;\n- **LR** — went **L**eft, then **R**ight (a zig-zag);\n- **RL** — went **R**ight, then **L**eft (the other zig-zag).\n\nStraight lines (LL, RR) need **one** rotation; zig-zags (LR, RL) need **two**. The next lesson shows each one.',
+          bn: 'ইনসার্টের পর ফেরার পথে উচ্চতা বদলায়। কোনো নোডের ব্যালান্স ফ্যাক্টর **+2** (বাম বেশি লম্বা) বা **−2** (ডান বেশি লম্বা) হলে, সমস্যার নাম দিই সেই নোডের নিচে **নতুন মানটা কোথায় গেছে** তা দেখে:\n\n- **LL** — **বামে**, তারপর আবার **বামে** (বামে হেলানো সোজা লাইন);\n- **RR** — **ডানে**, তারপর আবার **ডানে**;\n- **LR** — **বামে**, তারপর **ডানে** (আঁকাবাঁকা);\n- **RL** — **ডানে**, তারপর **বামে** (অন্য আঁকাবাঁকা)।\n\nসোজা লাইনে (LL, RR) লাগে **একটা** রোটেশন; আঁকাবাঁকায় (LR, RL) লাগে **দুটো**। পরের লেসনে প্রতিটা দেখানো হয়েছে।'
         },
         line: 9,
         iteration: { i: 4, of: 4, label: { en: '4 Patterns', bn: '৪টি প্যাটার্ন' } },
@@ -309,8 +321,8 @@ export const avlTopics = [
     id: 'avl-rotations',
     name: { en: 'The 4 AVL Rotations (LL, RR, LR, RL)', bn: '৪টি AVL রোটেশন (LL, RR, LR, RL)' },
     description: {
-      en: 'Single Right (LL), Single Left (RR), Double Left-Right (LR), and Double Right-Left (RL) rotations',
-      bn: 'সিঙ্গেল রাইট (LL), সিঙ্গেল লেফট (RR), ডাবল লেফট-রাইট (LR) এবং ডাবল রাইট-লেফট (RL) রোটেশন'
+      en: 'The 4 rotations that fix an unbalanced AVL tree',
+      bn: 'অসমান AVL ট্রি ঠিক করার ৪টা রোটেশন'
     },
     categoryKey: 'trees',
     subgroupKey: 'avl',
@@ -549,10 +561,13 @@ export const avlTopics = [
     },
     steps: [
       {
-        title: { en: 'LL Imbalance & Single Right Rotation', bn: 'LL ইমব্যালান্স ও সিঙ্গেল রাইট রোটেশন' },
+        title: {
+          en: 'LL: one right rotation',
+          bn: 'LL: একটা ডান রোটেশন'
+        },
         explanation: {
-          en: '### LL Case (Left of Left):\nInserting `10` under `20` under `30` makes node `30` have $BF = +2$, and node `20` have $BF = +1$.\n\n### The Right Rotation (`rightRotate`):\n- Grab node `20` (middle node) and pull it UP to become the new root!\n- Old root `30` swings DOWN to become the **right child** of `20`.\n- Any middle subtree $T_2$ of 20 would become the left child of 30.\n\nResult: `[20]` is root with left child `10` and right child `30`. Tree height decreases from 2 to 1!',
-          bn: '### LL কেস (বামের বামে):\n`30`-এর বামে `20`, তার বামে `10` ইনসার্ট করায় নোড `30`-এর $BF = +2$ এবং `20`-এর $BF = +1$ হয়ে যায়।\n\n### রাইট রোটেশন (`rightRotate`):\n- মাঝের নোড `20`-কে টেনে উপরে তুলে নতুন রুট বানাও!\n- পুরনো রুট `30` নিচে নেমে `20`-এর **ডান সন্তান** হয়ে যায়।\n- ২০-এর যদি কোনো ডান সাব-ট্রি $T_2$ থাকত, তা ৩০-এর বাম সন্তান হতো।\n\nফলাফল: রুট হলো `20`, বামে `10`, ডানে `30`। ট্রির উচ্চতা ২ থেকে কমে ১-এ নেমে এল!',
+          en: 'Insert `30`, `20`, `10`. Everything goes left: `30` now has balance factor **+2** — a straight line leaning left (**LL**).\n\n**Right rotation** — imagine lifting the middle node by hand:\n- `20` (the middle one) moves **up** and becomes the new top;\n- `30` swings **down to the right** of `20`;\n- if `20` had a right child, it moves over to become `30`\'s left child (it is between 20 and 30, so the order stays correct).\n\nResult: `20` on top, `10` on its left, `30` on its right. The height dropped from 2 to 1.',
+          bn: '`30`, `20`, `10` ইনসার্ট করো। সব বামে যায়: এখন `30`-এর ব্যালান্স ফ্যাক্টর **+2** — বামে হেলানো একটা সোজা লাইন (**LL**)।\n\n**ডান রোটেশন** — মাঝের নোডটা হাত দিয়ে তুলে ধরার কথা ভাবো:\n- `20` (মাঝেরটা) **ওপরে** ওঠে আর নতুন মাথা হয়;\n- `30` `20`-এর **ডানে নিচে** নেমে আসে;\n- `20`-এর ডান চাইল্ড থাকলে সেটা `30`-এর বাম চাইল্ড হয়ে যায় (সেটা 20 আর 30-এর মাঝে, তাই ক্রম ঠিক থাকে)।\n\nফল: ওপরে `20`, বামে `10`, ডানে `30`। উচ্চতা 2 থেকে কমে 1।'
         },
         line: 1,
         iteration: { i: 1, of: 4, label: { en: 'LL Rotation', bn: 'LL রোটেশন' } },
@@ -580,10 +595,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'RR Imbalance & Single Left Rotation', bn: 'RR ইমব্যালান্স ও সিঙ্গেল লেফট রোটেশন' },
+        title: {
+          en: 'RR: one left rotation',
+          bn: 'RR: একটা বাম রোটেশন'
+        },
         explanation: {
-          en: '### RR Case (Right of Right):\nInserting sorted values `[10, 20, 30]` makes node `10` have $BF = -2$ and node `20` have $BF = -1$.\n\n### The Left Rotation (`leftRotate`):\n- Middle node `20` pivots UP to become the new root.\n- Old root `10` rotates DOWN to become the **left child** of `20`.\n- Node `30` remains the right child of `20`.\n\nResult: `[20]` is root with left child `10` and right child `30`. Symmetry at its finest!',
-          bn: '### RR কেস (ডানের ডানে):\nসাজানো সংখ্যা `[10, 20, 30]` ঢুকানোর ফলে নোড `10`-এর $BF = -2$ এবং নোড `20`-এর $BF = -1$ হয়ে যায়।\n\n### লেফট রোটেশন (`leftRotate`):\n- মাঝের নোড `20` উপরে উঠে নতুন রুট হয়।\n- পুরনো রুট `10` নিচে নেমে `20`-এর **বাম সন্তান** হয়ে যায়।\n- নোড `30` অপরিবর্তিতভাবে ২০-এর ডান সন্তান থাকে।\n\nফলাফল: রুট `20`, বামে `10`, ডানে `30`। শতভাগ প্রতিসম সমাধান!',
+          en: 'The mirror case. Insert `10`, `20`, `30`: everything goes right, and `10` gets balance factor **−2** (**RR**).\n\n**Left rotation**:\n- the middle node `20` moves **up**;\n- `10` swings **down to the left** of `20`;\n- `30` stays as `20`\'s right child.\n\nResult: `20` on top with `10` and `30` — the same balanced shape as before.',
+          bn: 'আয়নার উল্টো কেস। `10`, `20`, `30` ইনসার্ট করো: সব ডানে যায়, আর `10`-এর ব্যালান্স ফ্যাক্টর হয় **−2** (**RR**)।\n\n**বাম রোটেশন**:\n- মাঝের নোড `20` **ওপরে** ওঠে;\n- `10` `20`-এর **বামে নিচে** নেমে আসে;\n- `30` `20`-এর ডান চাইল্ডই থাকে।\n\nফল: ওপরে `20`, সঙ্গে `10` আর `30` — আগের মতোই ব্যালান্সড আকার।'
         },
         line: 9,
         iteration: { i: 2, of: 4, label: { en: 'RR Rotation', bn: 'RR রোটেশন' } },
@@ -611,10 +629,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'LR Imbalance & Double Left-Right Rotation', bn: 'LR ইমব্যালান্স ও ডাবল লেফট-রাইট রোটেশন' },
+        title: {
+          en: 'LR: a zig-zag needs two rotations',
+          bn: 'LR: আঁকাবাঁকায় দুটো রোটেশন'
+        },
         explanation: {
-          en: '### LR Case (Zig-Zag: Right child of Left child):\nInsert keys `[30, 10, 20]`. Root `30` has $BF = +2$, but left child `10` has $BF = -1$!\nA single rotation cannot fix this because of the zig-zag bend.\n\n### Solution: Two Rotations:\n1. **Step 1 (Left Rotate on Left Child 10)**: Converts the zig-zag into a straight LL line `[30 -> 20 -> 10]`!\n2. **Step 2 (Right Rotate on Root 30)**: Normal right rotation brings `20` to root with children `10` and `30`!\n\n`root.left = leftRotate(root.left); return rightRotate(root);`',
-          bn: '### LR কেস (জিগ-জ্যাগ: বাম সন্তানের ডান সন্তান):\n`[30, 10, 20]` ইনসার্ট করা হলো। রুট `30`-এর $BF = +2$, কিন্তু তার বাম সন্তান `10`-এর $BF = -1$!\nজিগ-জ্যাগ বাঁকা থাকার কারণে কোনো একটি সিঙ্গেল রোটেশন একে সোজা করতে পারে না।\n\n### সমাধান: জোড়া রোটেশন (Double Rotation):\n১. **ধাপ ১ (বাম সন্তানের ওপর লেফট রোটেশন)**: বাঁকা অংশটিকে সোজা করে সাধারণ LL লাইনে রূপান্তর করে `[30 -> 20 -> 10]`!\n২. **ধাপ ২ (রুটের ওপর রাইট রোটেশন)**: সাধারণ রাইট রোটেশন `20`-কে রুটে তুলে আনে যার সন্তান হয় `10` ও `30`!\n\nকোড: `root.left = leftRotate(root.left); return rightRotate(root);`',
+          en: 'Insert `30`, `10`, `20`. `30` is +2 (left too tall), but the path bends: left to `10`, then **right** to `20`. One rotation would just bend it the other way.\n\nSo do it in two moves:\n1. **Left-rotate at `10`** → `20` moves up above `10`. Now it is a straight line `30 → 20 → 10` (an LL case).\n2. **Right-rotate at `30`** → `20` goes to the top, with `10` and `30` below.\n\nIn code: `node.left = rotateLeft(node.left); return rotateRight(node);`',
+          bn: '`30`, `10`, `20` ইনসার্ট করো। `30` হলো +2 (বাম বেশি লম্বা), কিন্তু পথ বেঁকে গেছে: বামে `10`, তারপর **ডানে** `20`। একটা রোটেশন শুধু উল্টো দিকে বাঁকিয়ে দেবে।\n\nতাই দুই চালে করো:\n১. **`10`-এ বাম রোটেট** → `20` `10`-এর ওপরে ওঠে। এখন এটা একটা সোজা লাইন `30 → 20 → 10` (LL কেস)।\n২. **`30`-এ ডান রোটেট** → `20` ওপরে যায়, নিচে `10` আর `30`।\n\nকোডে: `node.left = rotateLeft(node.left); return rotateRight(node);`'
         },
         line: 4,
         iteration: { i: 3, of: 4, label: { en: 'LR Double', bn: 'LR ডাবল' } },
@@ -642,10 +663,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'RL Imbalance & Double Right-Left Rotation', bn: 'RL ইমব্যালান্স ও ডাবল রাইট-লেফট রোটেশন' },
+        title: {
+          en: 'RL: the mirror zig-zag',
+          bn: 'RL: আয়নার আঁকাবাঁকা'
+        },
         explanation: {
-          en: '### RL Case (Zig-Zag: Left child of Right child):\nInsert keys `[10, 30, 20]`. Root `10` has $BF = -2$, and right child `30` has $BF = +1$!\n\n### Solution: Two Rotations:\n1. **Step 1 (Right Rotate on Right Child 30)**: Converts zig-zag into a straight RR line `[10 -> 20 -> 30]`.\n2. **Step 2 (Left Rotate on Root 10)**: Normal left rotation brings `20` to root with children `10` and `30`!\n\n`root.right = rightRotate(root.right); return leftRotate(root);`',
-          bn: '### RL কেস (জিগ-জ্যাগ: ডান সন্তানের বাম সন্তান):\n`[10, 30, 20]` ইনসার্ট করা হলো। রুট `10`-এর $BF = -2$, এবং ডান সন্তান `30`-এর $BF = +1$!\n\n### সমাধান: জোড়া রোটেশন (Double Rotation):\n১. **ধাপ ১ (ডান সন্তানের ওপর রাইট রোটেশন)**: জিগ-জ্যাগ অংশটিকে সোজা RR লাইনে রূপান্তর করে `[10 -> 20 -> 30]`।\n২. **ধাপ ২ (রুটের ওপর লেফট রোটেশন)**: সাধারণ লেফট রোটেশন `20`-কে রুটে নিয়ে আসে যার সন্তান হয় `10` ও `30`!\n\nকোড: `root.right = rightRotate(root.right); return leftRotate(root);`',
+          en: 'Insert `10`, `30`, `20`. `10` is −2 (right too tall) and the path bends right, then **left**.\n\n1. **Right-rotate at `30`** → straight line `10 → 20 → 30` (an RR case).\n2. **Left-rotate at `10`** → `20` on top, `10` and `30` below.\n\nIn code: `node.right = rotateRight(node.right); return rotateLeft(node);`\n\n> **Try it yourself** in the Tree Playground → "AVL insert", with the "Zig-zag" example.',
+          bn: '`10`, `30`, `20` ইনসার্ট করো। `10` হলো −2 (ডান বেশি লম্বা) আর পথটা ডানে, তারপর **বামে** বেঁকেছে।\n\n১. **`30`-এ ডান রোটেট** → সোজা লাইন `10 → 20 → 30` (RR কেস)।\n২. **`10`-এ বাম রোটেট** → ওপরে `20`, নিচে `10` আর `30`।\n\nকোডে: `node.right = rotateRight(node.right); return rotateLeft(node);`\n\n> **নিজে চেষ্টা করো:** ট্রি প্লেগ্রাউন্ড → "AVL ইনসার্ট", "আঁকাবাঁকা" উদাহরণ দিয়ে।'
         },
         line: 12,
         iteration: { i: 4, of: 4, label: { en: 'RL Double', bn: 'RL ডাবল' } },
@@ -679,8 +703,8 @@ export const avlTopics = [
     id: 'avl-operations',
     name: { en: 'AVL Insertion & Deletion Mechanics', bn: 'AVL ইনসার্ট ও ডিলিট মেকানিক্স' },
     description: {
-      en: 'Recursive insertion with single-rotation balance guarantee and deletion with rebalancing cascade',
-      bn: 'ইনসার্টে একক রোটেশন গ্যারান্টি এবং ডিলিশনে ক্যাসকেডিং রোটেশন মেকানিক্স'
+      en: 'Inserting and deleting in an AVL tree, step by step',
+      bn: 'AVL ট্রিতে ইনসার্ট আর ডিলিট, ধাপে ধাপে'
     },
     categoryKey: 'trees',
     subgroupKey: 'avl',
@@ -909,10 +933,13 @@ export const avlTopics = [
     },
     steps: [
       {
-        title: { en: 'Step 1: Standard BST Insertion Downward', bn: 'ধাপ ১: সাধারণ BST ইনসার্ট' },
+        title: {
+          en: 'Step 1: insert like a normal BST',
+          bn: 'ধাপ ১: সাধারণ BST-র মতো ইনসার্ট'
+        },
         explanation: {
-          en: 'AVL insertion begins exactly like normal BST insertion:\n1. Recursively search down the tree to locate the open leaf spot.\n2. In this example, we insert key **`25`** into a tree with root `30`.\n3. $25 < 30 \\implies$ go left to `20`.\n4. $25 > 20 \\implies$ attach `25` as right child of `20`!',
-          bn: 'AVL ইনসার্ট সাধারণ BST ইনসার্টের মতোই শুরু হয়:\n১. রিকারসিভভাবে নিচে নেমে সঠিক ফাঁকা লিফ অবস্থান খুঁজে বের করো।\n২. এই উদাহরণে আমরা রুট `30` বিশিষ্ট ট্রিতে **`25`** ইনসার্ট করছি।\n৩. $25 < 30 \\implies$ বামে নেমে ২০-এ যাও।\n৪. $25 > 20 \\implies$ ২০-এর ডান সন্তান হিসেবে `25` যুক্ত করো!',
+          en: 'An AVL insert starts exactly like a BST insert: walk down and put the new value in the empty spot.\n\nInsert **25** into the tree with root `30`:\n- 25 < 30 → go left to `20`;\n- 25 > 20 → `25` becomes the right child of `20`.',
+          bn: 'AVL ইনসার্ট ঠিক BST ইনসার্টের মতো শুরু হয়: নিচে নামো আর খালি জায়গায় নতুন মান বসাও।\n\nরুট `30`-ওয়ালা ট্রিতে **25** ইনসার্ট করো:\n- 25 < 30 → বামে `20`-এ;\n- 25 > 20 → `25` হয় `20`-এর ডান চাইল্ড।'
         },
         line: 2,
         iteration: { i: 1, of: 4, label: { en: 'Insert 25', bn: 'ইনসার্ট ২৫' } },
@@ -935,10 +962,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'Step 2: Backtracking & Updating Heights', bn: 'ধাপ ২: ব্যাকট্র্যাকিং ও উচ্চতা আপডেট' },
+        title: {
+          en: 'Step 2: walk back up and check',
+          bn: 'ধাপ ২: ফেরার পথে যাচাই'
+        },
         explanation: {
-          en: 'Now execution unwinds **back up the recursive call stack**:\n1. Update height of `25` $\\implies 1$.\n2. Update height of `20` $\\implies 1 + \\max(1, 1) = 2$. $BF(20) = 1 - 1 = 0$ (Balanced).\n3. Update height of `30` $\\implies 1 + \\max(2, 1) = 3$. $BF(30) = 2 - 1 = +1$ (Balanced).\n\nIf all ancestor BFs remain $\\in \\{-1, 0, +1\\}$, no rotation is needed and insertion finishes!',
-          bn: 'এবার রিকারসিভ কল স্ট্যাক বরাবর **নিচ থেকে উপরে ফিরে আসা** শুরু হয়:\n১. নোড ২৫-এর উচ্চতা আপডেট $\\implies 1$।\n২. নোড ২০-এর উচ্চতা আপডেট $\\implies 1 + \\max(1, 1) = 2$। $BF(20) = 1 - 1 = 0$ (ব্যালান্সড)।\n৩. রুট ৩০-এর উচ্চতা আপডেট $\\implies 1 + \\max(2, 1) = 3$। $BF(30) = 2 - 1 = +1$ (ব্যালান্সড)।\n\nযদি সব পূর্বপুরুষের BF $\\in \\{-1, 0, +1\\}$ থাকে, তবে কোনো রোটেশন ছাড়াই ইনসার্ট সমাপ্ত হয়!',
+          en: 'Now go back **up** the path you came down (the recursion returns), and at each node update its height and check its balance factor:\n\n1. `25`: a new leaf → height 1.\n2. `20`: height = 1 + max(1, 1) = 2; balance factor = 1 − 1 = **0** ✓.\n3. `30`: height = 1 + max(2, 1) = 3; balance factor = 2 − 1 = **+1** ✓.\n\nEvery balance factor is −1, 0 or +1, so **no rotation** is needed. Done.',
+          bn: 'এবার যে পথে নেমেছিলে সেই পথে **ওপরে** ফেরো (রিকার্শন ফেরত আসে), আর প্রতিটা নোডে উচ্চতা আপডেট করে ব্যালান্স ফ্যাক্টর দেখো:\n\n১. `25`: নতুন লিফ → উচ্চতা 1।\n২. `20`: উচ্চতা = 1 + max(1, 1) = 2; ব্যালান্স ফ্যাক্টর = 1 − 1 = **0** ✓।\n৩. `30`: উচ্চতা = 1 + max(2, 1) = 3; ব্যালান্স ফ্যাক্টর = 2 − 1 = **+1** ✓।\n\nপ্রতিটা ব্যালান্স ফ্যাক্টর −1, 0 বা +1, তাই **কোনো রোটেশন** লাগে না। শেষ।'
         },
         line: 6,
         iteration: { i: 2, of: 4, label: { en: 'Update Heights', bn: 'উচ্চতা আপডেট' } },
@@ -961,10 +991,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'Step 3: Detecting Imbalance and Rotating', bn: 'ধাপ ৩: ভারসাম্যহীনতা শনাক্ত ও রোটেশন' },
+        title: {
+          en: 'Step 3: an imbalance → rotate',
+          bn: 'ধাপ ৩: অসমান → রোটেট'
+        },
         explanation: {
-          en: 'Now suppose we insert **`5`**:\n- Backtracking to `20`: Left child `10` grows, making $BF(20) = +2$!\n- Key `5 < 10` $\\implies$ this is an **LL Imbalance** at node `20`.\n- Code triggers: `return rightRotate(20)`.\n\n### Single Rotation Guarantee:\n**Theorem**: In an AVL tree, insertion requires **at most ONE single or double rotation** to restore balance across the ENTIRE tree! Once that rotation is done, no higher ancestor will ever be imbalanced.',
-          bn: 'এখন ধরো আমরা নতুন মান **`5`** ইনসার্ট করলাম:\n- ২০-এ ফিরে এলে দেখা গেল তার বাম দিক বড় হওয়ায় $BF(20) = +2$ হয়ে গেছে!\n- নতুন মান $5 < 10$ $\\implies$ এটি নোড ২০-এর ক্ষেত্রে একটি **LL ইমব্যালান্স**।\n- কোড অবিলম্বে এক্সিকিউট করে: `return rightRotate(20)`।\n\n### একক রোটেশন গ্যারান্টি:\n**উপপাদ্য**: একটি AVL ট্রিতে ইনসার্ট করার পর পুরো ট্রির ভারসাম্য ফেরাতে **সর্বোচ্চ ঠিক একটি সিঙ্গেল বা ডাবল রোটেশনই** যথেষ্ট! ওই একটি রোটেশন শেষ হলেই ওপরের আর কোনো নোড কখনোই ভারসাম্য হারায় না।',
+          en: 'Now insert **5**. It goes left of `10`, under `20`.\n\nWalking back up, `20` gets balance factor **+2**, and 5 went left, then left again → **LL** case → `rotateRight(20)`.\n\nGood news: for an **insert**, one fix (one single or one double rotation) at the **lowest** unbalanced node is always enough. After it, that part of the tree is exactly as tall as before, so nothing higher can be unbalanced.',
+          bn: 'এবার **5** ইনসার্ট করো। এটা `20`-এর নিচে `10`-এর বামে যায়।\n\nফেরার পথে `20`-এর ব্যালান্স ফ্যাক্টর হয় **+2**, আর 5 গেছে বামে, তারপর আবার বামে → **LL** কেস → `rotateRight(20)`।\n\nসুখবর: **ইনসার্টে** **সবচেয়ে নিচের** অসমান নোডে একবার ঠিক করাই (একটা সিঙ্গেল বা একটা ডাবল রোটেশন) সবসময় যথেষ্ট। এরপর ট্রির ওই অংশ আগের মতোই লম্বা, তাই ওপরের কিছু অসমান হতে পারে না।'
         },
         line: 8,
         iteration: { i: 3, of: 4, label: { en: 'Rebalance', bn: 'রিব্যালান্স' } },
@@ -991,10 +1024,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'AVL Deletion: The Cascading Rebalance', bn: 'AVL ডিলিট: ক্যাসকেডিং রিব্যালান্স' },
+        title: {
+          en: 'Deleting can need more rotations',
+          bn: 'ডিলিটে বেশি রোটেশন লাগতে পারে'
+        },
         explanation: {
-          en: 'While insertion requires at most 1 rotation, **deletion can decrease tree height**, which may cause an imbalance at the parent, which after rotation may decrease height further and cause an imbalance at the grandparent!\n\nTherefore, AVL deletion rebalancing can **cascade up to $O(\\log N)$ times** all the way to the root node.\n\nEven with cascades, total deletion time remains strictly bounded by **$O(\\log N)$**.',
-          bn: 'ইনসার্টে সর্বোচ্চ ১টি রোটেশন লাগলেও, **ডিলিট করার ফলে সাব-ট্রির উচ্চতা কমে যেতে পারে**। এর ফলে প্যারেন্ট নোড ভারসাম্যহীন হতে পারে, যা রোটেশনের পর গ্র্যান্ডপ্যারেন্টকেও ভারসাম্যহীন করতে পারে!\n\nকাজেই AVL ডিলিশনে রুট পর্যন্ত সর্বোচ্চ **$O(\\log N)$ বার ক্যাসকেড রোটেশন** ঘটতে পারে।\n\nক্যাসকেড ঘটলেও মোট ডিলিশন টাইম কঠোরভাবে **$O(\\log N)$** লোগারিদমিক সীমার মধ্যেই থাকে।',
+          en: 'Delete is less lucky. Removing a node can make a side **shorter**. A rotation fixes that node, but it may make the whole part shorter again — and then the parent above can become unbalanced, and so on up to the root.\n\nSo a delete may need **several** rotations — at most one per level, so at most about **log N** of them.\n\nEven then, a delete stays fast: **O(log N)** in total.',
+          bn: 'ডিলিটের ভাগ্য অত ভালো নয়। একটা নোড সরালে একটা দিক **খাটো** হয়ে যেতে পারে। রোটেশন সেই নোডটা ঠিক করে, কিন্তু পুরো অংশটা আবার খাটো করে দিতে পারে — তখন ওপরের প্যারেন্ট অসমান হতে পারে, এভাবে রুট পর্যন্ত।\n\nতাই একটা ডিলিটে **কয়েকটা** রোটেশন লাগতে পারে — প্রতি লেভেলে বড়জোর একটা, মানে বড়জোর প্রায় **log N**টা।\n\nতবুও ডিলিট দ্রুতই থাকে: মোট **O(log N)**।'
         },
         line: 14,
         iteration: { i: 4, of: 4, label: { en: 'Deletion Cascade', bn: 'ডিলিট ক্যাসকেড' } },
@@ -1017,8 +1053,8 @@ export const avlTopics = [
     id: 'red-black-trees',
     name: { en: 'Red-Black Tree Invariants & 2-3-4 Equivalence', bn: 'রেড-ব্ল্যাক ট্রি শর্ত ও ২-৩-৪ সমতুল্যতা' },
     description: {
-      en: 'The 5 Red-Black invariants, Black-Height bound, and structural isomorphism to 2-3-4 trees',
-      bn: '৫টি রেড-ব্ল্যাক শর্ত, ব্ল্যাক-হাইট সীমা এবং ২-৩-৪ ট্রির সাথে কাঠামোগত সমতুল্যতা'
+      en: 'Balancing with red and black colours, and where it is used',
+      bn: 'লাল আর কালো রং দিয়ে ব্যালান্স, আর কোথায় ব্যবহার হয়'
     },
     categoryKey: 'trees',
     subgroupKey: 'avl',
@@ -1207,10 +1243,13 @@ export const avlTopics = [
     },
     steps: [
       {
-        title: { en: 'The 5 Red-Black Tree Invariants', bn: 'রেড-ব্ল্যাক ট্রির ৫টি অলঙ্ঘনীয় শর্ত' },
+        title: {
+          en: 'Red-Black tree: 5 simple rules',
+          bn: 'রেড-ব্ল্যাক ট্রি: ৫টা সহজ নিয়ম'
+        },
         explanation: {
-          en: 'A **Red-Black Tree** is a binary search tree where each node carries an extra bit of color (**RED** or **BLACK**) satisfying 5 invariants:\n\n1. **Every node is either RED or BLACK**.\n2. **The Root is always BLACK**.\n3. **Every Leaf (NIL sentinel) is BLACK**.\n4. **If a node is RED, both of its children must be BLACK** (No two consecutive RED nodes on any path!).\n5. **Equal Black-Height**: For every node, all paths to descendant leaves contain the **exact same number of BLACK nodes**.',
-          bn: '**রেড-ব্ল্যাক ট্রি (Red-Black Tree)** হলো এমন একটি বাইনারি সার্চ ট্রি যার প্রতিটি নোডে একটি অতিরিক্ত রঙের বিট থাকে (**RED** বা **BLACK**) যা ৫টি কঠোর শর্ত পূরণ করে:\n\n১. **প্রতিটি নোড হয় RED নয়তো BLACK**।\n২. **রুট নোডটি সর্বদা BLACK হবে**।\n৩. **সমস্ত লিফ (NIL sentinel) নোড BLACK হবে**।\n৪. **যদি কোনো নোড RED হয়, তবে তার উভয় সন্তানই BLACK হবে** (কোনো পথেই পরপর দুটি RED নোড থাকতে পারবে না!)।\n৫. **সমান ব্ল্যাক-হাইট**: যেকোনো নোড থেকে তার নিচের যেকোনো লিফে যাওয়ার পথে **সমান সংখ্যক BLACK নোড** থাকতে হবে।',
+          en: 'A **Red-Black tree** is another self-balancing BST. Instead of heights, every node gets a **colour**, red or black, and the tree keeps 5 rules:\n\n1. every node is **red or black**;\n2. the **root is black**;\n3. the empty spots at the bottom (called **NIL**) count as **black**;\n4. a red node **cannot have a red child** (no two reds in a row);\n5. every path from a node down to the bottom has the **same number of black nodes**.\n\nWhenever an insert or delete breaks a rule, the tree **recolours** some nodes and does a few **rotations** to fix it.',
+          bn: '**রেড-ব্ল্যাক ট্রি** আরেকটা নিজে-ব্যালান্স-হওয়া BST। উচ্চতার বদলে প্রতিটা নোড একটা **রং** পায়, লাল বা কালো, আর ট্রি ৫টা নিয়ম মানে:\n\n১. প্রতিটা নোড **লাল বা কালো**;\n২. **রুট কালো**;\n৩. নিচের খালি জায়গাগুলো (নাম **NIL**) **কালো** ধরা হয়;\n৪. লাল নোডের **লাল চাইল্ড থাকতে পারবে না** (পরপর দুটো লাল নয়);\n৫. একটা নোড থেকে নিচ পর্যন্ত প্রতিটা পথে **কালো নোডের সংখ্যা সমান**।\n\nকোনো ইনসার্ট বা ডিলিট নিয়ম ভাঙলে ট্রি কিছু নোডের **রং বদলায়** আর কয়েকটা **রোটেশন** করে ঠিক করে।'
         },
         line: 0,
         iteration: { i: 1, of: 4, label: { en: '5 Invariants', bn: '৫টি শর্ত' } },
@@ -1228,14 +1267,17 @@ export const avlTopics = [
             { label: 'Black Nodes (Root & Leaves)', color: 'var(--cyan)' },
             { label: 'Red Nodes', color: 'var(--red)' }
           ],
-          note: 'Notice Black-Height from root to any leaf is exactly 2 (Root 30 + Leaf). Invariant 5 satisfied!'
+          note: 'Notice Black-Height from root to any leaf is exactly 2 (Root 30 + Leaf). Rule 5 holds!'
         }
       },
       {
-        title: { en: 'Height Bound Theorem: Height ≤ 2 log2(N + 1)', bn: 'উচ্চতার উপপাদ্য: উচ্চতা ≤ ২ log2(N + ১)' },
+        title: {
+          en: 'Why the rules keep it short',
+          bn: 'নিয়মগুলো কেন একে খাটো রাখে'
+        },
         explanation: {
-          en: 'Why do these 5 invariants prevent the tree from becoming skewed?\n- Because **no two RED nodes can be consecutive**, at most half of the nodes on any path can be red.\n- Because **every path has the same number of BLACK nodes ($bh$)**, the shortest path has length $bh$ and the longest path has length at most $2 \\cdot bh$.\n\n> **Theorem**: The maximum height of a Red-Black tree with $N$ nodes is strictly bounded by:\n$$\\mathbf{h \\le 2 \\log_2(N + 1)}$$\nGuaranteed $O(\\log N)$ worst-case time without exception!',
-          bn: 'এই ৫টি শর্ত কেন ট্রিকে স্কিউড হতে দেয় না?\n- কারণ **কোনো পথেই পরপর দুটি RED থাকতে পারে না**, তাই যেকোনো পথের সর্বোচ্চ অর্ধেক নোড লাল হতে পারে।\n- কারণ **প্রতিটি পথের ব্ল্যাক নোডের সংখ্যা সমান ($bh$)**, তাই ক্ষুদ্রতম পথটির দৈর্ঘ্য $bh$ এবং দীর্ঘতম পথটির দৈর্ঘ্য সর্বোচ্চ $2 \\cdot bh$।\n\n> **বিখ্যাত উপপাদ্য**: $N$ নোডের রেড-ব্ল্যাক ট্রির সর্বোচ্চ উচ্চতা সর্বদা সীমাবদ্ধ থাকে:\n$$\\mathbf{h \\le 2 \\log_2(N + 1)}$$\nকোনো ব্যতিক্রম ছাড়াই নিশ্চিত $O(\\log N)$ সময়!',
+          en: 'Look at rules 4 and 5 together:\n\n- every path has the **same number of black** nodes (say b);\n- reds can never be next to each other, so a path can have **at most one red between blacks**.\n\nSo the shortest possible path is all black (b nodes) and the longest alternates red-black (about 2b). **No path is more than twice as long as another.**\n\nThat keeps the height at most **2 × log₂(N + 1)** — always **O(log N)**.',
+          bn: 'নিয়ম ৪ আর ৫ একসাথে দেখো:\n\n- প্রতিটা পথে **কালো নোড সমান** (ধরো b টা);\n- লাল কখনো পাশাপাশি থাকতে পারে না, তাই একটা পথে **দুই কালোর মাঝে বড়জোর একটা লাল**।\n\nতাই সবচেয়ে ছোট পথ সব কালো (b টা নোড), আর সবচেয়ে লম্বা পথ লাল-কালো পালাক্রমে (প্রায় 2b)। **কোনো পথ অন্যটার দ্বিগুণের বেশি লম্বা নয়।**\n\nএতে উচ্চতা থাকে বড়জোর **2 × log₂(N + 1)** — সবসময় **O(log N)**।'
         },
         line: 6,
         iteration: { i: 2, of: 4, label: { en: 'Height Bound', bn: 'উচ্চতার সীমা' } },
@@ -1253,10 +1295,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'Isomorphism: Red-Black Equivalence to 2-3-4 Trees', bn: 'আইসোমরফিজম: ২-৩-৪ ট্রির সাথে সমতুল্যতা' },
+        title: {
+          en: 'Red-Black trees are 2-3-4 trees in disguise',
+          bn: 'রেড-ব্ল্যাক ট্রি আসলে ছদ্মবেশী ২-৩-৪ ট্রি'
+        },
         explanation: {
-          en: 'Here is the most profound theoretical insight in tree architecture:\n\n> **Every Red-Black Tree is structurally isometric to a 2-3-4 Multiway Tree!**\n\n- If a BLACK node has **one RED child**, they merge horizontally to represent a **3-node** (2 keys, 3 children).\n- If a BLACK node has **two RED children**, they merge horizontally to represent a **4-node** (3 keys, 4 children).\n- Black nodes alone represent **2-nodes** (1 key, 2 children).\n\nRed-Black rotations and color flips are simply the binary implementation of 2-3-4 node splits!',
-          bn: 'ট্রি আর্কিটেকচারের সবচেয়ে গভীর তাত্ত্বিক সত্যটি হলো:\n\n> **প্রতিটি রেড-ব্ল্যাক ট্রি কাঠামোগতভাবে একটি ২-৩-৪ মাল্টিওয়ে ট্রির হুবহু সমতুল্য (Isometric)!**\n\n- একটি BLACK নোডের সাথে **একটি RED সন্তান** থাকলে তারা পাশাপাশি মিলে একটি **৩-নোড** তৈরি করে (২টি কি, ৩টি সন্তান)।\n- একটি BLACK নোডের সাথে **দুটি RED সন্তান** থাকলে তারা মিলে একটি **৪-নোড** তৈরি করে (৩টি কি, ৪টি সন্তান)।\n- কেবল BLACK নোডটি নির্দেশ করে সাধারণ **২-নোড** (১টি কি, ২টি সন্তান)।\n\nরেড-ব্ল্যাক ট্রির কালার ফ্লিপ এবং রোটেশন মূলত ২-৩-৪ ট্রির নোড স্প্লিটের বাইনারি রূপ!',
+          en: 'A helpful way to picture it: **glue every red node to its black parent**. Each glued group becomes one wide node:\n\n- a black node alone → a node with **1 key**;\n- black + one red child → a node with **2 keys**;\n- black + two red children → a node with **3 keys**.\n\nWhat you get is a **2-3-4 tree** (a multiway tree, see the next chapter) — and all its leaves are at the same depth. Red-Black recolouring and rotations are just that tree\'s node splits, done with binary nodes.',
+          bn: 'ছবি করে বোঝার একটা ভালো উপায়: **প্রতিটা লাল নোডকে তার কালো প্যারেন্টের সঙ্গে আঠা দিয়ে জুড়ে দাও**। প্রতিটা জোড়া দল একটা চওড়া নোড হয়ে যায়:\n\n- একা একটা কালো নোড → **১টা কী**-ওয়ালা নোড;\n- কালো + একটা লাল চাইল্ড → **২টা কী**-ওয়ালা নোড;\n- কালো + দুটো লাল চাইল্ড → **৩টা কী**-ওয়ালা নোড।\n\nযা পাওয়া যায় তা একটা **২-৩-৪ ট্রি** (মাল্টিওয়ে ট্রি, পরের অধ্যায়ে) — আর এর সব লিফ একই গভীরতায়। রেড-ব্ল্যাকের রং বদল আর রোটেশন আসলে সেই ট্রির নোড ভাগ করা, বাইনারি নোড দিয়ে করা।'
         },
         line: 8,
         iteration: { i: 3, of: 4, label: { en: 'Isomorphism', bn: 'সমতুল্যতা' } },
@@ -1276,10 +1321,13 @@ export const avlTopics = [
         }
       },
       {
-        title: { en: 'Real-World Production Uses of Red-Black Trees', bn: 'বাস্তব জগতে রেড-ব্ল্যাক ট্রির প্রয়োগ' },
+        title: {
+          en: 'AVL or Red-Black? Where they are used',
+          bn: 'AVL না রেড-ব্ল্যাক? কোথায় ব্যবহার হয়'
+        },
         explanation: {
-          en: 'Why is Red-Black tree preferred over AVL tree in standard libraries?\n- **AVL Trees** are more rigidly balanced (faster for pure lookup / read-heavy tasks).\n- **Red-Black Trees** require fewer rotations during frequent insertions and deletions, making them faster for dynamic write-heavy workloads.\n\n### Where Red-Black Trees Run the World:\n1. **C++ STL**: `std::map`, `std::set`, `std::multimap`\n2. **Java Collections**: `java.util.TreeMap`, `java.util.TreeSet`\n3. **Linux Kernel**: Completely Fair Scheduler (CFS) prioritizes running processes using a Red-Black tree!\n4. **epoll / Virtual Memory**: Linux kernel tracks memory regions (vm_area_struct) using Red-Black trees.',
-          bn: 'প্রোগ্রামিং ভাষার স্ট্যান্ডার্ড লাইব্রেরিতে AVL ট্রির চেয়ে রেড-ব্ল্যাক ট্রি কেন বেশি ব্যবহৃত হয়?\n- **AVL ট্রি** অত্যন্ত কঠোরভাবে ব্যালান্সড (যা রিড বা সার্চ-প্রধান কাজের জন্য কিছুটা দ্রুত)।\n- **রেড-ব্ল্যাক ট্রিতে** ইনসার্ট ও ডিলিটে রোটেশন অনেক কম লাগে, ফলে ঘনঘন পরিবর্তনশীল ডেটায় এটি অনেক দ্রুত কাজ করে।\n\n### বাস্তব প্রযুক্তিতে প্রয়োগ:\n১. **C++ STL**: `std::map`, `std::set`, `std::multiset` এর পেছনে রেড-ব্ল্যাক ট্রি চলে।\n২. **Java**: `java.util.TreeMap` এবং `TreeSet` রেড-ব্ল্যাক ট্রি দিয়ে তৈরি।\n৩. **লিনাক্স কার্নেল**: লিনাক্সের প্রসেস শিডিউলার (CFS) সব প্রক্রিয়া রেড-ব্ল্যাক ট্রির মাধ্যমে নিয়ন্ত্রণ করে!\n৪. **ভার্চুয়াল মেমোরি**: মেমোরি পেজ ও ম্যাপ ব্যবস্থাপনায় লিনাক্স রেড-ব্ল্যাক ট্রি ব্যবহার করে।',
+          en: '- **AVL** is balanced more strictly → slightly **faster searches**, but more rotations on insert/delete.\n- **Red-Black** is a little looser → slightly slower searches, but **fewer rotations** when data changes a lot.\n\nBecause real programs change data often, most standard libraries use **Red-Black trees**:\n- C++ `std::map` and `std::set`;\n- Java `TreeMap` and `TreeSet`;\n- the Linux kernel (for example its process scheduler).',
+          bn: '- **AVL** বেশি কড়াভাবে ব্যালান্সড → **খোঁজা** একটু দ্রুত, কিন্তু ইনসার্ট/ডিলিটে বেশি রোটেশন।\n- **রেড-ব্ল্যাক** একটু ঢিলা → খোঁজা একটু ধীর, কিন্তু ডেটা অনেক বদলালে **কম রোটেশন**।\n\nআসল প্রোগ্রামে ডেটা প্রায়ই বদলায় বলে বেশিরভাগ স্ট্যান্ডার্ড লাইব্রেরি **রেড-ব্ল্যাক ট্রি** ব্যবহার করে:\n- C++ `std::map` আর `std::set`;\n- Java `TreeMap` আর `TreeSet`;\n- লিনাক্স কার্নেল (যেমন এর প্রসেস শিডিউলার)।'
         },
         line: 11,
         iteration: { i: 4, of: 4, label: { en: 'Applications', bn: 'প্রয়োগ' } },

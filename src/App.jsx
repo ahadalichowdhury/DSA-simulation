@@ -12,11 +12,11 @@ import GraphToolbar from './components/GraphToolbar';
 import { runGraphOp, checkGraphOp, GRAPH_DEFAULT } from './visuals/graphPlayground.js';
 import { GRAPH_ALGO_META } from './data/topics/graph-playground.js';
 import TreeToolbar from './components/TreeToolbar';
-import { runTreeOp, checkTreeOp, TREE_DEFAULT } from './visuals/treePlayground.js';
+import { runTreeOp, checkTreeOp, TREE_DEFAULT, lessonTraversalSteps } from './visuals/treePlayground.js';
 import { TREE_ALGO_META } from './data/topics/tree-playground.js';
 import { topics, categoryOrder } from './data/topics/index.js';
 import { TRAVERSAL_CONFIGS } from './data/topics/traversalData.js';
-import { buildTree, generateTraversalSteps } from './visuals/traversalGenerator.js';
+import { buildTree } from './visuals/traversalGenerator.js';
 import { t } from './visuals/utils.js';
 import './App.css';
 
@@ -100,12 +100,10 @@ function App() {
     };
   }, [isInteractiveTraversal, activeTraversal, standardTopic]);
 
+  // the traversal lesson uses the same traced engine as the Tree Playground
   const traversalSteps = useMemo(() => {
     if (!isInteractiveTraversal) return null;
-    const root = buildTree(treeInput, treeMode);
-    const travName = activeTraversal === 'inorder' ? 'In-Order' : activeTraversal === 'preorder' ? 'Pre-Order' : activeTraversal === 'postorder' ? 'Post-Order' : 'BFS Level-Order';
-    const label = `${travName} Traversal (${treeMode.toUpperCase()})`;
-    return generateTraversalSteps(root, activeTraversal, label);
+    return lessonTraversalSteps(buildTree(treeInput, treeMode), activeTraversal);
   }, [isInteractiveTraversal, activeTraversal, treeInput, treeMode]);
 
   const isBstPlayground = activeId === 'bst-crud-playground';

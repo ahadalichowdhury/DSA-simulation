@@ -37,6 +37,8 @@ function edgesDecl(g, lang, tag) {
   return [`${open}  @${tag}`, ...rows.map((r, i) => `    ${r}${i < rows.length - 1 ? ',' : ''}  @${tag}`), `${close}  @${tag}`];
 }
 
+const D_INTRO = { ...G_INTRO, directed: true, edges: [{ u: 0, v: 1 }, { u: 0, v: 2 }, { u: 2, v: 1 }, { u: 1, v: 3 }, { u: 2, v: 4 }, { u: 4, v: 3 }] };
+
 /* ===================================================================== 1. What is a graph */
 
 const introCode = (() => {
@@ -289,7 +291,6 @@ const graphTerms = {
 
 /* ===================================================================== 3. Types of graphs */
 
-const D_INTRO = { ...G_INTRO, directed: true, edges: [{ u: 0, v: 1 }, { u: 0, v: 2 }, { u: 2, v: 1 }, { u: 1, v: 3 }, { u: 2, v: 4 }, { u: 4, v: 3 }] };
 const W_INTRO = { ...G_INTRO, weighted: true, edges: [{ u: 0, v: 1, w: 5 }, { u: 0, v: 2, w: 3 }, { u: 1, v: 2, w: 2 }, { u: 1, v: 3, w: 6 }, { u: 2, v: 4, w: 4 }, { u: 3, v: 4, w: 1 }] };
 const MULTI = { V: 3, directed: false, weighted: false, nodes: N([[0, 70, 200], [1, 260, 200], [2, 450, 200]]), edges: [{ u: 0, v: 1 }, { u: 0, v: 1, bend: 34 }, { u: 1, v: 1 }, { u: 1, v: 2 }] };
 const K5 = {
@@ -655,86 +656,129 @@ const listCode = (() => {
 const listSteps = (() => {
   const g = G_INTRO;
   const V = g.V;
-  const adj = Array.from({ length: V }, () => []);
-  const lp = (hlNew = [], rowHl = null, itemHl = {}) => ({
+  const finalAdj = adjOf(g).map((items) => items.map((x) => x.v));
+  let adj = Array.from({ length: V }, () => []);
+  // adjacency-list panel: one row per vertex; `fresh` marks entries that were just added
+  const lp = ({ rows = adj, fresh = [], rowHl = null, itemHl = {}, label } = {}) => ({
     type: 'adjlist',
-    label: T('adj[u] — the neighbours of u', 'adj[u] — u-এর প্রতিবেশীরা'),
-    rows: adj.map((items, u) => ({
+    label: label || T('adj — row u lists the neighbours of u', 'adj — সারি u-তে u-এর প্রতিবেশীরা'),
+    rows: rows.map((items, u) => ({
       head: u,
       state: rowHl === u ? 'current' : '',
-      items: items.map((v, k) => ({ v, state: hlNew.some(([a, b]) => a === u && b === k) ? 'relax' : itemHl[`${u},${k}`] || '' }))
+      items: items.map((v, k) => ({ v, state: fresh.some(([a, b]) => a === u && b === k) ? 'relax' : itemHl[`${u},${k}`] || '' }))
     }))
   });
+  const codeText = `adj = [ ${finalAdj.map((r) => `[${r.join(', ')}]`).join(', ')} ]`;
   const steps = [];
+
   steps.push(step(
-    T('Idea: each vertex keeps a list', 'ধারণা: প্রতিটা ভার্টেক্সের একটা তালিকা'),
+    T('The idea: a contact list for every vertex', 'ধারণা: প্রতিটা ভার্টেক্সের একটা কন্টাক্ট লিস্ট'),
     T(
-      'The matrix wasted space on zeros. The **adjacency list** stores **only the edges that exist**.\n\nEvery vertex gets its own list, `adj[u]`, holding just its neighbours — like a phone\'s contact list that only contains people you actually know. At the start all 5 lists are **empty** (∅).',
-      'ম্যাট্রিক্স শূন্যে জায়গা নষ্ট করত। **অ্যাডজাসেন্সি লিস্ট (adjacency list)** রাখে **শুধু যে এজগুলো আছে**।\n\nপ্রতিটা ভার্টেক্সের নিজের একটা তালিকা `adj[u]`, যাতে শুধু তার প্রতিবেশীরা — ফোনের কন্টাক্ট লিস্টের মতো, যেখানে শুধু তোমার চেনা মানুষরা থাকে। শুরুতে ৫টা তালিকাই **খালি** (∅)।'
+      'Think of the **contacts on your phone**: you do not store everyone in the world, only the people **you know**.\n\nAn **adjacency list** gives every vertex its own short list of **its neighbours** (the vertices it is joined to by an edge). That is all it is.\n\nRead the highlighted row: **`1 → 0 → 2 → 3`** means "**from 1 you can go straight to 0, 2 and 3**". Compare with the picture — 1 has exactly those three lines.',
+      'তোমার **ফোনের কন্টাক্ট লিস্ট** ভাবো: পৃথিবীর সবাইকে রাখো না, শুধু **যাদের চেনো** তাদের।\n\n**অ্যাডজাসেন্সি লিস্ট (adjacency list)** প্রতিটা ভার্টেক্সকে **তার প্রতিবেশীদের** (যাদের সঙ্গে একটা এজ দিয়ে যুক্ত) একটা ছোট নিজস্ব তালিকা দেয়। ব্যস, এটুকুই।\n\nহাইলাইট করা সারিটা পড়ো: **`1 → 0 → 2 → 3`** মানে "**1 থেকে সরাসরি 0, 2 আর 3-এ যাওয়া যায়**"। ছবির সঙ্গে মেলাও — 1-এর ঠিক ওই তিনটা রেখাই আছে।'
+    ),
+    scene(g, { nodeState: { 1: 'current', 0: 'compare', 2: 'compare', 3: 'compare' }, edgeState: { '0-1': 'compare', '1-2': 'compare', '1-3': 'compare' }, edgeFrom: { '0-1': 1, '1-2': 1, '1-3': 1 }, panels: [lp({ rows: finalAdj, rowHl: 1 })], status: T('row 1: 1 → 0 → 2 → 3', 'সারি 1: 1 → 0 → 2 → 3') }),
+    'nbrs'
+  ));
+  steps.push(step(
+    T('What it looks like in code', 'কোডে দেখতে কেমন'),
+    T(
+      `In code it is simply a **list of lists**:\n\n\`${codeText}\`\n\n- \`adj\` has one slot per vertex: **slot number = vertex number**.\n- \`adj[1]\` is the list for vertex 1 → \`[0, 2, 3]\`.\n- \`adj[1][0]\` is the **first** neighbour of 1 → \`0\`.\n\nSo "who are the neighbours of u?" is just: **read \`adj[u]\`**.`,
+      `কোডে এটা শুধু **তালিকার একটা তালিকা (list of lists)**:\n\n\`${codeText}\`\n\n- \`adj\`-এ প্রতিটা ভার্টেক্সের জন্য একটা ঘর: **ঘরের নম্বর = ভার্টেক্সের নম্বর**।\n- \`adj[1]\` হলো ভার্টেক্স 1-এর তালিকা → \`[0, 2, 3]\`।\n- \`adj[1][0]\` হলো 1-এর **প্রথম** প্রতিবেশী → \`0\`।\n\nতাই "u-এর প্রতিবেশী কারা?" মানে শুধু: **\`adj[u]\` পড়ো**।`
+    ),
+    scene(g, { nodeState: { 1: 'current', 0: 'relax' }, edgeState: { '0-1': 'relax' }, edgeFrom: { '0-1': 1 }, panels: [lp({ rows: finalAdj, rowHl: 1, itemHl: { '1,0': 'relax' } }), { type: 'text', label: T('in code', 'কোডে'), text: `\`${codeText}\`` }], status: T('adj[1] = [0, 2, 3]   adj[1][0] = 0', 'adj[1] = [0, 2, 3]   adj[1][0] = 0') }),
+    'nbrs'
+  ));
+  steps.push(step(
+    T('Building it: start with empty lists', 'বানানো: খালি তালিকা দিয়ে শুরু'),
+    T(
+      'Now let us **build** that list from the graph\'s edges, the way the code does.\n\nStart with **one empty list per vertex** — 5 vertices, so 5 empty rows (∅ means "empty"). Then we will read the edges one by one.',
+      'এবার গ্রাফের এজ থেকে ওই তালিকাটা **বানাই**, কোড যেভাবে বানায়।\n\nশুরু করো **প্রতিটা ভার্টেক্সের জন্য একটা খালি তালিকা** দিয়ে — ৫টা ভার্টেক্স, তাই ৫টা খালি সারি (∅ মানে "খালি")। তারপর এজগুলো একে একে পড়ব।'
     ),
     scene(g, { edgeState: allEdges(g, 'dim'), panels: [lp()], status: T('5 empty lists', '৫টা খালি তালিকা') }),
     'init'
   ));
   g.edges.forEach((e, i) => {
+    adj = adj.map((r) => [...r]);
     adj[e.u].push(e.v);
     adj[e.v].push(e.u);
     const doneE = Object.fromEntries(g.edges.slice(0, i).map((x) => [ek(x.u, x.v), 'tree']));
     const rest = Object.fromEntries(g.edges.slice(i + 1).map((x) => [ek(x.u, x.v), 'dim']));
     steps.push(step(
-      T(`Edge ${e.u}–${e.v}: add to both lists`, `এজ ${e.u}–${e.v}: দুই তালিকাতেই যোগ`),
+      T(`Edge ${e.u}–${e.v}: write it in both lists`, `এজ ${e.u}–${e.v}: দুই তালিকাতেই লেখো`),
       T(
-        `Edge **(${e.u}, ${e.v})**: append ${e.v} to \`adj[${e.u}]\` and ${e.u} to \`adj[${e.v}]\` — each end learns about the other.\n\nNow \`adj[${e.u}] = [${adj[e.u].join(', ')}]\`, \`adj[${e.v}] = [${adj[e.v].join(', ')}]\`.`,
-        `এজ **(${e.u}, ${e.v})**: \`adj[${e.u}]\`-এ ${e.v} আর \`adj[${e.v}]\`-এ ${e.u} যোগ করো — প্রতিটা মাথা অন্যটার কথা জানে।\n\nএখন \`adj[${e.u}] = [${adj[e.u].join(', ')}]\`, \`adj[${e.v}] = [${adj[e.v].join(', ')}]\`।`
+        `Edge **${e.u} – ${e.v}** is a two-way road, so **both ends** must know about it:\n- add **${e.v}** to the list of ${e.u} → \`adj[${e.u}] = [${adj[e.u].join(', ')}]\`\n- add **${e.u}** to the list of ${e.v} → \`adj[${e.v}] = [${adj[e.v].join(', ')}]\`${i === 0 ? '\n\nThe green boxes are the ones just added.' : ''}`,
+        `এজ **${e.u} – ${e.v}** দুই-মুখী রাস্তা, তাই **দুই মাথাকেই** জানতে হবে:\n- ${e.u}-এর তালিকায় **${e.v}** যোগ → \`adj[${e.u}] = [${adj[e.u].join(', ')}]\`\n- ${e.v}-এর তালিকায় **${e.u}** যোগ → \`adj[${e.v}] = [${adj[e.v].join(', ')}]\`${i === 0 ? '\n\nসবুজ বক্সগুলো এইমাত্র যোগ হলো।' : ''}`
       ),
-      scene(g, { nodeState: { [e.u]: 'current', [e.v]: 'current' }, edgeState: { ...doneE, ...rest, [ek(e.u, e.v)]: 'relax' }, edgeFrom: { [ek(e.u, e.v)]: e.u }, panels: [lp([[e.u, adj[e.u].length - 1], [e.v, adj[e.v].length - 1]])], status: T(`adj[${e.u}].add(${e.v}), adj[${e.v}].add(${e.u})`, `adj[${e.u}].add(${e.v}), adj[${e.v}].add(${e.u})`) }),
+      scene(g, { nodeState: { [e.u]: 'current', [e.v]: 'current' }, edgeState: { ...doneE, ...rest, [ek(e.u, e.v)]: 'relax' }, edgeFrom: { [ek(e.u, e.v)]: e.u }, panels: [lp({ fresh: [[e.u, adj[e.u].length - 1], [e.v, adj[e.v].length - 1]] })], status: T(`adj[${e.u}].add(${e.v}), adj[${e.v}].add(${e.u})`, `adj[${e.u}].add(${e.v}), adj[${e.v}].add(${e.u})`) }),
       ['loop', 'add', 'addBack'],
       { u: e.u, v: e.v }
     ));
   });
+  const entries = adj.reduce((s, r) => s + r.length, 0);
   steps.push(step(
-    T('Neighbours of 1: just read the list', '1-এর প্রতিবেশী: শুধু তালিকা পড়ো'),
+    T('Why is every edge written twice?', 'প্রতিটা এজ দুবার লেখা কেন?'),
     T(
-      '`adj[1] = [0, 2, 3]` — the neighbours are right there, nothing to skip.\n\nThis costs **O(deg(u))**: only as much work as u has neighbours. That is why BFS and DFS love adjacency lists — together they cost O(V + E) instead of O(V²).',
-      '`adj[1] = [0, 2, 3]` — প্রতিবেশীরা সরাসরি এখানে, বাদ দেওয়ার কিছু নেই।\n\nখরচ **O(deg(u))**: u-এর যত প্রতিবেশী, ঠিক তত কাজ। এই কারণেই BFS আর DFS অ্যাডজাসেন্সি লিস্ট পছন্দ করে — একসঙ্গে O(V²)-এর বদলে O(V + E)।'
+      `Count the boxes in all the lists: **${entries}**. But the graph has only **${g.edges.length}** edges. ${entries} = 2 × ${g.edges.length}.\n\nThat is not a mistake: in an **undirected** graph an edge belongs to **both** of its ends. Edge 1–3 appears as "3" in row 1 **and** as "1" in row 3, so you can start from either side.\n\n> **For directed graphs** (one-way arrows) each edge is written **once**, only in the row it leaves from — see a few steps ahead.`,
+      `সব তালিকার বক্স গোনো: **${entries}**টা। কিন্তু গ্রাফে এজ মাত্র **${g.edges.length}**টা। ${entries} = 2 × ${g.edges.length}।\n\nএটা ভুল নয়: **আনডিরেক্টেড** গ্রাফে একটা এজ তার **দুই** মাথারই। এজ 1–3 সারি 1-এ "3" হিসেবে **আর** সারি 3-এ "1" হিসেবে আছে, তাই যেকোনো দিক থেকে শুরু করা যায়।\n\n> **ডিরেক্টেড গ্রাফে** (একমুখী তীর) প্রতিটা এজ **একবারই** লেখা হয়, শুধু যে সারি থেকে বের হয় সেখানে — কয়েক ধাপ পরে দেখো।`
     ),
-    scene(g, { nodeState: { 1: 'current', 0: 'compare', 2: 'compare', 3: 'compare' }, edgeState: { '0-1': 'compare', '1-2': 'compare', '1-3': 'compare' }, edgeFrom: { '0-1': 1, '1-2': 1, '1-3': 1 }, panels: [lp([], 1)], status: T('adj[1] = [0, 2, 3]', 'adj[1] = [0, 2, 3]') }),
+    scene(g, { nodeState: { 1: 'current', 3: 'current' }, edgeState: { ...allEdges(g, 'tree'), '1-3': 'relax' }, panels: [lp({ itemHl: { '1,2': 'relax', '3,0': 'relax' } })], status: T(`${entries} entries = 2 × ${g.edges.length} edges`, `${entries}টা এন্ট্রি = 2 × ${g.edges.length}টা এজ`) }),
+    'addBack'
+  ));
+  steps.push(step(
+    T('Using it: the neighbours of 1', 'ব্যবহার: 1-এর প্রতিবেশী'),
+    T(
+      'The most common question in graph algorithms (BFS, DFS, Dijkstra…) is "**who are the neighbours of u?**".\n\nWith an adjacency list the answer is already written down: `adj[1] = [0, 2, 3]`. Just read the row.\n\nThis takes **as many steps as 1 has neighbours** (here 3) — written **O(deg(u))**. That is why BFS and DFS use adjacency lists.',
+      'গ্রাফ অ্যালগরিদমে (BFS, DFS, Dijkstra…) সবচেয়ে বেশি আসা প্রশ্ন "**u-এর প্রতিবেশী কারা?**"।\n\nঅ্যাডজাসেন্সি লিস্টে উত্তর আগে থেকেই লেখা: `adj[1] = [0, 2, 3]`। শুধু সারিটা পড়ো।\n\nএতে লাগে **1-এর যতজন প্রতিবেশী ততটা ধাপ** (এখানে 3) — লেখা হয় **O(deg(u))**। এজন্যই BFS আর DFS অ্যাডজাসেন্সি লিস্ট ব্যবহার করে।'
+    ),
+    scene(g, { nodeState: { 1: 'current', 0: 'compare', 2: 'compare', 3: 'compare' }, edgeState: { '0-1': 'compare', '1-2': 'compare', '1-3': 'compare' }, edgeFrom: { '0-1': 1, '1-2': 1, '1-3': 1 }, panels: [lp({ rowHl: 1 })], status: T('adj[1] = [0, 2, 3]', 'adj[1] = [0, 2, 3]') }),
     'nbrs'
   ));
   steps.push(step(
-    T('Is there an edge 1–3? Search the list', '1–3 এজ আছে? তালিকায় খোঁজো'),
+    T('Is there an edge 1–3? Search the row', '1–3 এজ আছে? সারিতে খোঁজো'),
     T(
-      'To test an edge we must **search** `adj[1]` for 3: 0? no. 2? no. 3? **yes**.\n\nThat is **O(deg(u))** — slower than the matrix\'s O(1). It is the price we pay for saving memory.',
-      'এজ যাচাই করতে `adj[1]`-এ 3 **খুঁজতে** হয়: 0? না। 2? না। 3? **হ্যাঁ**।\n\nএটা **O(deg(u))** — ম্যাট্রিক্সের O(1)-এর চেয়ে ধীর। মেমরি বাঁচানোর জন্য এই দামটা দিতে হয়।'
+      'Another question: "**is 1 connected to 3?**" Now we must **search** row 1 for 3: is it 0? no. 2? no. 3? **yes**.\n\nIn the worst case we read the whole row — again **O(deg(u))**. An adjacency **matrix** answers this in one look (O(1)); that is the price we pay for saving memory.',
+      'আরেকটা প্রশ্ন: "**1 কি 3-এর সঙ্গে যুক্ত?**" এবার সারি 1-এ 3 **খুঁজতে** হবে: 0? না। 2? না। 3? **হ্যাঁ**।\n\nসবচেয়ে খারাপ ক্ষেত্রে পুরো সারি পড়তে হয় — আবার **O(deg(u))**। অ্যাডজাসেন্সি **ম্যাট্রিক্স** এটা এক নজরে বলে (O(1)); মেমরি বাঁচানোর জন্য এই দামটা দিতে হয়।'
     ),
-    scene(g, { nodeState: { 1: 'current', 3: 'relax' }, edgeState: { '1-3': 'relax' }, panels: [lp([], 1, { '1,0': 'reject', '1,1': 'reject', '1,2': 'relax' })], status: T('0 ✗, 2 ✗, 3 ✓ → edge 1–3 exists', '0 ✗, 2 ✗, 3 ✓ → এজ 1–3 আছে') }),
+    scene(g, { nodeState: { 1: 'current', 3: 'relax' }, edgeState: { '1-3': 'relax' }, panels: [lp({ rowHl: 1, itemHl: { '1,0': 'reject', '1,1': 'reject', '1,2': 'relax' } })], status: T('0 ✗, 2 ✗, 3 ✓ → edge 1–3 exists', '0 ✗, 2 ✗, 3 ✓ → এজ 1–3 আছে') }),
     'has'
+  ));
+  const dAdj = adjOf(D_INTRO).map((items) => items.map((x) => x.v));
+  steps.push(step(
+    T('Directed graphs: one entry per arrow', 'ডিরেক্টেড গ্রাফ: প্রতি তীরে একটা এন্ট্রি'),
+    T(
+      `With **one-way arrows**, an arrow **u → v** is written **only in row u** ("from u you can go to v"). Row v does not get u, because you cannot go back.\n\nHere: \`adj[2] = [${dAdj[2].join(', ')}]\` (arrows 2 → 1 and 2 → 4), and \`adj[3] = []\` — no arrow leaves 3. Now the list has exactly **${D_INTRO.edges.length}** entries, one per arrow.`,
+      `**একমুখী তীর** থাকলে, তীর **u → v** লেখা হয় **শুধু সারি u-তে** ("u থেকে v-তে যাওয়া যায়")। সারি v-তে u যায় না, কারণ ফেরা যায় না।\n\nএখানে: \`adj[2] = [${dAdj[2].join(', ')}]\` (তীর 2 → 1 আর 2 → 4), আর \`adj[3] = []\` — 3 থেকে কোনো তীর বের হয় না। এখন তালিকায় ঠিক **${D_INTRO.edges.length}**টা এন্ট্রি, প্রতি তীরে একটা।`
+    ),
+    scene(D_INTRO, { nodeState: { 2: 'current' }, edgeState: { '2-1': 'compare', '2-4': 'compare' }, edgeFrom: { '2-1': 2, '2-4': 2 }, panels: [lp({ rows: dAdj, rowHl: 2, label: T('adj for one-way arrows', 'একমুখী তীরের adj') })], status: T(`adj[2] = [${dAdj[2].join(', ')}]`, `adj[2] = [${dAdj[2].join(', ')}]`) }),
+    'add'
   ));
   steps.push(step(
     T('Memory: only what exists', 'মেমরি: শুধু যা আছে'),
     T(
-      'Count the boxes: 5 list heads + **12** neighbour entries (each of the 6 edges is stored twice). That is **V + 2E = 17**, compared with **25** cells for the matrix.\n\nThe gap grows fast: a city map with 10,000 crossings and 15,000 roads needs about 40,000 list entries but **100,000,000** matrix cells.',
-      'বক্সগুলো গোনো: ৫টা তালিকার মাথা + **১২টা** প্রতিবেশী (৬টা এজের প্রতিটা দুবার রাখা)। মানে **V + 2E = 17**, যেখানে ম্যাট্রিক্সে **25**টা ঘর।\n\nপার্থক্য দ্রুত বাড়ে: ১০,০০০ মোড় আর ১৫,০০০ রাস্তার একটা শহরের ম্যাপে লিস্টে লাগে প্রায় ৪০,০০০ এন্ট্রি, কিন্তু ম্যাট্রিক্সে **১০,০০,০০,০০০**টা ঘর।'
+      `Count the storage: ${V} row heads + ${entries} neighbour boxes = **${V + entries}**. An adjacency matrix for the same graph needs ${V} × ${V} = **${V * V}** cells, mostly zeros.\n\nThe gap grows fast. A city map with 10,000 crossings and 15,000 roads needs about **40,000** list entries — but a matrix would need **100,000,000** cells.\n\n> **In short:** memory **O(V + E)** for the list vs **O(V²)** for the matrix.`,
+      `জায়গা গোনো: ${V}টা সারির মাথা + ${entries}টা প্রতিবেশী বক্স = **${V + entries}**। একই গ্রাফের অ্যাডজাসেন্সি ম্যাট্রিক্সে লাগে ${V} × ${V} = **${V * V}**টা ঘর, বেশিরভাগই শূন্য।\n\nপার্থক্য দ্রুত বাড়ে। ১০,০০০ মোড় আর ১৫,০০০ রাস্তার একটা শহরের ম্যাপে তালিকায় লাগে প্রায় **৪০,০০০** এন্ট্রি — কিন্তু ম্যাট্রিক্সে লাগত **১০,০০,০০,০০০**টা ঘর।\n\n> **সংক্ষেপে:** তালিকার মেমরি **O(V + E)**, ম্যাট্রিক্সের **O(V²)**।`
     ),
-    scene(g, { edgeState: allEdges(g, 'tree'), panels: [lp()], status: T('V + 2E = 5 + 12 = 17 boxes', 'V + 2E = 5 + 12 = 17টা বক্স') }),
+    scene(g, { edgeState: allEdges(g, 'tree'), panels: [lp()], status: T(`${V + entries} boxes vs ${V * V} matrix cells`, `${V + entries}টা বক্স বনাম ${V * V}টা ম্যাট্রিক্স ঘর`) }),
     'init'
   ));
   steps.push(step(
-    T('Weighted lists: store (neighbour, weight)', 'ওয়েটেড তালিকা: (প্রতিবেশী, ওজন) রাখো'),
+    T('Weighted graphs: store (neighbour, weight)', 'ওয়েটেড গ্রাফ: (প্রতিবেশী, ওজন) রাখো'),
     T(
-      'For a weighted graph each entry holds **two numbers**: the neighbour and the weight. The small number under each box is the weight: `adj[0] = [(1, 4), (2, 3)]`.\n\nThis is the exact form Dijkstra and Prim use later.',
-      'ওয়েটেড গ্রাফে প্রতিটা এন্ট্রিতে **দুটো সংখ্যা**: প্রতিবেশী আর ওজন। প্রতিটা বক্সের নিচের ছোট সংখ্যাটা ওজন: `adj[0] = [(1, 4), (2, 3)]`।\n\nপরে Dijkstra আর Prim ঠিক এই রূপটাই ব্যবহার করে।'
+      'If edges have **weights** (distance, cost…), each box stores **two numbers**: the neighbour **and** the weight of the road to it.\n\nThe small number under each box is the weight: `adj[0] = [(1, 4), (2, 3)]` means "0 → 1 costs 4, 0 → 2 costs 3".\n\nDijkstra and Prim read exactly this.',
+      'এজের **ওজন** (দূরত্ব, খরচ…) থাকলে প্রতিটা বক্সে **দুটো সংখ্যা**: প্রতিবেশী **আর** সেখানে যাওয়ার রাস্তার ওজন।\n\nপ্রতিটা বক্সের নিচের ছোট সংখ্যাটা ওজন: `adj[0] = [(1, 4), (2, 3)]` মানে "0 → 1-এর খরচ 4, 0 → 2-এর খরচ 3"।\n\nDijkstra আর Prim ঠিক এটাই পড়ে।'
     ),
     scene(G_W, { panels: [{ type: 'adjlist', label: T('adj[u] = (neighbour, weight)', 'adj[u] = (প্রতিবেশী, ওজন)'), rows: adjOf(G_W).map((items, u) => ({ head: u, state: u === 0 ? 'current' : '', items: items.map((it) => ({ v: it.v, w: it.w })) })) }], nodeState: { 0: 'current' }, edgeState: { '0-1': 'compare', '0-2': 'compare' }, status: T('adj[0] = [(1, 4), (2, 3)]', 'adj[0] = [(1, 4), (2, 3)]') }),
     'add'
   ));
   steps.push(step(
-    T('What we learned', 'কী শিখলাম'),
+    T('Common mistakes and summary', 'সাধারণ ভুল আর সারসংক্ষেপ'),
     T(
-      '- **Adjacency list** = one list of neighbours per vertex.\n- **Memory: O(V + E)** — only real edges are stored.\n- **Neighbours of u: O(deg(u))** — perfect for BFS, DFS, Dijkstra, Prim.\n- **Edge test: O(deg(u))** — slower than a matrix.\n\nThis is the **default choice** for most real graphs, because most real graphs are **sparse** (few edges compared to V²).',
-      '- **অ্যাডজাসেন্সি লিস্ট** = প্রতি ভার্টেক্সে প্রতিবেশীদের একটা তালিকা।\n- **মেমরি: O(V + E)** — শুধু আসল এজ রাখা হয়।\n- **u-এর প্রতিবেশী: O(deg(u))** — BFS, DFS, Dijkstra, Prim-এর জন্য একদম ঠিক।\n- **এজ যাচাই: O(deg(u))** — ম্যাট্রিক্সের চেয়ে ধীর।\n\nবেশিরভাগ বাস্তব গ্রাফের জন্য এটাই **স্বাভাবিক পছন্দ**, কারণ বেশিরভাগ বাস্তব গ্রাফ **পাতলা (sparse)** (V²-এর তুলনায় এজ কম)।'
+      '**Beginner mistakes to avoid:**\n- forgetting the second line `adj[v].add(u)` in an undirected graph → the edge only works one way;\n- adding it in a **directed** graph → arrows that point backwards by accident;\n- thinking the order inside a row matters — it does not, it only changes which neighbour is visited first.\n\n**Summary:** one list of neighbours per vertex · memory **O(V + E)** · neighbours of u in **O(deg u)** · the default choice for most real graphs (which are sparse).',
+      '**যে ভুলগুলো এড়াবে:**\n- আনডিরেক্টেড গ্রাফে দ্বিতীয় লাইন `adj[v].add(u)` ভুলে যাওয়া → এজ শুধু এক দিকে কাজ করে;\n- **ডিরেক্টেড** গ্রাফে সেটা যোগ করা → ভুল করে উল্টো দিকের তীর;\n- ভাবা যে সারির ভেতরের ক্রম গুরুত্বপূর্ণ — না, এটা শুধু কোন প্রতিবেশী আগে দেখা হবে তা বদলায়।\n\n**সারসংক্ষেপ:** প্রতি ভার্টেক্সে একটা প্রতিবেশী-তালিকা · মেমরি **O(V + E)** · u-এর প্রতিবেশী **O(deg u)**-এ · বেশিরভাগ বাস্তব (পাতলা) গ্রাফের স্বাভাবিক পছন্দ।'
     ),
     scene(g, { edgeState: allEdges(g, 'tree'), panels: [lp()], status: T('memory O(V + E)', 'মেমরি O(V + E)') }),
-    'nbrs'
+    ['add', 'addBack']
   ));
   return steps;
 })();

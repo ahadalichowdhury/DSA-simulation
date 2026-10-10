@@ -12,8 +12,8 @@ export const bstOpsTopics = [
     id: 'bst-fundamentals',
     name: { en: 'BST Definition & Invariants', bn: 'BST সংজ্ঞা ও মৌলিক ধর্ম' },
     description: {
-      en: 'Left < Root < Right invariant, monotonic sorted order, and BST vs Binary Tree complexity',
-      bn: 'বাম < রুট < ডান নিয়ম, মোনোটনিক সাজানো ক্রম এবং বাইনারি ট্রির সাথে তুলনা'
+      en: 'The BST rule (smaller left, bigger right) and why it is fast',
+      bn: 'BST-র নিয়ম (ছোট বামে, বড় ডানে) আর এটা কেন দ্রুত'
     },
     categoryKey: 'trees',
     subgroupKey: 'bst',
@@ -162,10 +162,13 @@ export const bstOpsTopics = [
     },
     steps: [
       {
-        title: { en: 'The BST Invariant: Left < Root < Right', bn: 'BST-এর মূল শর্ত: বাম < রুট < ডান' },
+        title: {
+          en: 'The BST rule: smaller left, bigger right',
+          bn: 'BST-র নিয়ম: ছোট বামে, বড় ডানে'
+        },
         explanation: {
-          en: 'A **Binary Search Tree (BST)** is a binary tree where every node satisfies the following ordering rule:\n1. All keys in the **left subtree** must be strictly **smaller** than the node\'s key.\n2. All keys in the **right subtree** must be strictly **greater** than the node\'s key.\n3. Both subtrees must also be valid BSTs.\n4. **No duplicate keys** are allowed.',
-          bn: '**বাইনারি সার্চ ট্রি (BST)** হলো এমন একটি বাইনারি ট্রি যার প্রতিটি নোড নিচের শর্ত পালন করে:\n১. নোডের **বাম সাব-ট্রির** সমস্ত মান নোডের চেয়ে কঠোরভাবে **ছোট** হতে হবে।\n২. নোডের **ডান সাব-ট্রির** সমস্ত মান নোডের চেয়ে কঠোরভাবে **বড়** হতে হবে।\n৩. বাম ও ডান উভয় সাব-ট্রিকেও পৃথকভাবে ভ্যালিড BST হতে হবে।\n৪. কোনো **ডুপ্লিকেট মান** অনুমোদিত নয়।'
+          en: 'A **Binary Search Tree (BST)** is a binary tree that keeps its values **in order** using one simple rule at every node:\n\n- everything in the **left** subtree is **smaller** than the node;\n- everything in the **right** subtree is **bigger** than the node.\n\nPick any node in the picture and check: all values to its lower-left are smaller, all to its lower-right are bigger.\n\n> **Common mistake:** it is not enough that the *children* are in order — **every** value in the whole left (or right) subtree must follow the rule.',
+          bn: '**বাইনারি সার্চ ট্রি (BST)** হলো এমন বাইনারি ট্রি, যা প্রতিটা নোডে একটা সহজ নিয়ম মেনে মানগুলোকে **সাজিয়ে** রাখে:\n\n- **বাম** সাব-ট্রির সবকিছু নোডের চেয়ে **ছোট**;\n- **ডান** সাব-ট্রির সবকিছু নোডের চেয়ে **বড়**।\n\nছবির যেকোনো নোড বেছে মিলিয়ে দেখো: তার নিচে-বামের সব মান ছোট, নিচে-ডানের সব মান বড়।\n\n> **সাধারণ ভুল:** শুধু *চাইল্ড* ঠিক ক্রমে থাকলেই হয় না — পুরো বাম (বা ডান) সাব-ট্রির **প্রতিটা** মানকে নিয়ম মানতে হবে।'
         },
         line: 0,
         iteration: { i: 1, of: 4, label: { en: 'Invariant', bn: 'শর্ত' } },
@@ -189,17 +192,20 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Monotonic In-Order Traversal Theorem', bn: 'ইন-অর্ডারের মোনোটনিক সর্টেড উপপাদ্য' },
+        title: {
+          en: 'Inorder of a BST is sorted',
+          bn: 'BST-র ইন-অর্ডার সাজানো'
+        },
         explanation: {
-          en: '### The Golden Theorem of BSTs:\nPerforming an **In-Order traversal** (Left → Root → Right) on a BST always visits nodes in **strictly monotonically increasing sorted order**!\n\nTrace for this tree:\n`In-Order = [10, 15, 20, 30, 40, 50, 60]`\n\nThis makes BST the ideal in-memory structure for dynamic datasets that need fast sorting and range searches.',
-          bn: '### BST-এর স্বর্ণ উপপাদ্য:\nযেকোনো বাইনারি সার্চ ট্রিতে **ইন-অর্ডার ট্রাভার্সাল** (বাম → রুট → ডান) চালালে উপাদানগুলো সর্বদা **ছোট থেকে বড় নিখুঁত সর্টেড ক্রমে** আসে!\n\nএই ট্রির ইন-অর্ডার ফল:\n`ইন-অর্ডার = [10, 15, 20, 30, 40, 50, 60]`\n\nএ কারণেই ডাইনামিক ডেটা সর্ট রাখা এবং রেঞ্জ কোয়েরি করার জন্য BST একটি অতুলনীয় ডেটা স্ট্রাকচার।'
+          en: 'Because smaller values sit on the left and bigger on the right, an **inorder** walk (left → node → right) prints a BST in **sorted order**:\n\n`10, 15, 20, 30, 40, 50, 60`\n\n> **Why it matters:** this is the easiest way to **check** a BST (is the inorder sorted?) and to print its values in order for free.',
+          bn: 'ছোট মান বামে আর বড় মান ডানে থাকে বলে, **ইন-অর্ডারে** (বাম → নোড → ডান) হাঁটলে BST **সাজানো ক্রমে** প্রিন্ট হয়:\n\n`10, 15, 20, 30, 40, 50, 60`\n\n> **কেন গুরুত্বপূর্ণ:** BST ঠিক আছে কিনা **যাচাইয়ের** এটাই সবচেয়ে সহজ উপায় (ইন-অর্ডার কি সাজানো?), আর বিনা খরচে মানগুলো ক্রমে প্রিন্ট করা যায়।'
         },
         line: 9,
         iteration: { i: 2, of: 4, label: { en: 'Sorted Order', bn: 'সর্টেড ক্রম' } },
         state: { inOrderOutput: '[10, 15, 20, 30, 40, 50, 60]', sorted: true },
         scene: {
           kind: 'array',
-          label: 'In-Order Traversal Result: Monotonically Sorted Sequence',
+          label: 'In-Order Traversal Result: Sorted Order',
           cells: [10, 15, 20, 30, 40, 50, 60],
           showIndex: true,
           highlights: { sorted: [0, 1, 2, 3, 4, 5, 6] },
@@ -207,10 +213,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'BST vs Standard Binary Tree Complexity', bn: 'BST বনাম সাধারণ বাইনারি ট্রির তুলনা' },
+        title: {
+          en: 'Why a BST is fast',
+          bn: 'BST কেন দ্রুত'
+        },
         explanation: {
-          en: 'Why convert an unordered binary tree into a BST?\n\n| Operation | Standard Binary Tree | Balanced BST ($h = \\log N$) | Skewed BST ($h = N-1$) |\n|---|---|---|---|\n| **Search** | $O(N)$ (Unordered scan) | **$O(\\log N)$** | $O(N)$ |\n| **Insert** | $O(1)$ (Any open leaf) | **$O(\\log N)$** | $O(N)$ |\n| **Delete** | $O(N)$ | **$O(\\log N)$** | $O(N)$ |\n| **Find Min/Max** | $O(N)$ | **$O(\\log N)$** | $O(N)$ |\n\nWhen balanced, BST slashes search times from seconds to microseconds!',
-          bn: 'সাধারণ আনঅর্ডার্ড ট্রির চেয়ে BST কেন শতগুণ শ্রেয়?\n\n| অপারেশন | সাধারণ বাইনারি ট্রি | ব্যালান্সড BST ($h = \\log N$) | স্কিউড BST ($h = N-1$) |\n|---|---|---|---|\n| **সার্চ** | $O(N)$ (পুরো ট্রি খোঁজা) | **$O(\\log N)$** | $O(N)$ |\n| **ইনসার্ট** | $O(1)$ (যেকোনো লিফে) | **$O(\\log N)$** | $O(N)$ |\n| **ডিলিট** | $O(N)$ | **$O(\\log N)$** | $O(N)$ |\n| **Min / Max** | $O(N)$ | **$O(\\log N)$** | $O(N)$ |\n\nব্যালান্সড অবস্থায় BST সার্চের গতি মিলিসেকেন্ড থেকে মাইক্রোসেকেন্ডে নামিয়ে আনে!'
+          en: 'In an ordinary binary tree you may have to look at **every** node to find a value. In a BST each comparison tells you which side to go, so you **throw away half** of what is left at each step.\n\n| | Ordinary binary tree | Balanced BST | BST shaped like a line |\n|---|---|---|---|\n| Search | look at all N | about **log₂ N** steps | N steps |\n| Insert | N | **log₂ N** | N |\n| Delete | N | **log₂ N** | N |\n\nFor 1,000,000 values: about **20** steps in a balanced BST instead of a million.',
+          bn: 'সাধারণ বাইনারি ট্রিতে একটা মান খুঁজতে **প্রতিটা** নোড দেখতে হতে পারে। BST-তে প্রতিটা তুলনা বলে দেয় কোন দিকে যেতে হবে, তাই প্রতি ধাপে বাকি অংশের **অর্ধেক বাদ** পড়ে।\n\n| | সাধারণ বাইনারি ট্রি | ব্যালান্সড BST | লাইনের মতো BST |\n|---|---|---|---|\n| সার্চ | সব N টা দেখো | প্রায় **log₂ N** ধাপ | N ধাপ |\n| ইনসার্ট | N | **log₂ N** | N |\n| ডিলিট | N | **log₂ N** | N |\n\n১০,০০,০০০টা মানে: ব্যালান্সড BST-তে প্রায় **২০** ধাপ, দশ লাখ নয়।'
         },
         line: 0,
         iteration: { i: 3, of: 4, label: { en: 'Complexity', bn: 'জটিলতা' } },
@@ -228,17 +237,20 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'The Danger of Skewing: Why Self-Balancing is Needed', bn: 'স্কিউড হওয়ার ঝুঁকি: সেলফ-ব্যালান্সিং কেন জরুরি' },
+        title: {
+          en: 'Danger: sorted input makes a line',
+          bn: 'বিপদ: সাজানো ইনপুট লাইন বানায়'
+        },
         explanation: {
-          en: 'What happens if we insert sorted keys `[10, 20, 30, 40, 50]` into a standard BST?\n\nEvery new node is greater than its parent, so it branches strictly to the right! The tree degenerates into a **linear linked list** with height $h = N - 1$.\n\nSearch time collapses from $O(\\log N)$ to $O(N)$. To prevent this catastrophic failure, computer scientists invented **AVL Trees and Red-Black Trees**!',
-          bn: 'যদি একটি সাধারণ BST-তে আগে থেকেই সাজানো সংখ্যা `[10, 20, 30, 40, 50]` ঢোকানো হয়, তবে কী ঘটবে?\n\nপ্রতিটি নতুন সংখ্যা প্যারেন্টের চেয়ে বড় হওয়ায় তা কেবল ডান দিকেই যুক্ত হবে! ট্রিটি একপাশে হেলে **লিনিয়ার লিঙ্কড লিস্টে** পরিণত হয় যার উচ্চতা $h = N - 1$।\n\nসার্চ টাইম $O(\\log N)$ থেকে ভেঙে পড়ে $O(N)$ হয়ে যায়। এই বিপর্যয় রোধ করতেই বিজ্ঞানীরা আবিষ্কার করেছিলেন **AVL ট্রি ও রেড-ব্ল্যাক ট্রি**!'
+          en: 'Insert `10, 20, 30, 40, 50` in that order. Each new value is bigger than everything before it, so it always goes **right** — the tree becomes a straight line.\n\nNow searching is no better than checking a list one by one: **N** steps instead of log₂ N.\n\n> **The fix:** trees that rebalance themselves after every insert — **AVL** and **Red-Black** trees (next chapter).',
+          bn: '`10, 20, 30, 40, 50` এই ক্রমে ইনসার্ট করো। প্রতিটা নতুন মান আগের সবার চেয়ে বড়, তাই সবসময় **ডানে** যায় — ট্রিটা একটা সোজা লাইন হয়ে যায়।\n\nএখন খোঁজা একটা লিস্ট একে একে দেখার চেয়ে ভালো নয়: log₂ N-এর বদলে **N** ধাপ।\n\n> **সমাধান:** এমন ট্রি যা প্রতিটা ইনসার্টের পর নিজেকে আবার ব্যালান্স করে — **AVL** আর **Red-Black** ট্রি (পরের অধ্যায়)।'
         },
         line: 4,
         iteration: { i: 4, of: 4, label: { en: 'Skewed Degeneration', bn: 'অবনতি' } },
         state: { inserted: '[10, 20, 30, 40, 50]', height: 4, shape: 'Linked List' },
         scene: {
           kind: 'tree',
-          label: 'Degenerated BST: Height = 4, behaves as a Linked List with O(N) search',
+          label: 'BST shaped like a line: Height = 4, behaves as a Linked List with O(N) search',
           root: {
             v: 10,
             r: {
@@ -264,8 +276,8 @@ export const bstOpsTopics = [
     id: 'bst-search-insert',
     name: { en: 'BST Search & Insertion', bn: 'BST সার্চ ও ইনসার্ট' },
     description: {
-      en: 'Search mechanics and iterative insertion using the classic trailing-pointer technique',
-      bn: 'সার্চ পদ্ধতি এবং ক্লাসিক ট্রেইলিং-পয়েন্টার কৌশল দিয়ে ইটারেটিভ ইনসার্ট'
+      en: 'Find a value or add a new one by going left or right',
+      bn: 'বামে-ডানে গিয়ে একটা মান খোঁজা বা নতুন মান যোগ করা'
     },
     categoryKey: 'trees',
     subgroupKey: 'bst',
@@ -474,10 +486,13 @@ export const bstOpsTopics = [
     },
     steps: [
       {
-        title: { en: 'BST Search Mechanics: Halving Search Space', bn: 'BST সার্চ: প্রতি ধাপে অর্ধেক অংশ বাদ' },
+        title: {
+          en: 'Searching: go left or right',
+          bn: 'সার্চ: বামে বা ডানে যাও'
+        },
         explanation: {
-          en: 'To search for a `key = 25`:\n1. Start at root `30`. Compare: $25 < 30$ $\\implies$ the entire right subtree ($> 30$) is instantly discarded! Branch left to `15`.\n2. Compare at `15`: $25 > 15$ $\\implies$ branch right to `20`.\n3. Compare at `20`: $25 > 20$ $\\implies$ branch right to `25`.\n4. **Found!** Only 3 comparisons instead of scanning all 7 nodes.',
-          bn: 'ধরি আমরা `key = 25` খুঁজতে চাই:\n১. রুটে আছি `30`। তুলনা: $25 < 30$ $\\implies$ ট্রির পুরো ডান পাশটা তাৎক্ষণিক বাতিল! বাম সন্তান `15`-এ নামো।\n২. `15`-এ তুলনা: $25 > 15$ $\\implies$ ডান সন্তান `20`-এ যাও।\n৩. `20`-এ তুলনা: $25 > 20$ $\\implies$ ডান সন্তান `25`-এ যাও।\n৪. **পাওয়া গেছে!** ৭টি নোড খোঁজার বদলে মাত্র ৩টি তুলনায় মানটি মিলে গেল।',
+          en: 'Search for **25**. At every node ask one question: *is 25 smaller or bigger than this?*\n\n1. At `30`: 25 < 30 → go **left** (everything on the right is bigger than 30, so it cannot be there).\n2. At `15`: 25 > 15 → go **right**.\n3. At `20`: 25 > 20 → go **right**.\n4. At `25`: **found!**\n\nOnly 4 nodes looked at, instead of all 7.',
+          bn: '**25** খোঁজো। প্রতিটা নোডে একটাই প্রশ্ন: *25 কি এটার চেয়ে ছোট না বড়?*\n\n১. `30`-এ: 25 < 30 → **বামে** যাও (ডান দিকের সব 30-এর চেয়ে বড়, তাই সেখানে থাকতে পারে না)।\n২. `15`-এ: 25 > 15 → **ডানে** যাও।\n৩. `20`-এ: 25 > 20 → **ডানে** যাও।\n৪. `25`-এ: **পাওয়া গেছে!**\n\n৭টার বদলে মাত্র ৪টা নোড দেখা হলো।'
         },
         line: 5,
         iteration: { i: 1, of: 4, label: { en: 'Search 25', bn: 'সার্চ ২৫' } },
@@ -500,10 +515,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Trailing Pointer r Follows t Downward', bn: 'ট্রেইলিং পয়েন্টার r অনুসরণ করে t-এর পথ' },
+        title: {
+          en: 'Inserting: walk down with two pointers',
+          bn: 'ইনসার্ট: দুটো পয়েন্টার নিয়ে নিচে নামো'
+        },
         explanation: {
-          en: 'Now let\'s **Insert `key = 35`** into the BST:\n- Pointer `t` navigates down searching for 35.\n- **Pointer `r` trails right behind `t`** to remember the parent node!\n1. Initially `t = 30`, `r = null`.\n2. $35 > 30$: `r = 30`, `t` moves right to `50`.\n3. $35 < 50$: `r = 50`, `t` moves left to `40`.\n4. $35 < 40$: `r = 40`, `t` moves left to `null`!',
-          bn: 'এবার আমরা ট্রিতে **`key = 35` ইনসার্ট** করতে চাই:\n- পয়েন্টার `t` ৩৫-এর জায়গা খুঁজতে নিচে নামতে থাকে।\n- **পয়েন্টার `r` ঠিক `t`-এর এক ধাপ পেছনে থাকে** যাতে প্যারেন্ট নোডটি মনে রাখা যায়!\n১. শুরুতে `t = 30`, `r = null`।\n২. $35 > 30$: `r = 30`, `t` ডানে নেমে গেল `50`-এ।\n৩. $35 < 50$: `r = 50`, `t` বামে নেমে গেল `40`-এ।\n৪. $35 < 40$: `r = 40`, `t` বামে নেমে হলো `null`!'
+          en: 'Insert **35**. We walk down exactly like a search, using two names:\n\n- `t` — where we are **now**;\n- `r` — the node we were at **one step before** (the future parent).\n\n1. Start: `t = 30`, `r = null`.\n2. 35 > 30 → `r = 30`, `t` moves right to `50`.\n3. 35 < 50 → `r = 50`, `t` moves left to `40`.\n4. 35 < 40 → `r = 40`, `t` moves left to **`null`** — an empty spot!\n\n> **Why keep `r`?** When `t` becomes `null` we have lost track of the node above. `r` remembers it, so we can attach the new node there.',
+          bn: '**35** ইনসার্ট করো। আমরা ঠিক সার্চের মতো নিচে নামি, দুটো নাম ব্যবহার করে:\n\n- `t` — আমরা **এখন** কোথায়;\n- `r` — **এক ধাপ আগে** যে নোডে ছিলাম (ভবিষ্যৎ প্যারেন্ট)।\n\n১. শুরু: `t = 30`, `r = null`।\n২. 35 > 30 → `r = 30`, `t` ডানে `50`-এ যায়।\n৩. 35 < 50 → `r = 50`, `t` বামে `40`-এ যায়।\n৪. 35 < 40 → `r = 40`, `t` বামে **`null`**-এ যায় — একটা খালি জায়গা!\n\n> **`r` কেন রাখি?** `t` যখন `null` হয়, ওপরের নোডটার খোঁজ হারিয়ে যায়। `r` সেটা মনে রাখে, তাই নতুন নোডটা সেখানে জোড়া যায়।'
         },
         line: 6,
         iteration: { i: 2, of: 4, label: { en: 'Trailing Pointer', bn: 'ট্রেইলিং পয়েন্টার' } },
@@ -525,10 +543,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Allocating and Linking the New Node', bn: 'নতুন নোড তৈরি এবং লিঙ্ক করা' },
+        title: {
+          en: 'Attach the new node',
+          bn: 'নতুন নোড জুড়ে দাও'
+        },
         explanation: {
-          en: 'Now allocate the new node: `p = new Node(35)`.\nCompare `key (35)` with parent `r.data (40)`:\n- $35 < 40$ $\\implies$ attach as left child: **`r.lchild = p`**!\n- If it had been greater, it would attach as `r.rchild = p`.\n\nThe new node is permanently wired into dynamic heap memory in $O(h)$ time with zero recursion overhead!',
-          bn: 'এবার মেমোরিতে নতুন নোড তৈরি করো: `p = new Node(35)`।\nনতুন মান ৩৫-কে প্যারেন্ট `r.data (40)`-এর সাথে তুলনা করো:\n- $35 < 40$ $\\implies$ বাম সন্তান হিসেবে লিঙ্ক করো: **`r.lchild = p`**!\n- যদি বড় হতো, তবে ডান সন্তান `r.rchild = p` হিসেবে লিঙ্ক হতো।\n\nকোনো রিকারশন মেমোরি খরচ না করে $O(h)$ সময়ে নতুন নোডটি ট্রির সাথে স্থায়ীভাবে যুক্ত হয়ে গেল!'
+          en: 'Create the new node `35` and attach it below `r` (which is `40`):\n\n- 35 < 40 → it becomes the **left** child: `r.left = p`.\n- (If it were bigger, it would become the right child.)\n\nNothing else moves. Inserting costs only as many steps as the tree is tall.',
+          bn: 'নতুন নোড `35` বানাও আর `r`-এর (মানে `40`-এর) নিচে জুড়ে দাও:\n\n- 35 < 40 → এটা **বাম** চাইল্ড হয়: `r.left = p`।\n- (বড় হলে ডান চাইল্ড হতো।)\n\nআর কিছুই নড়ে না। ইনসার্টে শুধু ট্রির উচ্চতার সমান ধাপ লাগে।'
         },
         line: 11,
         iteration: { i: 3, of: 4, label: { en: 'Link Node', bn: 'নোড লিঙ্ক' } },
@@ -546,14 +567,17 @@ export const bstOpsTopics = [
             { label: 'Parent r (40)', color: 'var(--yellow)' },
             { label: 'New Child Node (35)', color: 'var(--green)' }
           ],
-          note: 'Node 35 is now a valid leaf satisfying all BST invariants.'
+          note: 'Node 35 is now a valid empty spot that keeps the BST rule.'
         }
       },
       {
-        title: { en: 'In-Order Verification: Monotonicity Preserved', bn: 'ইন-অর্ডার যাচাই: সর্টেড ক্রম অক্ষুণ্ণ' },
+        title: {
+          en: 'Check: still sorted',
+          bn: 'যাচাই: এখনো সাজানো'
+        },
         explanation: {
-          en: 'Let\'s run In-Order traversal after inserting 35:\n`Output = [10, 15, 20, 30, 35, 40, 50, 60]`\n\nNotice that **35** automatically slips into its exact numerical position between 30 and 40 without any array shifts or element re-indexing! That is the superpower of Binary Search Trees.',
-          bn: '৩৫ ইনসার্ট করার পর পুনরায় ইন-অর্ডার চালিয়ে দেখি:\n`আউটপুট = [10, 15, 20, 30, 35, 40, 50, 60]`\n\nলক্ষ করো, **35** কোনো উপাদান সরানো বা শিফট করা ছাড়াই ঠিক ৩০ এবং ৪০-এর মাঝখানে নিখুঁত স্থানে বসে গেছে! এটাই বাইনারি সার্চ ট্রির আসল শক্তি।'
+          en: 'Print the tree in inorder after the insert:\n\n`10, 15, 20, 30, 35, 40, 50, 60`\n\n**35** landed exactly between 30 and 40 — without shifting any other value, unlike inserting into a sorted array.',
+          bn: 'ইনসার্টের পর ট্রিটা ইন-অর্ডারে প্রিন্ট করো:\n\n`10, 15, 20, 30, 35, 40, 50, 60`\n\n**35** ঠিক 30 আর 40-এর মাঝে বসেছে — অন্য কোনো মান সরাতে হয়নি, সাজানো অ্যারেতে ইনসার্টের মতো নয়।'
         },
         line: 13,
         iteration: { i: 4, of: 4, label: { en: 'Verification', bn: 'যাচাই' } },
@@ -575,8 +599,8 @@ export const bstOpsTopics = [
     id: 'bst-successor-predecessor',
     name: { en: 'BST In-Order Successor & Predecessor', bn: 'BST ইন-অর্ডার উত্তরসূরি ও পূর্বসূরি' },
     description: {
-      en: 'Finding successor (next key in sorted order) and predecessor (previous key) with and without right/left subtrees',
-      bn: 'ডান/বাম সাবট্রি থাকা ও না থাকা উভয় অবস্থায় উত্তরসূরি ও পূর্বসূরি নির্ণয়'
+      en: 'The next and previous value in sorted order',
+      bn: 'সাজানো ক্রমে পরের আর আগের মান'
     },
     categoryKey: 'trees',
     subgroupKey: 'bst',
@@ -825,10 +849,13 @@ export const bstOpsTopics = [
     },
     steps: [
       {
-        title: { en: '1. In-Order Sorted Property & Definitions', bn: '১. ইন-অর্ডার সর্টেড ধর্ম ও সংজ্ঞা' },
+        title: {
+          en: 'Successor and predecessor',
+          bn: 'সাকসেসর আর প্রিডেসেসর'
+        },
         explanation: {
-          en: 'In a Binary Search Tree, an **In-Order Traversal** ($Left \\to Root \\to Right$) strictly visits elements in **monotonically increasing order**:\n\n$$\\text{In-Order Sequence: } 20 \\to 30 \\to 40 \\to 50 \\to 60 \\to 70 \\to 80$$\n\n- **In-Order Successor:** The smallest key strictly greater than target $X$ (the immediate next element in sorted order).\n- **In-Order Predecessor:** The greatest key strictly smaller than target $X$ (the immediate previous element in sorted order).\n\nFor node **50**, its predecessor is **40** and its successor is **60**.',
-          bn: 'একটি বাইনারি সার্চ ট্রিতে **ইন-অর্ডার ট্রাভার্সাল** ($Left \\to Root \\to Right$) উপাদানগুলোকে কঠোরভাবে **ছোট থেকে বড় ক্রমে** উপস্থাপন করে:\n\n$$\\text{ইন-অর্ডার ক্রম: } ২০ \\to ৩০ \\to ৪০ \\to ৫০ \\to ৬০ \\to ৭০ \\to ৮০$$\n\n- **ইন-অর্ডার উত্তরসূরি (Successor):** টার্গেট $X$-এর চেয়ে ঠিক পরের ক্ষুদ্রতম বড় উপাদান।\n- **ইন-অর্ডার পূর্বসূরি (Predecessor):** টার্গেট $X$-এর চেয়ে ঠিক আগের বৃহত্তম ছোট উপাদান।\n\nনোড **৫০**-এর পূর্বসূরি হলো **৪০** এবং উত্তরসূরি হলো **৬০**।'
+          en: 'Write the BST values in sorted order (its inorder): `20, 30, 40, 50, 60, 70, 80`.\n\n- The **successor** of a value is the **next** one in this list.\n- The **predecessor** is the **previous** one.\n\nFor **50**: predecessor = **40**, successor = **60**.\n\n> **Why it matters:** deleting a node with two children needs exactly one of these (next lessons).',
+          bn: 'BST-র মানগুলো সাজানো ক্রমে লেখো (মানে তার ইন-অর্ডার): `20, 30, 40, 50, 60, 70, 80`।\n\n- কোনো মানের **সাকসেসর (successor)** হলো এই লিস্টে তার **পরের** মান।\n- **প্রিডেসেসর (predecessor)** হলো **আগের** মান।\n\n**50**-এর জন্য: প্রিডেসেসর = **40**, সাকসেসর = **60**।\n\n> **কেন গুরুত্বপূর্ণ:** দুই চাইল্ডওয়ালা নোড ডিলিট করতে ঠিক এদের একটা লাগে (পরের লেসনে)।'
         },
         line: 1,
         iteration: { i: 1, of: 5, label: { en: 'In-Order Property', bn: 'ইন-অর্ডার ধর্ম' } },
@@ -850,10 +877,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: '2. Case 1: Target Has Right Subtree → inSucc(p.rchild)', bn: '২. কেস ১: টার্গেটের ডান সাবট্রি আছে → inSucc(p.rchild)' },
+        title: {
+          en: 'Successor when there is a right subtree',
+          bn: 'ডান সাব-ট্রি থাকলে সাকসেসর'
+        },
         explanation: {
-          en: 'When the target node has a **right child** (`target.rchild != null`), its In-Order Successor is guaranteed to lie in that right subtree.\n\n**Algorithm:**\n1. Move one step to the right child: `p = target.rchild` (node `70`).\n2. Walk left as far as possible: `while (p.lchild) p = p.lchild`.\n3. The leftmost node reached is the minimum of the right subtree: node **`60`**!\n\nThis runs in $O(h)$ time and requires $O(1)$ space.',
-          bn: 'যখন টার্গেট নোডের **ডান সন্তান থাকে** (`target.rchild != null`), তখন তার উত্তরসূরি নিশ্চিতভাবে সেই ডান সাবট্রির ভেতরেই থাকে।\n\n**অ্যালগরিদম:**\n১. এক ধাপ ডানে যাও: `p = target.rchild` (নোড `৭০`)।\n২. এরপর যতদূর সম্ভব বামে যেতে থাকো: `while (p.lchild) p = p.lchild`।\n৩. সর্ববামের শেষ নোডটিই হলো ডান সাবট্রির ক্ষুদ্রতম মান: নোড **`৬০`**!\n\nএটি $O(h)$ সময়ে সম্পন্ন হয় এবং অতিরিক্ত কোনো মেমোরি লাগে না।'
+          en: 'If the node has a **right** child, its successor is the **smallest value on its right side**.\n\nFor `50`:\n1. step **once right** → `70`;\n2. then keep going **left** as long as you can → `60`.\n\nThe successor of 50 is **60**.\n\n> **Remember it as:** "one step right, then all the way left".',
+          bn: 'নোডের **ডান** চাইল্ড থাকলে, তার সাকসেসর হলো **ডান দিকের সবচেয়ে ছোট মান**।\n\n`50`-এর জন্য:\n১. **একবার ডানে** → `70`;\n২. তারপর যতক্ষণ পারো **বামে** যাও → `60`।\n\n50-এর সাকসেসর **60**।\n\n> **এভাবে মনে রাখো:** "একবার ডানে, তারপর একদম বামে"।'
         },
         line: 3,
         iteration: { i: 2, of: 5, label: { en: 'Case 1: inSucc', bn: 'কেস ১: inSucc' } },
@@ -877,10 +907,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: '3. Case 1 for Predecessor: inPre(p.lchild)', bn: '৩. পূর্বসূরির জন্য কেস ১: inPre(p.lchild)' },
+        title: {
+          en: 'Predecessor when there is a left subtree',
+          bn: 'বাম সাব-ট্রি থাকলে প্রিডেসেসর'
+        },
         explanation: {
-          en: 'Symmetrically, when the target node has a **left child** (`target.lchild != null`), its In-Order Predecessor lies in that left subtree.\n\n**Algorithm:**\n1. Move one step to the left child: `p = target.lchild` (node `30`).\n2. Walk right as far as possible: `while (p.rchild) p = p.rchild`.\n3. The rightmost node reached is the maximum of the left subtree: node **`40`**!\n\nTherefore, `inPre(50.lchild)` immediately returns **`40`**.',
-          bn: 'একইভাবে প্রতিসম নিয়মে, যখন টার্গেটের **বাম সন্তান থাকে** (`target.lchild != null`), তখন তার পূর্বসূরি সেই বাম সাবট্রিতেই থাকে।\n\n**অ্যালগরিদম:**\n১. এক ধাপ বামে যাও: `p = target.lchild` (নোড `৩০`)।\n২. এরপর যতদূর সম্ভব ডানে যেতে থাকো: `while (p.rchild) p = p.rchild`।\n৩. সর্বডানের শেষ নোডটিই হলো বাম সাবট্রির বৃহত্তম মান: নোড **`৪০`**!\n\nসুতরাং `inPre(50.lchild)` সাথে সাথে রিটার্ন করে **`৪০`**।'
+          en: 'The mirror image: if the node has a **left** child, its predecessor is the **biggest value on its left side**.\n\nFor `50`:\n1. step **once left** → `30`;\n2. then keep going **right** as long as you can → `40`.\n\nThe predecessor of 50 is **40**. ("One step left, then all the way right.")',
+          bn: 'আয়নার উল্টো: নোডের **বাম** চাইল্ড থাকলে, তার প্রিডেসেসর হলো **বাম দিকের সবচেয়ে বড় মান**।\n\n`50`-এর জন্য:\n১. **একবার বামে** → `30`;\n২. তারপর যতক্ষণ পারো **ডানে** যাও → `40`।\n\n50-এর প্রিডেসেসর **40**। ("একবার বামে, তারপর একদম ডানে।")'
         },
         line: 7,
         iteration: { i: 3, of: 5, label: { en: 'Case 1: inPre', bn: 'কেস ১: inPre' } },
@@ -904,10 +937,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: '4. Case 2: Target Has NO Right Child (Ancestor Search)', bn: '৪. কেস ২: টার্গেটের ডান সাবট্রি নেই (পূর্বপুরুষ অনুসন্ধান)' },
+        title: {
+          en: 'Successor with no right subtree',
+          bn: 'ডান সাব-ট্রি না থাকলে সাকসেসর'
+        },
         explanation: {
-          en: 'What if we need the successor of a node that has **no right child**? Example: Find successor of node **`40`**.\n\nIn the sorted sequence `[20, 30, 40, 50, 60, 70, 80]`, the successor of `40` is **`50`**, but node `40` has no right subtree!\n\n**Ancestor Search Algorithm:**\n1. Start at `root = 50`. Since `target (40) < 50`, we branch **LEFT** and record `50` as candidate successor!\n2. At node `30`, since `target (40) > 30`, we branch **RIGHT** (candidate `50` is retained).\n3. We reach node `40` (target). The search ends.\n4. Result: The deepest ancestor from which we took a **left turn** is node **`50`**!',
-          bn: 'যদি এমন কোনো নোডের উত্তরসূরি দরকার হয় যার **ডান সন্তান নেই**? যেমন: নোড **`৪০`**-এর উত্তরসূরি নির্ণয়।\n\nসর্টেড সিকোয়েন্স `[২০, ৩০, ৪০, ৫০, ৬০, ৭০, ৮০]` অনুসারে ৪০-এর উত্তরসূরি হলো **৫০**, কিন্তু ৪০-এর কোনো ডান সাবট্রি নেই!\n\n**পূর্বপুরুষ অনুসন্ধান অ্যালগরিদম:**\n১. রুট `৫০` থেকে শুরু করি। যেহেতু `৪০ < ৫০`, আমরা **বামে** যাই এবং `৫০`-কে সম্ভাব্য উত্তরসূরি হিসেবে চিহ্নিত করি!\n২. নোড `৩০`-এ যাই। যেহেতু `৪০ > ৩০`, আমরা **ডানে** যাই (৫০ অক্ষত থাকে)।\n৩. আমরা টার্গেট নোড `৪০`-এ পৌঁছে যাই। লুপ শেষ।\n৪. ফলাফল: যে গভীরতম পূর্বপুরুষ থেকে আমরা **বামে মোড় নিয়েছিলাম**, সেই নোড **`৫০`**-ই হলো ইন-অর্ডার উত্তরসূরি!'
+          en: 'Now find the successor of **40**. It has **no right child**, so the trick above does not work. The answer is **above** it.\n\nWalk down from the root towards 40 and remember the last place you **turned left**:\n\n1. At `50`: 40 < 50 → turn **left**. Remember `50`.\n2. At `30`: 40 > 30 → turn right (do not update).\n3. Reached `40`. The last left turn was at **`50`**.\n\nSo the successor of 40 is **50** — matching the sorted list `… 40, 50 …`.',
+          bn: 'এবার **40**-এর সাকসেসর খোঁজো। এর **কোনো ডান চাইল্ড নেই**, তাই ওপরের কৌশল কাজ করে না। উত্তরটা এর **ওপরে**।\n\nরুট থেকে 40-এর দিকে নামো আর শেষবার কোথায় **বামে মোড় নিয়েছ** মনে রাখো:\n\n১. `50`-এ: 40 < 50 → **বামে** মোড়। `50` মনে রাখো।\n২. `30`-এ: 40 > 30 → ডানে মোড় (আপডেট নয়)।\n৩. `40`-এ পৌঁছালাম। শেষ বামের মোড় ছিল **`50`**-এ।\n\nতাই 40-এর সাকসেসর **50** — সাজানো লিস্ট `… 40, 50 …`-এর সঙ্গে মিলে যায়।'
         },
         line: 14,
         iteration: { i: 4, of: 5, label: { en: 'Case 2: Ancestor Search', bn: 'কেস ২: পূর্বপুরুষ সার্চ' } },
@@ -931,10 +967,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: '5. Application: Abdul Bari Balanced BST Deletion', bn: '৫. প্রয়োগ: আব্দুল বারী ব্যালান্সড BST ডিলিট' },
+        title: {
+          en: 'Where this is used: deleting a node',
+          bn: 'কোথায় লাগে: নোড ডিলিট'
+        },
         explanation: {
-          en: 'Why are `inPre` and `inSucc` essential in computer science?\n\nIn **BST Deletion Case 3** (deleting a node with two children, like root `50`):\n- In the Abdul Bari masterclass textbook (Page 6), we compare subtree heights:\n\n$$\\begin{cases} \\text{If } \\text{height}(p.\\text{lchild}) > \\text{height}(p.\\text{rchild}): & q = \\text{inPre}(p.\\text{lchild}) \\\\ \\text{Else}: & q = \\text{inSucc}(p.\\text{rchild}) \\end{cases}$$\n\n- We copy $q.\\text{data}$ into $p$, then recursively delete $q$ from that subtree.\n- **Significance:** Picking from the taller subtree dynamically keeps the BST balanced and prevents degeneration into a skewed tree!',
-          bn: 'কম্পিউটার বিজ্ঞানে `inPre` এবং `inSucc` কেন এত তাৎপর্যপূর্ণ?\n\n**BST ডিলিট কেস ৩**-এ (দুটি সন্তান বিশিষ্ট নোড, যেমন রুট `৫০` ডিলিট করার সময়):\n- আব্দুল বারীর পাঠ্যবই অনুসারে (পৃষ্ঠা ৬), আমরা দুই পাশের উচ্চতা তুলনা করি:\n\n$$\\begin{cases} \\text{যদি } \\text{উচ্চতা}(\\text{বাম}) > \\text{উচ্চতা}(\\text{ডান}): & q = \\text{inPre}(p.\\text{lchild}) \\\\ \\text{অন্যথায়}: & q = \\text{inSucc}(p.\\text{rchild}) \\end{cases}$$\n\n- আমরা $q$-এর ডেটা $p$-তে বসিয়ে দিই এবং সেই সাবট্রি থেকে $q$-কে ডিলিট করি।\n- **তাৎপর্য:** উঁচু সাবট্রি থেকে নোড সরানোর ফলে BST স্বয়ংক্রিয়ভাবে ব্যালান্সড থাকে এবং স্কিউড হওয়া রোধ হয়!'
+          en: 'To delete a node with **two children** (like the root `50`), we replace its value with a neighbour in sorted order — either the **predecessor** (from the left) or the **successor** (from the right) — and then delete that neighbour instead, which is much easier.\n\nA small trick from Abdul Bari\'s lectures: take the replacement from the **taller** side.\n- left side taller → use the predecessor;\n- otherwise → use the successor.\n\nTaking from the taller side shortens it, which helps keep the tree from leaning.',
+          bn: '**দুই চাইল্ডওয়ালা** নোড (যেমন রুট `50`) ডিলিট করতে, তার মান সাজানো ক্রমের একজন প্রতিবেশী দিয়ে বদলে দিই — **প্রিডেসেসর** (বাম থেকে) বা **সাকসেসর** (ডান থেকে) — তারপর সেই প্রতিবেশীকে ডিলিট করি, যেটা অনেক সহজ।\n\nআব্দুল বারির লেকচারের একটা ছোট কৌশল: বদলিটা নাও **লম্বা** দিক থেকে।\n- বাম দিক লম্বা → প্রিডেসেসর ব্যবহার করো;\n- নইলে → সাকসেসর।\n\nলম্বা দিক থেকে নিলে সেটা খাটো হয়, তাতে ট্রি এক দিকে হেলে পড়া কমে।'
         },
         line: 11,
         iteration: { i: 5, of: 5, label: { en: 'BST Deletion Application', bn: 'BST ডিলিট প্রয়োগ' } },
@@ -963,8 +1002,8 @@ export const bstOpsTopics = [
     id: 'bst-deletion',
     name: { en: 'BST Deletion (All 3 Cases)', bn: 'BST ডিলিট (৩টি কেস)' },
     description: {
-      en: 'Case 1 (Leaf), Case 2 (Single Child), and Case 3 (Two Children using Predecessor/Successor)',
-      bn: 'কেস ১ (লিফ), কেস ২ (এক সন্তান), এবং কেস ৩ (ইন-অর্ডার পূর্বসূরি/উত্তরসূরি)'
+      en: 'Removing a value: leaf, one child, or two children',
+      bn: 'মান সরানো: লিফ, এক চাইল্ড, বা দুই চাইল্ড'
     },
     categoryKey: 'trees',
     subgroupKey: 'bst',
@@ -1183,10 +1222,13 @@ export const bstOpsTopics = [
     },
     steps: [
       {
-        title: { en: 'Case 1: Deleting a Leaf Node (Degree 0)', bn: 'কেস ১: লিফ নোড ডিলিট (ডিগ্রি ০)' },
+        title: {
+          en: 'Case 1: delete a leaf',
+          bn: 'কেস ১: লিফ ডিলিট'
+        },
         explanation: {
-          en: 'In **Case 1**, the node to be deleted has **zero children** (`p.lchild == null && p.rchild == null`).\n\nExample: Delete leaf **`10`**.\n- The parent node (`15`) simply sets its child pointer to `NULL`.\n- Memory for node `10` is safely deallocated.\n- Easiest operation: $O(1)$ pointer reset.',
-          bn: '**কেস ১-এ** টার্গেট নোডের **কোনো সন্তান থাকে না** (`ডিগ্রি ০`)।\n\nউদাহরণ: লিফ নোড **`10`** ডিলিট করো।\n- প্যারেন্ট নোড (`15`) সরাসরি তার চাইল্ড পয়েন্টারকে `NULL` করে দেয়।\n- নোড `10`-এর মেমোরি মুক্ত (free) করে দেওয়া হয়।\n- সবচেয়ে সহজ কেস: $O(1)$ সময়ে সমাধান হয়।',
+          en: 'There are 3 cases, depending on how many children the node has. The easiest: **no children** (a leaf).\n\nDelete **10**: just tell its parent `15` "you no longer have that child" (set the link to `null`). Nothing else changes.',
+          bn: 'নোডের কয়টা চাইল্ড আছে তার ওপর নির্ভর করে ৩টা কেস। সবচেয়ে সহজ: **কোনো চাইল্ড নেই** (লিফ)।\n\n**10** ডিলিট করো: শুধু তার প্যারেন্ট `15`-কে বলো "ওই চাইল্ড আর নেই" (লিংকটা `null` করো)। আর কিছুই বদলায় না।'
         },
         line: 6,
         iteration: { i: 1, of: 4, label: { en: 'Case 1 (Leaf)', bn: 'কেস ১ (লিফ)' } },
@@ -1208,10 +1250,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Case 2: Deleting a Node with One Child (Degree 1)', bn: 'কেস ২: এক সন্তান বিশিষ্ট নোড ডিলিট (ডিগ্রি ১)' },
+        title: {
+          en: 'Case 2: delete a node with one child',
+          bn: 'কেস ২: এক চাইল্ডওয়ালা নোড ডিলিট'
+        },
         explanation: {
-          en: 'In **Case 2**, the node to be deleted has **exactly one child**.\n\nExample: If node `20` only had right child `25`:\n- We **bypass** node `20` completely!\n- Parent `15` directly links its pointer to grandchild `25` (`15.rchild = 25`).\n- Node `20` is deleted. The tree structure remains intact without changing height.',
-          bn: '**কেস ২-এ** টার্গেট নোডের **ঠিক একটি সন্তান** থাকে (`ডিগ্রি ১`)।\n\nউদাহরণ: ধরি নোড `20`-এর কেবল একটি সন্তান `25` আছে:\n- আমরা মাঝের নোড `20`-কে সরাসরি **বাইপাস** করে দিই!\n- প্যারেন্ট `15` সরাসরি নাতি নোড `25`-এর সাথে যুক্ত হয় (`15.rchild = 25`)।\n- নোড `20` মেমোরি থেকে ডিলিট হয়ে যায়। ট্রির বাকি কাঠামো অক্ষত থাকে।',
+          en: 'If the node has **one child**, let the child take its place.\n\nExample: if `20` had only a right child `25`, then deleting `20` means: connect `15` directly to `25` (`15.right = 25`) and remove `20`.\n\nIt is like removing a link from a chain and joining the two ends. The BST rule still holds, because 25 was already on the correct side of 15.',
+          bn: 'নোডের **একটা চাইল্ড** থাকলে, চাইল্ডটাকে তার জায়গায় বসাও।\n\nউদাহরণ: `20`-এর শুধু ডান চাইল্ড `25` থাকলে, `20` ডিলিট মানে: `15`-কে সরাসরি `25`-এর সঙ্গে জোড়ো (`15.right = 25`) আর `20` সরিয়ে দাও।\n\nচেইন থেকে একটা কড়া খুলে দুই মাথা জুড়ে দেওয়ার মতো। BST নিয়ম ঠিক থাকে, কারণ 25 আগে থেকেই 15-এর সঠিক দিকে ছিল।'
         },
         line: 8,
         iteration: { i: 2, of: 4, label: { en: 'Case 2 (Degree 1)', bn: 'কেস ২ (১ সন্তান)' } },
@@ -1234,10 +1279,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Case 3: Deleting a Node with Two Children (Degree 2)', bn: 'কেস ৩: দুই সন্তান বিশিষ্ট নোড ডিলিট (ডিগ্রি ২)' },
+        title: {
+          en: 'Case 3: delete a node with two children',
+          bn: 'কেস ৩: দুই চাইল্ডওয়ালা নোড ডিলিট'
+        },
         explanation: {
-          en: 'What if we want to delete **Root 30** (which has two full subtrees)?\n\nWe CANNOT just remove it, because it would split the tree into pieces! Instead:\n1. Find its **In-Order Successor** (smallest element in right subtree = `40`) OR **In-Order Predecessor** (largest element in left subtree = `20`).\n2. **Copy `40` into node 30\'s position**.\n3. Recursively delete `40` from the right subtree (which is guaranteed to have degree $\\le 1$!).',
-          bn: 'যদি আমরা **রুট নোড 30** ডিলিট করতে চাই (যার দুই পাশেই সন্তান আছে)?\n\nসরাসরি ফেলে দেওয়া সম্ভব নয়, কারণ ট্রি দুই টুকরো হয়ে যাবে! কৌশলটি হলো:\n১. তার **ইন-অর্ডার উত্তরসূরি** (ডান পাশের ক্ষুদ্রতম নোড = `40`) অথবা **ইন-অর্ডার পূর্বসূরি** (বাম পাশের বৃহত্তম নোড = `20`) খুঁজে বের করো।\n২. ৩০-এর ঘরে **৪০-এর মানটি কপি করে বসিয়ে দাও**।\n৩. এবার ডান পাশ থেকে ৪০-কে ডিলিট করো (যার সন্তান সর্বোচ্চ ১টি হতে পারে, ফলে এটি কেস ১ বা ২-এ নেমে আসে!)।',
+          en: 'Delete the root **30**, which has two subtrees. We cannot just remove it — the tree would fall into two pieces.\n\nTrick: **swap in a neighbour value**.\n1. Find its **successor** — the smallest value on the right side: `40` (or the predecessor `20` from the left side).\n2. **Copy 40** into the root\'s place.\n3. Now delete the old `40` down below. It has **at most one child** (it was the smallest on its side), so that is Case 1 or 2 — easy.',
+          bn: 'রুট **30** ডিলিট করো, যার দুটো সাব-ট্রি। শুধু সরিয়ে দিলে চলবে না — ট্রিটা দুই টুকরো হয়ে যাবে।\n\nকৌশল: **একটা প্রতিবেশী মান বসিয়ে দাও**।\n১. তার **সাকসেসর** খোঁজো — ডান দিকের সবচেয়ে ছোট মান: `40` (বা বাম দিকের প্রিডেসেসর `20`)।\n২. রুটের জায়গায় **40 কপি** করো।\n৩. এবার নিচের পুরোনো `40` ডিলিট করো। এর **বড়জোর একটা চাইল্ড** (নিজের দিকে এটাই সবচেয়ে ছোট ছিল), তাই এটা কেস ১ বা ২ — সহজ।'
         },
         line: 13,
         iteration: { i: 3, of: 4, label: { en: 'Case 3 (Degree 2)', bn: 'কেস ৩ (২ সন্তান)' } },
@@ -1260,17 +1308,20 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Case 3 Result: BST Invariants Preserved', bn: 'কেস ৩-এর ফলাফল: BST শর্ত সম্পূর্ণ অক্ষুণ্ণ' },
+        title: {
+          en: 'Case 3 result: still a valid BST',
+          bn: 'কেস ৩-এর ফল: এখনো সঠিক BST'
+        },
         explanation: {
-          en: 'After promoting `40` and deleting the original duplicate `40`:\n- The new root is **`40`**.\n- Every node in the left subtree (`10, 15, 20`) is $< 40$.\n- Every node in the right subtree (`50, 60`) is $> 40$.\n\nIn-Order result: `[10, 15, 20, 40, 50, 60]`. Clean, perfectly sorted, and $O(h)$ optimal.',
-          bn: '৪০-কে রুটে এনে নিচের নকল ৪০ ডিলিট করার পর:\n- নতুন রুট হলো **`40`**।\n- বাম সাব-ট্রির সব নোড (`10, 15, 20`) $< 40$।\n- ডান সাব-ট্রির সব নোড (`50, 60`) $> 40$।\n\nইন-অর্ডারের ফল: `[10, 15, 20, 40, 50, 60]`। নিখুঁতভাবে সর্টেড এবং $O(h)$ অপটিমাল।',
+          en: 'After the swap, the root is **40**:\n\n- everything on the left (`10, 15, 20`) is smaller than 40;\n- everything on the right (`50, 60`) is bigger than 40.\n\nInorder: `10, 15, 20, 40, 50, 60` — still sorted. Delete takes as many steps as the tree is tall.',
+          bn: 'অদলবদলের পর রুট **40**:\n\n- বাম দিকের সব (`10, 15, 20`) 40-এর চেয়ে ছোট;\n- ডান দিকের সব (`50, 60`) 40-এর চেয়ে বড়।\n\nইন-অর্ডার: `10, 15, 20, 40, 50, 60` — এখনো সাজানো। ডিলিটে ট্রির উচ্চতার সমান ধাপ লাগে।'
         },
         line: 16,
         iteration: { i: 4, of: 4, label: { en: 'Tree Repaired', bn: 'ট্রি অক্ষত' } },
         state: { newRoot: 40, inOrder: '[10, 15, 20, 40, 50, 60]', validBST: true },
         scene: {
           kind: 'tree',
-          label: 'Completed Deletion: Root is now 40. All BST ordering invariants preserved!',
+          label: 'Completed Deletion: Root is now 40. The BST rule still holds everywhere!',
           root: {
             v: 40,
             l: { v: 15, l: { v: 10 }, r: { v: 20 } },
@@ -1291,8 +1342,8 @@ export const bstOpsTopics = [
     id: 'recursive-tree-metrics',
     name: { en: 'Recursive Tree Analysis Metrics', bn: 'রিকারসিভ ট্রি মেট্রিক্স ও গণনা' },
     description: {
-      en: 'Post-order recurrence relations for total nodes, leaf nodes, degree-2 nodes, height, and element sum',
-      bn: 'পোস্ট-অর্ডার রিকারশন দিয়ে মোট নোড, লিফ, ২-ডিগ্রি নোড, উচ্চতা ও উপাদানের যোগফল নির্ণয়'
+      en: 'Count nodes and leaves, find the height and sum with recursion',
+      bn: 'রিকার্শন দিয়ে নোড আর লিফ গোনা, উচ্চতা আর যোগফল বের করা'
     },
     categoryKey: 'trees',
     subgroupKey: 'bst',
@@ -1521,10 +1572,13 @@ export const bstOpsTopics = [
     },
     steps: [
       {
-        title: { en: 'Post-Order Recurrence Logic', bn: 'পোস্ট-অর্ডার রিকারশন লজিক' },
+        title: {
+          en: 'Measuring a tree with recursion',
+          bn: 'রিকার্শন দিয়ে ট্রি মাপা'
+        },
         explanation: {
-          en: 'How can we measure any property of a binary tree?\n\nBy using the **Divide and Conquer** paradigm:\n1. Solve the metric recursively on the **left subtree**.\n2. Solve the metric recursively on the **right subtree**.\n3. **Combine the answers** at the current parent node!\n\nThis is identical to Post-Order traversal (Left, Right, Root).',
-          bn: 'একটি বাইনারি ট্রির যেকোনো বৈশিষ্ট্য কীভাবে পরিমাপ করা যায়?\n\n**ডিভাইড অ্যান্ড কনকার** নিয়মের মাধ্যমে:\n১. বাম সাব-ট্রির মান রিকারসিভভাবে বের করো।\n২. ডান সাব-ট্রির মান রিকারসিভভাবে বের করো।\n৩. বর্তমান প্যারেন্টে দুটি মানকে **যুক্ত করো**!\n\nএটি হুবহু পোস্ট-অর্ডার ট্রাভার্সাল (বাম, ডান, রুট)-এর কাঠামোর ওপর কাজ করে।',
+          en: 'How do you count nodes, leaves, height or the total of a tree? One idea solves all of them:\n\n1. get the answer for the **left** subtree;\n2. get the answer for the **right** subtree;\n3. **combine** the two answers at the current node.\n\nAnd if the node is `null` (an empty tree), return a simple starting value, like 0.\n\n> This "children first, then the parent" order is exactly **postorder**.',
+          bn: 'একটা ট্রির নোড, লিফ, উচ্চতা বা মোট যোগফল কীভাবে গুনবে? একটাই ধারণা সবগুলোর সমাধান করে:\n\n১. **বাম** সাব-ট্রির উত্তর বের করো;\n২. **ডান** সাব-ট্রির উত্তর বের করো;\n৩. বর্তমান নোডে দুটো উত্তর **মিলিয়ে** নাও।\n\nআর নোডটা `null` (খালি ট্রি) হলে একটা সহজ শুরুর মান ফেরত দাও, যেমন 0।\n\n> "আগে চাইল্ড, তারপর প্যারেন্ট" — এই ক্রমটাই হলো **পোস্ট-অর্ডার**।'
         },
         line: 1,
         iteration: { i: 1, of: 5, label: { en: 'Divide & Conquer', bn: 'ভাগ ও সমাধান' } },
@@ -1539,10 +1593,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Metric 1: Total Node Count', bn: 'মেট্রিক ১: মোট নোড সংখ্যা গণনা' },
+        title: {
+          en: 'Count all nodes',
+          bn: 'সব নোড গোনো'
+        },
         explanation: {
-          en: 'Formula:\n`Count(p) = Count(p.lchild) + Count(p.rchild) + 1`\nBase case: `if p == null: return 0`\n\nTracing on root 50:\n- Left subtree has 3 nodes (`10, 20, 30`).\n- Right subtree has 3 nodes (`60, 70, 80`).\n- Total nodes = $3 + 3 + 1 = \\mathbf{7}$.',
-          bn: 'সূত্র:\n`Count(p) = Count(p.lchild) + Count(p.rchild) + 1`\nবেস কেস: `if p == null: return 0`\n\nরুট ৫০-এর ক্ষেত্রে হিসাব:\n- বাম সাব-ট্রিতে নোড আছে ৩টি (`10, 20, 30`)।\n- ডান সাব-ট্রিতে নোড আছে ৩টি (`60, 70, 80`)।\n- মোট নোড = $3 + 3 + 1 = \\mathbf{7}$ টি।',
+          en: '`count(node) = count(left) + count(right) + 1` (the **+1** is the node itself). An empty tree has 0 nodes.\n\nAt root `50`: the left side has 3 nodes, the right side has 3 nodes, so 3 + 3 + 1 = **7**.',
+          bn: '`count(node) = count(left) + count(right) + 1` (**+1** হলো নোডটা নিজে)। খালি ট্রিতে 0টা নোড।\n\nরুট `50`-এ: বাম দিকে ৩টা, ডান দিকে ৩টা, তাই 3 + 3 + 1 = **7**।'
         },
         line: 3,
         iteration: { i: 2, of: 5, label: { en: 'Count Nodes', bn: 'নোড সংখ্যা' } },
@@ -1566,10 +1623,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Metric 2: Leaf Node Count (N0)', bn: 'মেট্রিক ২: লিফ নোড সংখ্যা গণনা' },
+        title: {
+          en: 'Count the leaves',
+          bn: 'লিফ গোনো'
+        },
         explanation: {
-          en: 'Formula:\n`if p == null: return 0`\n`if p.lchild == null && p.rchild == null: return 1`\n`return Leaf(p.lchild) + Leaf(p.rchild)`\n\nLeaves found: `10, 30, 60, 80` $\\implies$ **Total Leaves = 4**.\nRemember the theorem: $N_0 = N_2 + 1 \\implies 4 = 3 + 1$. Perfectly verified!',
-          bn: 'সূত্র:\n`if p == null: return 0`\n`if p.lchild == null && p.rchild == null: return 1`\n`return Leaf(p.lchild) + Leaf(p.rchild)`\n\nখুঁজে পাওয়া লিফ: `10, 30, 60, 80` $\\implies$ **মোট লিফ = ৪টি**।\nআগের সেই উপপাদ্য মনে করো: $N_0 = N_2 + 1 \\implies 4 = 3 + 1$। নিখুঁতভাবে প্রমাণিত!',
+          en: 'A leaf is a node with no children. So:\n- empty → 0;\n- a node with **no children** → 1 (it is a leaf);\n- otherwise → leaves on the left + leaves on the right.\n\nLeaves here: `10, 30, 60, 80` → **4**.\n\n> Check with the rule from Tree Math: leaves = nodes with two children + 1 → 4 = 3 + 1 ✓.',
+          bn: 'লিফ মানে যে নোডের কোনো চাইল্ড নেই। তাই:\n- খালি → 0;\n- **কোনো চাইল্ড নেই** এমন নোড → 1 (এটাই লিফ);\n- নইলে → বাম দিকের লিফ + ডান দিকের লিফ।\n\nএখানে লিফ: `10, 30, 60, 80` → **4**টা।\n\n> ট্রি গণিতের নিয়ম দিয়ে যাচাই: লিফ = দুই চাইল্ডওয়ালা নোড + 1 → 4 = 3 + 1 ✓।'
         },
         line: 7,
         iteration: { i: 3, of: 5, label: { en: 'Count Leaves', bn: 'লিফ গণনা' } },
@@ -1592,10 +1652,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Metric 3: Tree Height Calculation', bn: 'মেট্রিক ৩: ট্রির উচ্চতা নির্ণয়' },
+        title: {
+          en: 'Find the height',
+          bn: 'উচ্চতা বের করো'
+        },
         explanation: {
-          en: 'Formula:\n`Height(p) = 1 + max(Height(p.lchild), Height(p.rchild))`\nBase case: `if p == null: return -1`\n\nTracing:\n- Leaves return height `0`.\n- Node 20: $1 + \\max(0, 0) = 1$.\n- Node 70: $1 + \\max(0, 0) = 1$.\n- Root 50: $1 + \\max(1, 1) = \\mathbf{2}$.\n\nTree height is **2** (longest path has 2 edges).',
-          bn: 'সূত্র:\n`Height(p) = 1 + max(Height(p.lchild), Height(p.rchild))`\nবেস কেস: `if p == null: return -1`\n\nহিসাবের ধাপ:\n- লিফ নোডগুলোর হাইট `0`।\n- নোড ২০-এর হাইট: $1 + \\max(0, 0) = 1$।\n- নোড ৭০-এর হাইট: $1 + \\max(0, 0) = 1$।\n- রুট ৫০-এর হাইট: $1 + \\max(1, 1) = \\mathbf{2}$।\n\nট্রির মোট উচ্চতা **২** (সর্বোচ্চ পাথটিতে ২টি এজ আছে)।',
+          en: '`height(node) = 1 + max(height(left), height(right))` — take the **taller** side and add the one edge down to it. An empty tree has height **−1**, so a single leaf gets 1 + (−1) = 0.\n\n- leaves → 0;\n- `20` and `70` → 1 + max(0, 0) = 1;\n- root `50` → 1 + max(1, 1) = **2**.\n\nThe longest path from the root down has **2 edges**.',
+          bn: '`height(node) = 1 + max(height(left), height(right))` — **লম্বা** দিকটা নাও আর সেখানে নামার একটা এজ যোগ করো। খালি ট্রির উচ্চতা **−1**, তাই একটা লিফ পায় 1 + (−1) = 0।\n\n- লিফ → 0;\n- `20` আর `70` → 1 + max(0, 0) = 1;\n- রুট `50` → 1 + max(1, 1) = **2**।\n\nরুট থেকে নিচের সবচেয়ে লম্বা পথে **২টা এজ**।'
         },
         line: 11,
         iteration: { i: 4, of: 5, label: { en: 'Tree Height', bn: 'ট্রির উচ্চতা' } },
@@ -1619,10 +1682,13 @@ export const bstOpsTopics = [
         }
       },
       {
-        title: { en: 'Metric 4: Sum of All Node Elements', bn: 'মেট্রিক ৪: সমস্ত উপাদানের সমষ্টি' },
+        title: {
+          en: 'Add up all values',
+          bn: 'সব মান যোগ করো'
+        },
         explanation: {
-          en: 'Formula:\n`Sum(p) = Sum(p.lchild) + Sum(p.rchild) + p.data`\n\nSum of Left subtree $= 10 + 20 + 30 = 60$.\nSum of Right subtree $= 60 + 70 + 80 = 210$.\nTotal Sum $= 60 + 210 + 50 = \\mathbf{320}$.\n\nAll metrics execute in $O(N)$ linear time and $O(h)$ auxiliary stack space.',
-          bn: 'সূত্র:\n`Sum(p) = Sum(p.lchild) + Sum(p.rchild) + p.data`\n\nবাম পাশের যোগফল $= 10 + 20 + 30 = 60$।\nডান পাশের যোগফল $= 60 + 70 + 80 = 210$।\nট্রির মোট যোগফল $= 60 + 210 + 50 = \\mathbf{320}$।\n\nসমস্ত মেট্রিক মাত্র $O(N)$ লিনিয়ার সময় ও $O(h)$ স্ট্যাক স্পেসে সম্পন্ন হয়।',
+          en: '`sum(node) = sum(left) + sum(right) + node.value`. An empty tree adds 0.\n\n- left side: 10 + 20 + 30 = 60;\n- right side: 60 + 70 + 80 = 210;\n- total: 60 + 210 + 50 = **320**.\n\n> Every one of these visits each node once: **O(N)** time.',
+          bn: '`sum(node) = sum(left) + sum(right) + node.value`। খালি ট্রি 0 যোগ করে।\n\n- বাম দিক: 10 + 20 + 30 = 60;\n- ডান দিক: 60 + 70 + 80 = 210;\n- মোট: 60 + 210 + 50 = **320**।\n\n> এগুলোর প্রতিটা প্রতিটা নোড একবার দেখে: **O(N)** সময়।'
         },
         line: 14,
         iteration: { i: 5, of: 5, label: { en: 'Sum Values', bn: 'যোগফল' } },
