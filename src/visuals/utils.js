@@ -112,24 +112,27 @@ const TEX_SYMBOLS = {
  */
 export function texToHtml(str) {
   if (!str || str.indexOf('$') < 0) return str;
-  const conv = (m) => {
-    let x = m.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    for (let k = 0; k < 3; k++) {
+  const frac = (top, bot, cls = '') => `<span class="mfrac${cls}"><span>${top}</span><span>${bot}</span></span>`;
+  const conv = (m, block = false) => {
+    let x = m.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\[,;!]/g, ' ');
+    for (let k = 0; k < 4; k++) {
       x = x
         .replace(/\\mathbf\{([^{}]*)\}/g, '<b>$1</b>')
         .replace(/\\text\{([^{}]*)\}/g, '$1')
-        .replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, (_, a, b) => `${/^\w+$/.test(a) ? a : `(${a})`}/${/^\w+$/.test(b) ? b : `(${b})`}`)
-        .replace(/\\binom\{([^{}]*)\}\{([^{}]*)\}/g, 'C($1, $2)')
+        .replace(/_\{([^{}]*)\}/g, '<sub>$1</sub>')
+        .replace(/\^\{([^{}]*)\}/g, '<sup>$1</sup>')
+        // fractions are drawn stacked: top, a line, bottom
+        .replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, (_, a, b) => frac(a, b))
+        .replace(/\\binom\{([^{}]*)\}\{([^{}]*)\}/g, (_, a, b) => `(${frac(a, b, ' mbinom')})`)
         .replace(/\\sqrt\{([^{}]*)\}/g, '√($1)');
     }
     x = x.replace(/\\([a-zA-Z]+)/g, (all, name) => (TEX_SYMBOLS[name] != null ? TEX_SYMBOLS[name] : name));
-    x = x.replace(/_\{([^{}]*)\}/g, '<sub>$1</sub>').replace(/_([A-Za-z0-9])/g, '<sub>$1</sub>');
-    x = x.replace(/\^\{([^{}]*)\}/g, '<sup>$1</sup>').replace(/\^([A-Za-z0-9])/g, '<sup>$1</sup>');
-    return `<span class="math">${x.replace(/[{}]/g, '').trim()}</span>`;
+    x = x.replace(/_([A-Za-z0-9])/g, '<sub>$1</sub>').replace(/\^([A-Za-z0-9])/g, '<sup>$1</sup>');
+    return `<span class="math${block ? ' math-block' : ''}">${x.replace(/[{}]/g, '').trim()}</span>`;
   };
   // only $…$ on one line that does not start or end with a space (so "$5 and $6" stays as is)
   return str
-    .replace(/\$\$([^$`]{1,240}?)\$\$/g, (_, m) => conv(m.trim()))
+    .replace(/\n?\$\$([^$`]{1,240}?)\$\$\n?/g, (_, m) => conv(m.trim(), true))
     .replace(/\$(?=\S)([^$\n`]{1,160}?)(?<=\S)\$/g, (_, m) => conv(m));
 }
 

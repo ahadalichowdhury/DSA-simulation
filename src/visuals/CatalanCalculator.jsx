@@ -40,7 +40,7 @@ export default function CatalanCalculator({ lang = 'en' }) {
           <span>{lang === 'bn' ? 'ক্যাটালান সংখ্যা ও ট্রি কাউন্টিং ক্যালকুলেটর' : 'Catalan Formula & Tree Counting Calculator'}</span>
         </div>
         <div className="catalan-badge">
-          T(N) = <span className="mono">1/(N+1) × (2N! / (N! × N!))</span>
+          T(N) = <span className="mfrac"><span>(2N)!</span><span>(N + 1)! · N!</span></span>
         </div>
       </div>
 

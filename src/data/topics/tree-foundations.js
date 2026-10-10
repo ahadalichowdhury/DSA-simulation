@@ -668,7 +668,7 @@ export const foundationTopics = [
       time: 'O(n) math',
       space: 'O(1)',
       note: {
-        en: 'For N unlabeled nodes, Catalan formula T(N) = (2N)! / ((N+1)! N!) gives the total distinct binary tree structures. For N labeled nodes, multiply by N! permutations.',
+        en: 'The Catalan number T(N) (see the formula in the steps) counts the different binary tree shapes with N nodes. If the nodes have labels, multiply by N!.',
         bn: 'N টি আনলেবেলড নোডের জন্য কাতালান সূত্র T(N) মোট পৃথক ট্রির গঠন গণনা করে। লেবেলড নোডের ক্ষেত্রে N! পারমিউটেশন দিয়ে গুণ করতে হয়।'
       }
     },
@@ -828,8 +828,8 @@ export const foundationTopics = [
       {
         title: { en: 'Catalan Numbers: Counting Distinct Tree Shapes', bn: 'কাতালান সংখ্যা: ট্রির সম্ভাব্য গঠন গণনা' },
         explanation: {
-          en: 'How many distinct structural shapes can be formed with **N unlabeled nodes**?\n\nThe answer is given by the **Catalan Number** formula:\n$$T(N) = \\frac{1}{N + 1} \\binom{2N}{N} = \\frac{(2N)!}{(N + 1)! N!}$$\n\nOr recursively: $T(N) = \\sum_{i=1}^{N} T(i - 1) \\cdot T(N - i)$\n- $T(0) = 1, T(1) = 1, T(2) = 2, \\mathbf{T(3) = 5}, T(4) = 14, T(5) = 42, T(6) = 132$.',
-          bn: '**N সংখ্যক আনলেবেলড নোড** দিয়ে কয়টি ভিন্ন ভিন্ন আকৃতির বাইনারি ট্রি তৈরি করা সম্ভব?\n\nএর উত্তর দেয় বিশ্ববিখ্যাত **কাতালান সংখ্যা (Catalan Numbers)** সূত্র:\n$$T(N) = \\frac{1}{N + 1} \\binom{2N}{N} = \\frac{(2N)!}{(N + 1)! N!}$$\n\nরিকারসিভ রূপ: $T(N) = \\sum_{i=1}^{N} T(i - 1) \\cdot T(N - i)$\n- $T(0) = 1, T(1) = 1, T(2) = 2, \\mathbf{T(3) = 5}, T(4) = 14, T(5) = 42, T(6) = 132$।'
+          en: 'How many different **shapes** can a binary tree with **N nodes** have?\n\nThe answer is the **Catalan number**:\n$$T(N) = \\frac{(2N)!}{(N + 1)! \\cdot N!}$$\nExample with **N = 3**:\n$$T(3) = \\frac{6!}{4! \\cdot 3!} = \\frac{720}{24 \\cdot 6} = \\mathbf{5}$$\nFirst values: T(0) = 1, T(1) = 1, T(2) = 2, **T(3) = 5**, T(4) = 14, T(5) = 42.',
+          bn: '**N টা নোড** দিয়ে একটা বাইনারি ট্রি কয়টা ভিন্ন **আকারের** হতে পারে?\n\nউত্তর দেয় **কাতালান সংখ্যা (Catalan number)**:\n$$T(N) = \\frac{(2N)!}{(N + 1)! \\cdot N!}$$\nউদাহরণ, **N = 3**:\n$$T(3) = \\frac{6!}{4! \\cdot 3!} = \\frac{720}{24 \\cdot 6} = \\mathbf{5}$$\nপ্রথম কয়েকটা মান: T(0) = 1, T(1) = 1, T(2) = 2, **T(3) = 5**, T(4) = 14, T(5) = 42।'
         },
         line: 1,
         iteration: { i: 1, of: 5, label: { en: 'Catalan Math', bn: 'কাতালান সূত্র' } },
@@ -870,8 +870,8 @@ export const foundationTopics = [
       {
         title: { en: 'Labeled Nodes & Maximum Height Trees', bn: 'লেবেলযুক্ত নোড ও সর্বোচ্চ উচ্চতার ট্রি' },
         explanation: {
-          en: '- **Labeled Nodes**: If the $N$ nodes have distinct values (e.g., keys A, B, C), each of the $T(N)$ structural shapes can be filled in $N!$ permutations:\n$$\\text{Total Labeled Trees} = T(N) \\times N! = \\left[ \\frac{1}{N+1} \\binom{2N}{N} \\right] \\times N!$$\nFor $N = 3$: $5 \\times 3! = 5 \\times 6 = \\mathbf{30\\text{ distinct labeled trees}}$.\n\n- **Maximum Height Trees ($h = N - 1$)**: The number of trees having maximum possible height is given by **$2^{N - 1}$**. For $N = 3$, $2^{3-1} = 4$ trees (shapes 1, 2, 4, 5).',
-          bn: '- **লেবেলযুক্ত নোড (Labeled Nodes)**: নোডগুলোতে যদি নাম বা মান থাকে (যেমন A, B, C), তবে প্রতিটি কাঠামোর ভেতর নোডগুলোকে $N!$ ভাবে সাজানো যায়:\n$$\\text{মোট লেবেলড ট্রি} = T(N) \\times N! = \\left[ \\frac{1}{N+1} \\binom{2N}{N} \\right] \\times N!$$\n$N = 3$ হলে: $5 \\times 3! = 5 \\times 6 = \\mathbf{30টি\\text{ পৃথক ট্রি}}$।\n\n- **সর্বোচ্চ উচ্চতার ট্রি ($h = N - 1$)**: $N$ নোডের জন্য সর্বোচ্চ উচ্চতা ($h = N-1$) বিশিষ্ট ট্রি সংখ্যা হলো **$2^{N - 1}$**। $N=3$ হলে $2^{3-1} = 4$ টি (আগের স্লাইডের ১, ২, ৪ ও ৫ নং গঠন)।'
+          en: '- **Labeled Nodes**: If the $N$ nodes have distinct values (e.g., keys A, B, C), each of the $T(N)$ structural shapes can be filled in $N!$ permutations:\n$$\\text{Total labeled trees} = T(N) \\times N!$$\nFor $N = 3$: $5 \\times 3! = 5 \\times 6 = \\mathbf{30\\text{ distinct labeled trees}}$.\n\n- **Maximum Height Trees ($h = N - 1$)**: The number of trees having maximum possible height is given by **$2^{N - 1}$**. For $N = 3$, $2^{3-1} = 4$ trees (shapes 1, 2, 4, 5).',
+          bn: '- **লেবেলযুক্ত নোড (Labeled Nodes)**: নোডগুলোতে যদি নাম বা মান থাকে (যেমন A, B, C), তবে প্রতিটি কাঠামোর ভেতর নোডগুলোকে $N!$ ভাবে সাজানো যায়:\n$$\\text{মোট লেবেলড ট্রি} = T(N) \\times N!$$\n$N = 3$ হলে: $5 \\times 3! = 5 \\times 6 = \\mathbf{30টি\\text{ পৃথক ট্রি}}$।\n\n- **সর্বোচ্চ উচ্চতার ট্রি ($h = N - 1$)**: $N$ নোডের জন্য সর্বোচ্চ উচ্চতা ($h = N-1$) বিশিষ্ট ট্রি সংখ্যা হলো **$2^{N - 1}$**। $N=3$ হলে $2^{3-1} = 4$ টি (আগের স্লাইডের ১, ২, ৪ ও ৫ নং গঠন)।'
         },
         line: 6,
         iteration: { i: 3, of: 5, label: { en: 'Permutations', bn: 'পারমিউটেশন' } },

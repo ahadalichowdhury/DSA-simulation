@@ -2097,3 +2097,10 @@ code{font-family:var(--font-mono);font-size:.92em;padding:0 4px;border-radius:4p
 @media (max-width:900px){.gp-algos{gap:6px}.bst-inline-input.gp-edges{min-width:0;width:100%}}
 .math{font-family:'Cambria Math','STIX Two Math','Times New Roman',serif;font-size:1.05em;white-space:nowrap}
 .math sub,.math sup{font-size:.72em}
+/* stacked fractions in lesson math: top, a line, bottom */
+.mfrac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .2em;line-height:1.25}
+.mfrac>span{padding:0 .25em;white-space:nowrap}
+.mfrac>span:first-child{border-bottom:1.5px solid currentColor;padding-bottom:.1em}
+.mfrac>span:last-child{padding-top:.1em}
+.mfrac.mbinom>span:first-child{border-bottom:none}
+.math-block{display:block;text-align:center;margin:.6em 0;font-size:1.18em;overflow-x:auto;padding:.2em 0}
