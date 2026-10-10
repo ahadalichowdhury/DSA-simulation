@@ -12,6 +12,8 @@ import GraphToolbar from './components/GraphToolbar';
 import { runGraphOp, checkGraphOp, GRAPH_DEFAULT } from './visuals/graphPlayground.js';
 import { GRAPH_ALGO_META } from './data/topics/graph-playground.js';
 import TreeToolbar from './components/TreeToolbar';
+import TermTooltip from './components/TermTooltip';
+import { termsFor } from './data/glossary.js';
 import { runTreeOp, checkTreeOp, TREE_DEFAULT, lessonTraversalSteps } from './visuals/treePlayground.js';
 import { TREE_ALGO_META } from './data/topics/tree-playground.js';
 import { topics, categoryOrder } from './data/topics/index.js';
@@ -222,6 +224,8 @@ function App() {
   const playPending = bstPending || graphPending || treePending;
 
   const activeTopic = isInteractiveTraversal && traversalTopic ? traversalTopic : isBstPlayground && bstTopic ? bstTopic : isGraphPlayground && graphTopic ? graphTopic : isTreePlayground && treeTopic ? treeTopic : standardTopic;
+  // what the short names (u, v, dist, p …) mean in this lesson, for the hover tooltips
+  const lessonTerms = useMemo(() => termsFor(activeTopic), [activeTopic]);
   const steps = isInteractiveTraversal && traversalSteps
     ? traversalSteps
     : isBstPlayground && bstOutcome ? bstOutcome.steps
@@ -527,6 +531,7 @@ function App() {
           setStepIndex(0);
         }}
       />
+      <TermTooltip terms={lessonTerms} lang={lang} />
     </div>
   );
 }

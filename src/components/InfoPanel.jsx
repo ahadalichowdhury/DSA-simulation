@@ -5,6 +5,7 @@ import {
   Sparkles, TrendingUp, Copy, Check
 } from 'lucide-react';
 import { t, texToHtml } from '../visuals/utils.js';
+import { termsFor } from '../data/glossary.js';
 
 marked.setOptions({ breaks: true, gfm: true });
 
@@ -36,7 +37,16 @@ const LEVEL_TEXT = {
 /**
  * Tokenize and syntax-highlight code lines cleanly.
  */
-function highlightCode(line) {
+/** Wrap every glossary name inside `code` and **bold** text, so hovering it explains it. */
+function markTerms(html, terms) {
+  const names = Object.keys(terms).sort((a, b) => b.length - a.length).map((n) => n.replace(/[$]/g, '\\$&'));
+  if (!names.length) return html;
+  const re = new RegExp(`(?<![\\w$])(${names.join('|')})(?![\\w$])`, 'g');
+  return html.replace(/<(code|strong)>([^<]*)<\/\1>/g, (all, tag, inner) =>
+    `<${tag}>${inner.replace(re, (m) => `<span class="term" data-term="${m}" tabindex="0">${m}</span>`)}</${tag}>`);
+}
+
+function highlightCode(line, terms = {}) {
   if (!line || !line.trim()) {
     return <span className="code-empty">&nbsp;</span>;
   }
@@ -82,6 +92,8 @@ function highlightCode(line) {
       tokens.push(<span key={key++} className="tok-fn">{tok}</span>);
     } else if (/^\d+$/.test(tok)) {
       tokens.push(<span key={key++} className="tok-num">{tok}</span>);
+    } else if (terms[tok]) {
+      tokens.push(<span key={key++} className="term" data-term={tok}>{tok}</span>);
     } else {
       tokens.push(tok);
     }
@@ -153,15 +165,17 @@ const InfoPanel = ({
     };
   }, [isResizing, onWidthChange]);
 
+  const terms = useMemo(() => termsFor(topic), [topic]);
+
   const html = useMemo(() => {
     const raw = t(step?.explanation, lang);
     if (!raw) return '';
     try {
-      return marked.parse(texToHtml(raw));
+      return markTerms(marked.parse(texToHtml(raw)), terms);
     } catch {
       return raw;
     }
-  }, [step, lang]);
+  }, [step, lang, terms]);
 
   // code can be the legacy {en,bn} pseudocode or the 5-variant {pseudo,js,java,python,cpp}
   const codeVariant =
@@ -295,7 +309,7 @@ const InfoPanel = ({
                     className={`code-line ${activeLines.includes(i) ? 'active' : !topic?.lineMap && activeLines.length && i < Math.min(...activeLines) ? 'done' : ''}`}
                   >
                     <span className="ln">{i + 1}</span>
-                    <span className="code-text">{highlightCode(line)}</span>
+                    <span className="code-text">{highlightCode(line, terms)}</span>
                   </div>
                 ))}
               </div>

@@ -334,7 +334,7 @@ export default function GraphAlgoVisual({ scene, lang, speed = 1 }) {
                 )}
                 {tags[n.id] && (
                   // a solid badge, so "u" / "v" stays readable even when an edge passes behind it
-                  <g className="ga-tag" transform={`translate(0,${-R - 13})`}>
+                  <g className="ga-tag" data-term={tags[n.id]} transform={`translate(0,${-R - 13})`}>
                     <rect x={-(String(tags[n.id]).length * 4.4 + 8)} y="-10" width={String(tags[n.id]).length * 8.8 + 16} height="20" rx="10" />
                     <text>{tags[n.id]}</text>
                   </g>
