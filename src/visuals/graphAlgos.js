@@ -20,6 +20,65 @@ function base(g) {
 
 const ek = (u, v) => `${u}-${v}`;
 
+/**
+ * Small labels drawn above the circles, so the letters used in the code
+ * (u = the vertex we are working on, v = the neighbour we are checking)
+ * point at real vertices in the picture.
+ */
+function tagNames(pairs) {
+  const t = {};
+  for (const [id, name] of pairs) if (id != null) t[id] = t[id] ? `${t[id]} = ${name}` : name;
+  return t;
+}
+const tagUV = (u, v) => tagNames([[u, 'u'], [v, 'v']]);
+
+/** What the short letters in each algorithm's code stand for, added to its "main() calls …" step. */
+const NAMES = {
+  bfs: T(
+    '**u** = the vertex just taken from the **front of the queue**; **v** = one of **u\'s neighbours**. The small **u** and **v** labels above the circles show which vertices they are right now.',
+    '**u** = **queue-এর সামনে** থেকে এইমাত্র নেওয়া ভার্টেক্স; **v** = **u-এর একজন প্রতিবেশী**। বৃত্তের ওপরের ছোট **u** আর **v** লেবেল দেখায় এই মুহূর্তে এরা কোন ভার্টেক্স।'
+  ),
+  dfs: T(
+    '**u** = the vertex `dfs` is **visiting now** (the top of the call stack); **v** = one of **u\'s neighbours**. Watch the small **u** and **v** labels above the circles.',
+    '**u** = `dfs` **এখন যে ভার্টেক্সে** আছে (কল স্ট্যাকের ওপরেরটা); **v** = **u-এর একজন প্রতিবেশী**। বৃত্তের ওপরের ছোট **u** আর **v** লেবেল খেয়াল করো।'
+  ),
+  dijkstra: T(
+    '**u** = the vertex **picked this round** (closest one not yet done); **v** = one of **u\'s neighbours**; **w** = the **weight** of the edge u–v (its length). The **u** and **v** labels above the circles show them.',
+    '**u** = **এই রাউন্ডে বাছা** ভার্টেক্স (done হয়নি এমনদের মধ্যে সবচেয়ে কাছের); **v** = **u-এর একজন প্রতিবেশী**; **w** = এজ u–v-এর **ওজন** (দৈর্ঘ্য)। বৃত্তের ওপরের **u** আর **v** লেবেল এদের দেখায়।'
+  ),
+  prim: T(
+    '**u** = the vertex **added to the tree this round**; **v** = one of **u\'s neighbours**; **w** = the **cost** of the edge u–v. The **u** and **v** labels above the circles show them.',
+    '**u** = **এই রাউন্ডে ট্রিতে যোগ হওয়া** ভার্টেক্স; **v** = **u-এর একজন প্রতিবেশী**; **w** = এজ u–v-এর **খরচ**। বৃত্তের ওপরের **u** আর **v** লেবেল এদের দেখায়।'
+  ),
+  kruskal: T(
+    'Each edge is written **(u, v, w)**: it joins vertex **u** and vertex **v** and costs **w**. The **u** and **v** labels mark the two ends of the edge being checked.',
+    'প্রতিটা এজ লেখা হয় **(u, v, w)**: এটা ভার্টেক্স **u** আর **v**-কে জোড়ে, খরচ **w**। **u** আর **v** লেবেল যাচাই হওয়া এজের দুই মাথা চিহ্নিত করে।'
+  ),
+  bellman: T(
+    'Each edge is written **(u, v, w)**: an arrow **from u to v** with weight **w**. The **u** and **v** labels mark the arrow being checked.',
+    'প্রতিটা এজ লেখা হয় **(u, v, w)**: **u থেকে v-তে** একটা তীর, ওজন **w**। **u** আর **v** লেবেল যাচাই হওয়া তীরটা চিহ্নিত করে।'
+  ),
+  floyd: T(
+    '**i** = where a trip **starts** (the row), **j** = where it **ends** (the column), **k** = the vertex we may **stop at in the middle**. The **i**, **k** and **j** labels above the circles show them.',
+    '**i** = যাত্রা যেখানে **শুরু** (সারি), **j** = যেখানে **শেষ** (কলাম), **k** = **মাঝপথে** যে ভার্টেক্সে থামা যায়। বৃত্তের ওপরের **i**, **k** আর **j** লেবেল এদের দেখায়।'
+  ),
+  kahn: T(
+    '**u** = the task just taken from the **queue** (it is done now); **v** = a task that **waits for u** (an arrow u → v). Watch the small **u** and **v** labels.',
+    '**u** = **queue** থেকে এইমাত্র নেওয়া কাজ (এটা এখন শেষ); **v** = যে কাজ **u-এর অপেক্ষায়** (তীর u → v)। ছোট **u** আর **v** লেবেল খেয়াল করো।'
+  ),
+  topo: T(
+    '**u** = the vertex `dfs` is **exploring now**; **v** = a vertex that **u points to** (an arrow u → v). Watch the small **u** and **v** labels.',
+    '**u** = `dfs` **এখন যে ভার্টেক্স** ঘুরে দেখছে; **v** = যে ভার্টেক্সের দিকে **u তীর দেয়** (তীর u → v)। ছোট **u** আর **v** লেবেল খেয়াল করো।'
+  )
+};
+function withNames(step, key) {
+  const n = NAMES[key];
+  step.explanation = {
+    en: `${step.explanation.en}\n\n> **Names in the code:** ${n.en}`,
+    bn: `${step.explanation.bn}\n\n> **কোডের নামগুলো:** ${n.bn}`
+  };
+}
+
 /** BFS visiting order, used to compare BFS with DFS in the text. */
 function bfsOrderOf(g, start) {
   const adj = adjOf(g);
@@ -81,6 +140,7 @@ export function genBFS(g, start) {
     return {
       ...base(g),
       nodeState,
+      tags: tagUV(cur, chk && chk.v),
       edgeState,
       edgeFrom,
       subs,
@@ -114,6 +174,7 @@ export function genBFS(g, start) {
     frame({ cur: start, status: T(`bfs(adj, ${start})`, `bfs(adj, ${start})`) }),
     'call'
   );
+  withNames(steps[steps.length - 1], 'bfs');
 
   visited[start] = true;
   level[start] = 0;
@@ -226,6 +287,7 @@ export function genDFS(g, start) {
     return {
       ...base(g),
       nodeState,
+      tags: tagUV(stack.length ? stack[stack.length - 1] : null, chk && chk.v),
       edgeState,
       edgeFrom,
       panels: [
@@ -257,6 +319,7 @@ export function genDFS(g, start) {
     frame({ status: T(`dfs(adj, ${start}, visited)`, `dfs(adj, ${start}, visited)`) }),
     ['init', 'call']
   );
+  withNames(steps[steps.length - 1], 'dfs');
 
   const firstDive = [];
   let backtracked = false;
@@ -379,6 +442,7 @@ function genGreedy(g, kind, src) {
     return {
       ...base(g),
       nodeState,
+      tags: tagUV(cur, chk && chk.v),
       edgeState,
       edgeFrom,
       subs,
@@ -421,6 +485,7 @@ function genGreedy(g, kind, src) {
     frame({ aHl: { [src]: 'relax' }, status: T(`${NAME}[${src}] = 0, all others ∞`, `${NAME}[${src}] = 0, বাকি সব ∞`) }),
     ['call', 'init']
   );
+  withNames(steps[steps.length - 1], D ? 'dijkstra' : 'prim');
 
   for (let round = 0; round < V; round++) {
     let u = -1;
@@ -576,6 +641,7 @@ export function genKruskal(g) {
     return {
       ...base(g),
       nodeState,
+      tags: curIdx != null ? tagUV(sorted[curIdx].u, sorted[curIdx].v) : {},
       edgeState,
       panels: [
         { type: 'edges', label: showSorted ? T('edges, sorted by weight', 'এজ, ওজন অনুযায়ী সাজানো') : T('edges (input order)', 'এজ (ইনপুটের ক্রমে)'), rows, notes: showSorted },
@@ -605,6 +671,7 @@ export function genKruskal(g) {
     frame({ statusText: T('sorted: cheapest first', 'সাজানো: সস্তা আগে') }),
     ['call', 'header', 'sort']
   );
+  withNames(steps[steps.length - 1], 'kruskal');
   push(
     T('Everyone starts in their own group', 'সবাই নিজের দলে শুরু করে'),
     T(
@@ -696,6 +763,7 @@ export function genBellmanFord(g, src, negDemo) {
     return {
       ...base(g),
       nodeState,
+      tags: cur ? tagUV(cur.u, cur.v) : {},
       edgeState,
       subs,
       panels: [
@@ -725,6 +793,7 @@ export function genBellmanFord(g, src, negDemo) {
     frame({ dHl: { [src]: 'relax' }, statusText: T(`dist[${src}] = 0, others ∞`, `dist[${src}] = 0, বাকি ∞`) }),
     ['call', 'header', 'init']
   );
+  withNames(steps[steps.length - 1], 'bellman');
 
   let pass = 0;
   for (pass = 1; pass <= V - 1; pass++) {
@@ -892,6 +961,7 @@ export function genFloyd(g) {
     return {
       ...base(g),
       nodeState,
+      tags: tagNames([[i, 'i'], [k, 'k'], [j, 'j']]),
       edgeState,
       panels: [{ type: 'matrix', label: label || T('D[i][j] — shortest known distance from i (row) to j (column)', 'D[i][j] — i (সারি) থেকে j (কলাম)-এর জানা সবচেয়ে ছোট দূরত্ব'), rows: lbl, cols: lbl, corner: 'i \\ j', cells: D.map((r) => r.map(fmt)), rowHl: k, colHl: k, hl }],
       status: statusText
@@ -908,6 +978,7 @@ export function genFloyd(g) {
     frame({ statusText: T('D = direct arrows only', 'D = শুধু সরাসরি তীর') }),
     ['build', 'call']
   );
+  withNames(steps[steps.length - 1], 'floyd');
 
   for (let k = 0; k < V; k++) {
     const changes = [];
@@ -979,6 +1050,7 @@ export function genKahn(g, cycleDemo) {
     return {
       ...base(g),
       nodeState,
+      tags: tagUV(cur, chk && chk.v),
       edgeState,
       edgeFrom,
       subs,
@@ -1010,6 +1082,7 @@ export function genKahn(g, cycleDemo) {
     frame({ iHl: Object.fromEntries(indeg.map((d, i) => [i, d === 0 ? 'relax' : ''])), statusText: T(`indeg = [${indeg.join(', ')}]`, `indeg = [${indeg.join(', ')}]`) }),
     ['call', 'header', 'indeg']
   );
+  withNames(steps[steps.length - 1], 'kahn');
   for (let v = 0; v < V; v++) if (indeg[v] === 0) queue.push(v);
   push(
     T(`Free tasks go in the queue: ${list(queue)}`, `মুক্ত কাজ queue-তে: ${list(queue)}`),
@@ -1150,6 +1223,7 @@ export function genTopoDFS(g) {
     return {
       ...base(g),
       nodeState,
+      tags: tagUV(call.length ? call[call.length - 1] : null, chk && chk.v),
       edgeState,
       edgeFrom,
       panels: [
@@ -1180,6 +1254,7 @@ export function genTopoDFS(g) {
     frame({ statusText: T('topoSort(adj)', 'topoSort(adj)') }),
     ['call', 'topoHeader']
   );
+  withNames(steps[steps.length - 1], 'topo');
 
   const dfs = (u, from) => {
     visited[u] = true;

@@ -261,7 +261,7 @@ export default function GraphAlgoVisual({ scene, lang, speed = 1 }) {
   const xs = nodes.map((n) => n.x);
   const ys = nodes.map((n) => n.y);
   const minX = Math.min(...xs) - PAD;
-  const minY = Math.min(...ys) - PAD - (Object.keys(tags).length ? 14 : 0);
+  const minY = Math.min(...ys) - PAD - (Object.keys(tags).length ? 22 : 0);
   const w = Math.max(...xs) - minX + PAD;
   const h = Math.max(...ys) - minY + PAD + (Object.keys(subs).length ? 12 : 0);
 
@@ -332,7 +332,13 @@ export default function GraphAlgoVisual({ scene, lang, speed = 1 }) {
                     <text>{subs[n.id]}</text>
                   </g>
                 )}
-                {tags[n.id] && <text className="ga-tag" y={-R - 9}>{tags[n.id]}</text>}
+                {tags[n.id] && (
+                  // a solid badge, so "u" / "v" stays readable even when an edge passes behind it
+                  <g className="ga-tag" transform={`translate(0,${-R - 13})`}>
+                    <rect x={-(String(tags[n.id]).length * 4.4 + 8)} y="-10" width={String(tags[n.id]).length * 8.8 + 16} height="20" rx="10" />
+                    <text>{tags[n.id]}</text>
+                  </g>
+                )}
               </g>
             );
           })}

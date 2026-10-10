@@ -2003,7 +2003,8 @@ code{font-family:var(--font-mono);font-size:.92em;padding:0 4px;border-radius:4p
 .ga-node-label{font-family:var(--font-mono);font-size:15px;font-weight:800;fill:var(--text-primary);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .ga-sub rect{fill:var(--yellow-bg);stroke:var(--yellow-border);stroke-width:1}
 .ga-sub text{font-family:var(--font-mono);font-size:11px;font-weight:700;fill:var(--text-primary);text-anchor:middle;dominant-baseline:central}
-.ga-tag{font-family:var(--font-sans);font-size:10.5px;font-weight:800;fill:var(--purple);text-anchor:middle}
+.ga-tag rect{fill:var(--purple);stroke:var(--bg-secondary);stroke-width:2}
+.ga-tag text{font-family:var(--font-mono);font-size:13px;font-weight:800;fill:#fff;text-anchor:middle;dominant-baseline:central}
 .ga-n-current circle{fill:#fef08a;stroke:#ca8a04;stroke-width:3.2}
 .ga-n-visited circle{fill:#dcfce7;stroke:#22c55e;stroke-width:3}
 .ga-n-done circle{fill:#22c55e;stroke:#15803d;stroke-width:3}

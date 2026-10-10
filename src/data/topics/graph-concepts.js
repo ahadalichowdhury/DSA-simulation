@@ -117,6 +117,15 @@ const whatIsGraph = {
       'e'
     ),
     step(
+      T('Short names you will see in code: u, v, w', 'কোডে যে ছোট নামগুলো দেখবে: u, v, w'),
+      T(
+        'Graph code uses a few one-letter names again and again. Learn them once:\n\n- **V** = the **number of vertices** (here 5).\n- **E** = the **number of edges** (here 6).\n- **u** and **v** = **the two ends of one edge**. When code says "edge (u, v)", u is one vertex and v is the other. Here the highlighted edge is (1, 3): **u = 1**, **v = 3** (see the small labels).\n- **w** = the **weight** of edge (u, v), when edges have weights (distance, cost…).\n- **adj** = the **adjacency** list or matrix — where the graph is stored.\n\n> In algorithms, **u** is usually "the vertex we are working on now" and **v** is "one of its neighbours". Every graph lesson shows small **u** and **v** labels above the circles, so you always know which is which.',
+        'গ্রাফের কোডে কয়েকটা এক-অক্ষরের নাম বারবার আসে। একবার শিখে নাও:\n\n- **V** = **ভার্টেক্সের সংখ্যা** (এখানে 5)।\n- **E** = **এজের সংখ্যা** (এখানে 6)।\n- **u** আর **v** = **একটা এজের দুই মাথা**। কোডে "edge (u, v)" মানে u একটা ভার্টেক্স আর v অন্যটা। এখানে হাইলাইট করা এজ (1, 3): **u = 1**, **v = 3** (ছোট লেবেল দেখো)।\n- **w** = এজ (u, v)-এর **ওজন**, যদি এজের ওজন থাকে (দূরত্ব, খরচ…)।\n- **adj** = **অ্যাডজাসেন্সি** লিস্ট বা ম্যাট্রিক্স — যেখানে গ্রাফটা রাখা আছে।\n\n> অ্যালগরিদমে সাধারণত **u** মানে "এখন যে ভার্টেক্স নিয়ে কাজ করছি" আর **v** মানে "তার একজন প্রতিবেশী"। প্রতিটা গ্রাফ লেসনে বৃত্তের ওপরে ছোট **u** আর **v** লেবেল থাকে, তাই কোনটা কোন সবসময় বুঝবে।'
+      ),
+      scene(G_INTRO, { nodeState: { 1: 'current', 3: 'compare' }, edgeState: { '1-3': 'relax' }, edgeFrom: { '1-3': 1 }, tags: { 1: 'u', 3: 'v' }, status: T('edge (u, v) = (1, 3)   V = 5   E = 6', 'এজ (u, v) = (1, 3)   V = 5   E = 6') }),
+      'e'
+    ),
+    step(
       T('The definition: G = (V, E)', 'সংজ্ঞা: G = (V, E)'),
       T(
         'Put the two together and you have the formal definition:\n\n> A **graph** G is a pair **G = (V, E)**: a set of vertices V and a set of edges E, where each edge joins two vertices of V.\n\nThe code does exactly this: it keeps `V = 5` and the list of `edges`, then prints how many there are.',
@@ -209,10 +218,10 @@ const termsSteps = (() => {
     steps.push(step(
       T(`Edge ${e.u}–${e.v}: +1 for ${e.u} and ${e.v}`, `এজ ${e.u}–${e.v}: ${e.u} আর ${e.v}-এ +1`),
       T(
-        `Edge **(${e.u}, ${e.v})** has two ends, so it adds 1 to \`degree[${e.u}]\` **and** 1 to \`degree[${e.v}]\`.\n\nNow degree = [${deg.join(', ')}].${i === 0 ? '\n\nThe green edges are the ones already counted.' : ''}`,
-        `এজ **(${e.u}, ${e.v})**-এর দুটো মাথা, তাই এটা \`degree[${e.u}]\`-এ 1 **আর** \`degree[${e.v}]\`-এ 1 যোগ করে।\n\nএখন degree = [${deg.join(', ')}]।${i === 0 ? '\n\nসবুজ এজগুলো আগেই গোনা হয়ে গেছে।' : ''}`
+        `In the code this edge is **(u, v)** with **u = ${e.u}**, **v = ${e.v}** (see the labels).\n\nEdge **(${e.u}, ${e.v})** has two ends, so it adds 1 to \`degree[${e.u}]\` **and** 1 to \`degree[${e.v}]\`.\n\nNow degree = [${deg.join(', ')}].${i === 0 ? '\n\nThe green edges are the ones already counted.' : ''}`,
+        `কোডে এই এজটা **(u, v)**, যেখানে **u = ${e.u}**, **v = ${e.v}** (লেবেল দেখো)।\n\nএজ **(${e.u}, ${e.v})**-এর দুটো মাথা, তাই এটা \`degree[${e.u}]\`-এ 1 **আর** \`degree[${e.v}]\`-এ 1 যোগ করে।\n\nএখন degree = [${deg.join(', ')}]।${i === 0 ? '\n\nসবুজ এজগুলো আগেই গোনা হয়ে গেছে।' : ''}`
       ),
-      scene(g, { nodeState: { [e.u]: 'relax', [e.v]: 'relax' }, edgeState: { ...done, [ek(e.u, e.v)]: 'compare' }, subs: Object.fromEntries(deg.map((d, v) => [v, `deg ${d}`])), panels: [degPanel({ [e.u]: 'relax', [e.v]: 'relax' })], status: T(`degree[${e.u}]++, degree[${e.v}]++`, `degree[${e.u}]++, degree[${e.v}]++`) }),
+      scene(g, { nodeState: { [e.u]: 'relax', [e.v]: 'relax' }, tags: { [e.u]: 'u', [e.v]: 'v' }, edgeState: { ...done, [ek(e.u, e.v)]: 'compare' }, subs: Object.fromEntries(deg.map((d, v) => [v, `deg ${d}`])), panels: [degPanel({ [e.u]: 'relax', [e.v]: 'relax' })], status: T(`degree[${e.u}]++, degree[${e.v}]++`, `degree[${e.u}]++, degree[${e.v}]++`) }),
       ['loop', 'inc'],
       { u: e.u, v: e.v }
     ));
@@ -557,10 +566,10 @@ const matrixSteps = (() => {
     steps.push(step(
       T(`Edge ${e.u}–${e.v}: two cells become 1`, `এজ ${e.u}–${e.v}: দুটো ঘর 1 হয়`),
       T(
-        `Edge **(${e.u}, ${e.v})**: set \`M[${e.u}][${e.v}] = 1\` (row ${e.u}, column ${e.v}).\n\nThe road is two-way, so also set \`M[${e.v}][${e.u}] = 1\` — the **mirror** cell.${i === 0 ? ' Every undirected edge fills **two** cells.' : ''}`,
-        `এজ **(${e.u}, ${e.v})**: \`M[${e.u}][${e.v}] = 1\` করো (সারি ${e.u}, কলাম ${e.v})।\n\nরাস্তা দুই-মুখী, তাই \`M[${e.v}][${e.u}] = 1\`-ও করো — **আয়নার** ঘর।${i === 0 ? ' প্রতিটা আনডিরেক্টেড এজ **দুটো** ঘর ভরে।' : ''}`
+        `In the code this edge is **(u, v)** with **u = ${e.u}**, **v = ${e.v}**.\n\nEdge **(${e.u}, ${e.v})**: set \`M[${e.u}][${e.v}] = 1\` (row ${e.u}, column ${e.v}).\n\nThe road is two-way, so also set \`M[${e.v}][${e.u}] = 1\` — the **mirror** cell.${i === 0 ? ' Every undirected edge fills **two** cells.' : ''}`,
+        `কোডে এই এজটা **(u, v)**, যেখানে **u = ${e.u}**, **v = ${e.v}**।\n\nএজ **(${e.u}, ${e.v})**: \`M[${e.u}][${e.v}] = 1\` করো (সারি ${e.u}, কলাম ${e.v})।\n\nরাস্তা দুই-মুখী, তাই \`M[${e.v}][${e.u}] = 1\`-ও করো — **আয়নার** ঘর।${i === 0 ? ' প্রতিটা আনডিরেক্টেড এজ **দুটো** ঘর ভরে।' : ''}`
       ),
-      scene(g, { nodeState: { [e.u]: 'current', [e.v]: 'current' }, edgeState: { ...doneE, ...rest, [ek(e.u, e.v)]: 'relax' }, edgeFrom: { [ek(e.u, e.v)]: e.u }, panels: [mp({ [`${e.u},${e.v}`]: 'relax', [`${e.v},${e.u}`]: 'relax' })], status: T(`M[${e.u}][${e.v}] = M[${e.v}][${e.u}] = 1`, `M[${e.u}][${e.v}] = M[${e.v}][${e.u}] = 1`) }),
+      scene(g, { nodeState: { [e.u]: 'current', [e.v]: 'current' }, tags: { [e.u]: 'u', [e.v]: 'v' }, edgeState: { ...doneE, ...rest, [ek(e.u, e.v)]: 'relax' }, edgeFrom: { [ek(e.u, e.v)]: e.u }, panels: [mp({ [`${e.u},${e.v}`]: 'relax', [`${e.v},${e.u}`]: 'relax' })], status: T(`M[${e.u}][${e.v}] = M[${e.v}][${e.u}] = 1`, `M[${e.u}][${e.v}] = M[${e.v}][${e.u}] = 1`) }),
       ['loop', 'set', 'mirror'],
       { u: e.u, v: e.v }
     ));
@@ -707,10 +716,10 @@ const listSteps = (() => {
     steps.push(step(
       T(`Edge ${e.u}–${e.v}: write it in both lists`, `এজ ${e.u}–${e.v}: দুই তালিকাতেই লেখো`),
       T(
-        `Edge **${e.u} – ${e.v}** is a two-way road, so **both ends** must know about it:\n- add **${e.v}** to the list of ${e.u} → \`adj[${e.u}] = [${adj[e.u].join(', ')}]\`\n- add **${e.u}** to the list of ${e.v} → \`adj[${e.v}] = [${adj[e.v].join(', ')}]\`${i === 0 ? '\n\nThe green boxes are the ones just added.' : ''}`,
-        `এজ **${e.u} – ${e.v}** দুই-মুখী রাস্তা, তাই **দুই মাথাকেই** জানতে হবে:\n- ${e.u}-এর তালিকায় **${e.v}** যোগ → \`adj[${e.u}] = [${adj[e.u].join(', ')}]\`\n- ${e.v}-এর তালিকায় **${e.u}** যোগ → \`adj[${e.v}] = [${adj[e.v].join(', ')}]\`${i === 0 ? '\n\nসবুজ বক্সগুলো এইমাত্র যোগ হলো।' : ''}`
+        `In the code this edge is **(u, v)** with **u = ${e.u}**, **v = ${e.v}**.\n\nEdge **${e.u} – ${e.v}** is a two-way road, so **both ends** must know about it:\n- add **${e.v}** to the list of ${e.u} → \`adj[${e.u}] = [${adj[e.u].join(', ')}]\`\n- add **${e.u}** to the list of ${e.v} → \`adj[${e.v}] = [${adj[e.v].join(', ')}]\`${i === 0 ? '\n\nThe green boxes are the ones just added.' : ''}`,
+        `কোডে এই এজটা **(u, v)**, যেখানে **u = ${e.u}**, **v = ${e.v}**।\n\nএজ **${e.u} – ${e.v}** দুই-মুখী রাস্তা, তাই **দুই মাথাকেই** জানতে হবে:\n- ${e.u}-এর তালিকায় **${e.v}** যোগ → \`adj[${e.u}] = [${adj[e.u].join(', ')}]\`\n- ${e.v}-এর তালিকায় **${e.u}** যোগ → \`adj[${e.v}] = [${adj[e.v].join(', ')}]\`${i === 0 ? '\n\nসবুজ বক্সগুলো এইমাত্র যোগ হলো।' : ''}`
       ),
-      scene(g, { nodeState: { [e.u]: 'current', [e.v]: 'current' }, edgeState: { ...doneE, ...rest, [ek(e.u, e.v)]: 'relax' }, edgeFrom: { [ek(e.u, e.v)]: e.u }, panels: [lp({ fresh: [[e.u, adj[e.u].length - 1], [e.v, adj[e.v].length - 1]] })], status: T(`adj[${e.u}].add(${e.v}), adj[${e.v}].add(${e.u})`, `adj[${e.u}].add(${e.v}), adj[${e.v}].add(${e.u})`) }),
+      scene(g, { nodeState: { [e.u]: 'current', [e.v]: 'current' }, tags: { [e.u]: 'u', [e.v]: 'v' }, edgeState: { ...doneE, ...rest, [ek(e.u, e.v)]: 'relax' }, edgeFrom: { [ek(e.u, e.v)]: e.u }, panels: [lp({ fresh: [[e.u, adj[e.u].length - 1], [e.v, adj[e.v].length - 1]] })], status: T(`adj[${e.u}].add(${e.v}), adj[${e.v}].add(${e.u})`, `adj[${e.u}].add(${e.v}), adj[${e.v}].add(${e.u})`) }),
       ['loop', 'add', 'addBack'],
       { u: e.u, v: e.v }
     ));
