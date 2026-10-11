@@ -8,6 +8,7 @@
  * code line always agree.
  */
 import { adjOf } from './graphData.js';
+import { planStep } from './algoPlans.js';
 
 // identical text is code (e.g. `dist[3]: ∞ → 6`), so it is stored once as a plain string
 const T = (en, bn) => (en === bn ? en : { en, bn });
@@ -256,6 +257,7 @@ export function genBFS(g, start) {
     frame({ status: T('green = BFS tree (fewest edges from the start)', 'সবুজ = BFS ট্রি (শুরু থেকে সবচেয়ে কম এজ)') }),
     'call'
   );
+  steps.splice(1, 0, planStep('bfs', base(g), 'header'));
   return steps;
 }
 
@@ -401,6 +403,7 @@ export function genDFS(g, start) {
     frame({ status: T(`DFS order: ${order.join(' ')}`, `DFS ক্রম: ${order.join(' ')}`) }),
     'call'
   );
+  steps.splice(1, 0, planStep('dfs', base(g), 'header'));
   return steps;
 }
 
@@ -602,6 +605,7 @@ function genGreedy(g, kind, src) {
       'call'
     );
   }
+  steps.splice(1, 0, planStep(D ? 'dijkstra' : 'prim', base(g), 'header'));
   return steps;
 }
 
@@ -736,6 +740,7 @@ export function genKruskal(g) {
     frame({ statusText: T(`MST cost = ${total}`, `MST খরচ = ${total}`) }),
     'print'
   );
+  steps.splice(1, 0, planStep('kruskal', base(g), 'header'));
   return steps;
 }
 
@@ -929,6 +934,7 @@ export function genBellmanFord(g, src, negDemo) {
       'call'
     );
   }
+  steps.splice(1, 0, planStep('bellman', base(g), 'header'));
   return steps;
 }
 
@@ -1021,6 +1027,7 @@ export function genFloyd(g) {
     frame({ hl: Object.fromEntries(D.flatMap((r, i) => r.map((_, j) => [`${i},${j}`, 'done']))), statusText: T('final table', 'চূড়ান্ত টেবিল') }),
     'print'
   );
+  steps.splice(1, 0, planStep('floyd', base(g), 'header'));
   return steps;
 }
 
@@ -1184,6 +1191,7 @@ export function genKahn(g, cycleDemo) {
     frame({ statusText: T(`order = ${order.join(' → ')}`, `order = ${order.join(' → ')}`) }),
     'call'
   );
+  steps.splice(1, 0, planStep('kahn', base(g), 'header'));
   return steps;
 }
 
@@ -1346,6 +1354,7 @@ export function genTopoDFS(g) {
     frame({ rHl: Object.fromEntries(finished.map((_, i) => [i, 'done'])), statusText: T(`order = ${order.join(' → ')}`, `order = ${order.join(' → ')}`) }),
     'popAll'
   );
+  steps.splice(1, 0, planStep('topo', base(g), 'topoHeader'));
   return steps;
 }
 

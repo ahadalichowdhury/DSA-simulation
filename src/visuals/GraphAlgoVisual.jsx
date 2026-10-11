@@ -235,6 +235,20 @@ function OutputPanel({ p, lang }) {
   );
 }
 
+/** A numbered list on the canvas — used for an algorithm's "key steps" board. */
+function ListPanel({ p, lang }) {
+  return (
+    <div className="ga-panel ga-plan">
+      <Label text={p.label} lang={lang} />
+      <ol className="ga-plan-list">
+        {(p.items || []).map((it, i) => (
+          <li key={i} className={p.active === i ? 'on' : ''} dangerouslySetInnerHTML={{ __html: rich(it, lang) }} />
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 function TextPanel({ p, lang }) {
   return (
     <div className="ga-panel">
@@ -245,7 +259,7 @@ function TextPanel({ p, lang }) {
 }
 
 /** Memory panels (queue, stack, array …), also used under the tree canvas. */
-export const PANELS = { queue: QueuePanel, stack: StackPanel, array: ArrayPanel, matrix: MatrixPanel, adjlist: AdjListPanel, edges: EdgesPanel, output: OutputPanel, text: TextPanel };
+export const PANELS = { list: ListPanel, queue: QueuePanel, stack: StackPanel, array: ArrayPanel, matrix: MatrixPanel, adjlist: AdjListPanel, edges: EdgesPanel, output: OutputPanel, text: TextPanel };
 
 /* ------------------------------------------------------------------ main */
 

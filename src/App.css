@@ -2119,3 +2119,8 @@ code{font-family:var(--font-mono);font-size:.92em;padding:0 4px;border-radius:4p
 .term-tip-row{display:flex;gap:8px;align-items:baseline}
 .term-tip-row b{font-family:var(--font-mono);font-size:13px;color:#c4b5fd;flex-shrink:0}
 [data-theme="dark"] .term-tip-row b{color:#6d28d9}
+.ga-plan{max-width:470px;padding:10px 14px 10px 12px;border-radius:12px;border:1.5px solid var(--border-bright);background:var(--bg-secondary);box-shadow:var(--shadow-sm)}
+.ga-plan .ga-panel-label{font-size:13px;color:var(--text-primary)}
+.ga-plan-list{margin:2px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:5px;font-size:13.5px;line-height:1.45;color:var(--text-primary)}
+.ga-plan-list li::marker{font-weight:800;color:var(--purple)}
+.ga-plan-list li.on{background:var(--yellow-bg);border-radius:6px}

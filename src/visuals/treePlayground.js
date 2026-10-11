@@ -9,6 +9,7 @@
 import { program } from './codeTags.js';
 import { genTraverse } from './bstGenerator.js';
 import { TEXT as BST_TEXT, traversalFn } from './bstCode.js';
+import { planStep } from './algoPlans.js';
 
 const T = (en, bn) => (en === bn ? en : { en, bn });
 const fmt = (a) => (a.length ? a.join(', ') : '—');
@@ -680,6 +681,7 @@ function genLevelOrder(root, vals) {
     scene(withQ({ states: states({ visited: out }), status: T(`level order: <b>${out.join(' ')}</b>`, `লেভেল অর্ডার: <b>${out.join(' ')}</b>`) })),
     ['done']
   );
+  steps.splice(1, 0, planStep('levelorder', steps[0].scene, ['header']));
   return steps;
 }
 
@@ -807,6 +809,7 @@ function genAvl(vals) {
     scene({ pendingIndex: vals.length, states: states({ visited: allVals(box.root) }), status: T(`inorder: <b>${allVals(box.root).join(' ')}</b>`, `ইন-অর্ডার: <b>${allVals(box.root).join(' ')}</b>`) }),
     ['done']
   );
+  steps.splice(1, 0, planStep('avl', steps[0].scene, ['header']));
   return steps;
 }
 
@@ -894,6 +897,7 @@ function genHeapBuild(vals) {
     sceneOf({ states: states({ found: heap[0], visited: heap.slice(1) }), hl: Object.fromEntries(heap.map((_, i) => [i, 'done'])), status: T(`heap = [${heap.join(', ')}]`, `heap = [${heap.join(', ')}]`) }, vals.length),
     ['done']
   );
+  steps.splice(1, 0, planStep('heapBuild', steps[0].scene, ['hHeader']));
   return steps;
 }
 
@@ -991,7 +995,13 @@ function genHeapExtract(vals) {
     sceneOf({ states: states({ found: heap[0] }), hl: Object.fromEntries(heap.map((_, k) => [k, 'done'])), status: T(`return <b>${min}</b>`, `return <b>${min}</b>`) }),
     ['eRet', 'done']
   );
+  steps.splice(1, 0, planStep('heapExtract', steps[0].scene, ['eHeader']));
   return steps;
+}
+
+/** Preorder / inorder / postorder also start with their plan (after the main() call). */
+function withTraversalPlan(steps, order) {
+  return [steps[0], planStep(order, steps[0].scene, ['header']), ...steps.slice(1)];
 }
 
 /* ================================================================ run */
@@ -1005,7 +1015,7 @@ export function runTreeOp(op) {
   else if (A === 'heapExtract') steps = genHeapExtract(vals);
   else {
     const root = buildTreeOf(vals, op.shape);
-    steps = A === 'levelorder' ? genLevelOrder(root, vals) : genTraverse(root, A).steps;
+    steps = A === 'levelorder' ? genLevelOrder(root, vals) : withTraversalPlan(genTraverse(root, A).steps, A);
   }
   const prog = treeProgram(op, vals);
   return { steps, code: prog.code, lineMap: prog.lineMap };
@@ -1034,7 +1044,7 @@ const LESSON_LINES = {
 export function lessonTraversalSteps(root, kind) {
   if (!root) return [];
   const vals = allVals(root);
-  const steps = kind === 'bfs' ? genLevelOrder(root, vals) : genTraverse(root, kind).steps;
+  const steps = kind === 'bfs' ? genLevelOrder(root, vals) : withTraversalPlan(genTraverse(root, kind).steps, kind);
   const map = LESSON_LINES[kind] || LESSON_LINES.inorder;
   return steps.map((s) => ({ ...s, line: [...new Set([].concat(s.line).map((l) => map[l]).filter((l) => l != null))] }));
 }
