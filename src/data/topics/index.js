@@ -7,6 +7,7 @@ import { multiwayTopics } from './multiway.js';
 import { treeTopics } from './trees.js';
 import { treePlaygroundTopics } from './tree-playground.js';
 import { graphConceptTopics } from './graph-concepts.js';
+import { mstConceptTopics } from './mst-concepts.js';
 import { graphAlgorithmTopics } from './graph-algorithms.js';
 import { graphPlaygroundTopics } from './graph-playground.js';
 
@@ -69,6 +70,7 @@ const raw = [
   ...treeTopics,
   ...treePlaygroundTopics,
   ...graphConceptTopics,
+  ...mstConceptTopics,
   ...graphAlgorithmTopics,
   ...graphPlaygroundTopics
 ];

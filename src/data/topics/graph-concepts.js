@@ -1111,10 +1111,40 @@ const K4 = {
   edges: [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]].map(([u, v]) => ({ u, v }))
 };
 
+// small graphs for the "rules" steps
+const G_SPLIT = { ...G_W, edges: G_W.edges.filter((e) => !(e.u === 3 && e.v === 4)) };
+const TRI = {
+  V: 3,
+  directed: false,
+  weighted: true,
+  nodes: N([[0, 80, 240], [1, 230, 60], [2, 380, 240]]),
+  edges: [[0, 1, 2], [1, 2, 2], [0, 2, 2]].map(([u, v, w]) => ({ u, v, w }))
+};
+const SQ = {
+  V: 4,
+  directed: false,
+  weighted: true,
+  nodes: N([[0, 80, 70], [1, 330, 70], [2, 330, 280], [3, 80, 280]]),
+  edges: [[0, 1, 2], [1, 2, 2], [2, 3, 2], [0, 3, 3]].map(([u, v, w]) => ({ u, v, w }))
+};
+const ALL_COST = G_W.edges.reduce((s, e) => s + e.w, 0);
+
+/** "4 islands: {0} · {1, 2, 3} · {4} · {5}" for the chosen edges of G_W. */
+function islandsOf(V, pairs) {
+  const p = Array.from({ length: V }, (_, i) => i);
+  const f = (x) => (p[x] === x ? x : f(p[x]));
+  for (const [u, v] of pairs) p[f(u)] = f(v);
+  const groups = new Map();
+  for (let v = 0; v < V; v++) groups.set(f(v), [...(groups.get(f(v)) || []), v]);
+  const list = [...groups.values()].map((g) => `{${g.join(', ')}}`).join(' · ');
+  return { count: groups.size, text: T(`**${groups.size} islands:** ${list}`, `**${groups.size}টা দ্বীপ:** ${list}`) };
+}
+const islandPanel = (pairs) => ({ type: 'text', label: T('islands (groups that can reach each other)', 'দ্বীপ (যারা একে অন্যের কাছে পৌঁছাতে পারে)'), text: islandsOf(6, pairs).text });
+
 const spanningTree = {
   id: 'graph-spanning-tree',
   name: { en: 'Spanning Trees & MST', bn: 'স্প্যানিং ট্রি ও MST' },
-  description: { en: 'Connect every vertex with V − 1 edges, and find the cheapest way', bn: 'V − 1টা এজে সব ভার্টেক্স জোড়া, আর সবচেয়ে সস্তা উপায় খোঁজা' },
+  description: { en: 'Why the cheapest network is a tree, why it has V − 1 edges, and when MST applies', bn: 'সবচেয়ে সস্তা নেটওয়ার্ক কেন ট্রি, কেন V − 1টা এজ, আর MST কখন খাটে' },
   categoryKey: 'graphs',
   subgroupKey: 'g-mst',
   level: 'beginner',
@@ -1124,29 +1154,136 @@ const spanningTree = {
   code: spanCode.code,
   lineMap: spanCode.lineMap,
   steps: [
+    /* ---------- part 1: the problem and why the answer is a tree (no code) ---------- */
     step(
-      T('The problem: connect everyone cheaply', 'সমস্যা: সবাইকে সস্তায় জোড়া'),
+      T('The problem: connect every village cheaply', 'সমস্যা: প্রতিটা গ্রাম সস্তায় জোড়া'),
       T(
-        'Six villages want electricity. The numbers are the cost of laying a cable along each possible route.\n\nWe do not need **every** cable — we only need every village to be **connected** to every other one, somehow. Which cables should we lay so the **total cost is as small as possible**?',
-        'ছয়টা গ্রামে বিদ্যুৎ দরকার। সংখ্যাগুলো প্রতিটা সম্ভাব্য পথে কেবল টানার খরচ।\n\n**সব** কেবল লাগবে না — শুধু দরকার প্রতিটা গ্রাম যেকোনোভাবে অন্য সবার সঙ্গে **যুক্ত** থাকুক। কোন কেবলগুলো টানলে **মোট খরচ সবচেয়ে কম** হবে?'
+        'Six villages want electricity. Each line is a route where a cable **could** be laid, and its number is the **cost** of that cable.\n\nThe only goal: power must reach **every** village — directly or through other villages. Which cables should we lay so the **total cost is as small as possible**?\n\nThe same question shows up everywhere: network cables between offices, roads between towns, water pipes, and even grouping similar items in data science (clustering).',
+        'ছয়টা গ্রামে বিদ্যুৎ দরকার। প্রতিটা রেখা এমন একটা পথ যেখানে কেবল টানা **যায়**, আর তার সংখ্যাটা সেই কেবলের **খরচ**।\n\nলক্ষ্য একটাই: বিদ্যুৎ **প্রতিটা** গ্রামে পৌঁছাতে হবে — সরাসরি বা অন্য গ্রাম হয়ে। কোন কেবলগুলো টানলে **মোট খরচ সবচেয়ে কম** হবে?\n\nএকই প্রশ্ন সব জায়গায়: অফিসগুলোর মধ্যে নেটওয়ার্ক কেবল, শহরগুলোর মধ্যে রাস্তা, পানির পাইপ, এমনকি ডেটা সায়েন্সে একই রকম জিনিস দলে ভাগ করা (ক্লাস্টারিং)।'
       ),
-      scene(G_W, { status: T('7 possible cables, total if we laid all: 22', '৭টা সম্ভাব্য কেবল, সব টানলে মোট: 22') }),
-      'header'
+      scene(G_W, { status: T(`7 possible cables · laying all of them costs ${ALL_COST}`, `৭টা সম্ভাব্য কেবল · সব টানলে খরচ ${ALL_COST}`) })
+    ),
+    step(
+      T('Do we need every cable?', 'সব কেবল কি লাগবে?'),
+      T(
+        `Lay **all 7** cables: cost **${ALL_COST}**. Everyone is connected — but look at the loop **0 – 1 – 2**.\n\nPower from 0 can reach 1 directly (cable 0–1), **or** go 0 → 2 → 1. Cable 0–1 is a **second road** to a place we can already reach. A closed loop like this is called a **cycle**.\n\nIf we remove 0–1, is anyone cut off? **No.** So that cable is pure waste.`,
+        `**৭টা** কেবলই টানো: খরচ **${ALL_COST}**। সবাই যুক্ত — কিন্তু **0 – 1 – 2** লুপটা দেখো।\n\n0 থেকে বিদ্যুৎ 1-এ সরাসরি যেতে পারে (কেবল 0–1), **অথবা** 0 → 2 → 1 হয়ে। কেবল 0–1 এমন জায়গায় যাওয়ার **দ্বিতীয় রাস্তা**, যেখানে আগেই যাওয়া যায়। এমন বন্ধ লুপকে বলে **সাইকেল (cycle)**।\n\n0–1 সরালে কেউ কি বিচ্ছিন্ন হয়? **না।** তাই ওই কেবলটা পুরোই অপচয়।`
+      ),
+      scene(G_W, { edgeState: { ...allEdges(G_W, 'tree'), '0-1': 'compare' }, nodeState: { 0: 'compare', 1: 'compare', 2: 'compare' }, status: T('cycle 0 → 1 → 2 → 0: cable 0–1 is a second way', 'সাইকেল 0 → 1 → 2 → 0: কেবল 0–1 একটা দ্বিতীয় পথ') })
+    ),
+    step(
+      T('Every cycle has a spare edge', 'প্রতিটা সাইকেলে একটা বাড়তি এজ থাকে'),
+      T(
+        `What we just found: **in a cycle, you can remove any one edge and everything stays connected** — the other way round the loop still works.\n\nSo remove the **most expensive** edge of each cycle:\n- cycle 0–1–2: drop 0–1 (4) → cost ${ALL_COST - 4}\n- cycle 1–2–3: drop 2–3 (4) → cost **${ALL_COST - 8}**\n\nNo cycle is left and every village is still connected. Connected **with no cycle** is exactly a **tree**. That is why the cheapest network is always a tree — and why this topic is called spanning **tree**.`,
+        `এইমাত্র যা পেলাম: **সাইকেলের যেকোনো একটা এজ সরালেও সব যুক্ত থাকে** — লুপের উল্টো দিক দিয়ে তখনো যাওয়া যায়।\n\nতাই প্রতিটা সাইকেলের **সবচেয়ে দামি** এজটা সরাও:\n- সাইকেল 0–1–2: 0–1 (4) বাদ → খরচ ${ALL_COST - 4}\n- সাইকেল 1–2–3: 2–3 (4) বাদ → খরচ **${ALL_COST - 8}**\n\nকোনো সাইকেল নেই, আর প্রতিটা গ্রাম এখনো যুক্ত। যুক্ত **কিন্তু সাইকেল নেই** — এটাই ঠিক **ট্রি**। এ কারণেই সবচেয়ে সস্তা নেটওয়ার্ক সবসময় একটা ট্রি — আর এজন্যই টপিকের নাম স্প্যানিং **ট্রি**।`
+      ),
+      scene(G_W, { edgeState: { ...pick(G_W, MST), '0-1': 'reject', '2-3': 'reject' }, nodeState: allNodes(G_W, 'done'), panels: [{ type: 'text', label: T('cost', 'খরচ'), text: `${ALL_COST} − 4 − 4 = **${ALL_COST - 8}**` }], status: T('dropped 0–1 and 2–3 → no cycle, still connected', '0–1 আর 2–3 বাদ → সাইকেল নেই, এখনো যুক্ত') })
     ),
     step(
       T('A spanning tree', 'একটা স্প্যানিং ট্রি'),
       T(
-        `A **spanning tree** picks some edges so that:\n\n- it **spans** — touches **every** vertex, and everything is connected;\n- it is a **tree** — **no cycle**.\n\nThe green edges are one spanning tree. It uses **5 = V − 1** edges and costs ${costOf(TREE_A)}.`,
-        `**স্প্যানিং ট্রি (spanning tree)** এমনভাবে কিছু এজ বাছে যাতে:\n\n- এটা **ছড়িয়ে থাকে (spans)** — **প্রতিটা** ভার্টেক্স ছোঁয়, আর সব যুক্ত;\n- এটা **ট্রি** — **কোনো সাইকেল নেই**।\n\nসবুজ এজগুলো একটা স্প্যানিং ট্রি। এতে **5 = V − 1**টা এজ, খরচ ${costOf(TREE_A)}।`
+        `A **spanning tree** keeps **every vertex** but only **some edges**, so that:\n\n- it **spans** — touches every vertex, and everything is connected;\n- it is a **tree** — **no cycle**.\n\nThe green edges are one spanning tree: **5** edges, cost ${costOf(TREE_A)}. It is not the cheapest one — that comes soon.`,
+        `**স্প্যানিং ট্রি (spanning tree)** **প্রতিটা ভার্টেক্স** রাখে কিন্তু শুধু **কিছু এজ**, এমনভাবে যে:\n\n- এটা **ছড়িয়ে থাকে (spans)** — প্রতিটা ভার্টেক্স ছোঁয়, আর সব যুক্ত;\n- এটা **ট্রি** — **কোনো সাইকেল নেই**।\n\nসবুজ এজগুলো একটা স্প্যানিং ট্রি: **৫টা** এজ, খরচ ${costOf(TREE_A)}। এটা সবচেয়ে সস্তা না — সেটা একটু পরে।`
       ),
-      scene(G_W, { edgeState: pick(G_W, TREE_A), nodeState: allNodes(G_W, 'done'), status: T(`5 edges, cost ${costOf(TREE_A)}`, `৫টা এজ, খরচ ${costOf(TREE_A)}`) }),
+      scene(G_W, { edgeState: pick(G_W, TREE_A), nodeState: allNodes(G_W, 'done'), status: T(`5 edges, cost ${costOf(TREE_A)}`, `৫টা এজ, খরচ ${costOf(TREE_A)}`) })
+    ),
+    step(
+      T('Why V − 1 edges? Count the islands', 'কেন V − 1টা এজ? দ্বীপ গোনো'),
+      T(
+        'Forget the costs for a moment. With **no** cable, every village is its own little **island**: 6 vertices → **6 islands**.\n\nNow add cables one at a time. A cable between **two different islands** joins them into one, so the number of islands drops by **exactly 1**.\n\nWe want **1 island** at the end (everyone connected). Going from 6 islands to 1 takes **6 − 1 = 5** joins → **V − 1** edges.',
+        'খরচ একটু ভুলে যাও। **কোনো** কেবল না থাকলে প্রতিটা গ্রাম নিজেই একটা ছোট **দ্বীপ**: ৬টা ভার্টেক্স → **৬টা দ্বীপ**।\n\nএবার একটা একটা করে কেবল যোগ করো। **দুটো আলাদা দ্বীপের** মধ্যে কেবল দিলে তারা এক হয়ে যায়, তাই দ্বীপের সংখ্যা **ঠিক ১টা** কমে।\n\nশেষে আমরা চাই **১টা দ্বীপ** (সবাই যুক্ত)। ৬টা দ্বীপ থেকে ১টায় যেতে লাগে **6 − 1 = 5**টা জোড়া → **V − 1**টা এজ।'
+      ),
+      scene(G_W, { edgeState: allEdges(G_W, 'dim'), panels: [islandPanel([])], status: T('no cables yet → 6 islands', 'এখনো কেবল নেই → ৬টা দ্বীপ') })
+    ),
+    step(
+      T('An edge inside one island makes a cycle', 'একই দ্বীপের ভেতরের এজ সাইকেল বানায়'),
+      T(
+        'Lay 1–2 and 1–3. Islands: 6 → 5 → **4**, and {1, 2, 3} is now one island.\n\nNow try **2–3**. Both ends are **already in the same island** (2 → 1 → 3). It joins nothing — the count stays 4 — and it closes the cycle 2–1–3–2.\n\n- **useful** edge = joins **two different** islands\n- **useless** edge = both ends in the **same** island = makes a **cycle**\n\nRemember this test: it is exactly what **Kruskal\'s algorithm** checks for every edge.',
+        '1–2 আর 1–3 টানো। দ্বীপ: 6 → 5 → **4**, আর {1, 2, 3} এখন একটাই দ্বীপ।\n\nএবার **2–3** চেষ্টা করো। দুই মাথাই **আগে থেকে একই দ্বীপে** (2 → 1 → 3)। এটা কিছুই জোড়ে না — সংখ্যা 4-ই থাকে — আর 2–1–3–2 সাইকেল বন্ধ করে।\n\n- **কাজের** এজ = **দুটো আলাদা** দ্বীপ জোড়ে\n- **অকাজের** এজ = দুই মাথা **একই** দ্বীপে = **সাইকেল** বানায়\n\nএই পরীক্ষাটা মনে রাখো: **ক্রুসকালের অ্যালগরিদম** প্রতিটা এজে ঠিক এটাই দেখে।'
+      ),
+      scene(G_W, { edgeState: { ...pick(G_W, [[1, 2], [1, 3]]), '2-3': 'reject' }, nodeState: { 1: 'setA', 2: 'setA', 3: 'setA' }, tags: { 2: 'u', 3: 'v' }, panels: [islandPanel([[1, 2], [1, 3]])], status: T('2–3: same island → joins nothing → cycle', '2–3: একই দ্বীপ → কিছু জোড়ে না → সাইকেল') })
+    ),
+    step(
+      T('Five joins → one island', 'পাঁচটা জোড়া → একটা দ্বীপ'),
+      T(
+        'Keep adding only **useful** edges: 3–4, 0–2, 4–5. After **5** edges there is **1 island** — done.\n\nThis one picture explains the whole rule:\n- **fewer** than V − 1 edges → some island is left over → **not connected**;\n- **more** than V − 1 edges → at least one edge joined nothing → there is a **cycle**;\n- **exactly V − 1** edges and connected → a **tree**.',
+        'শুধু **কাজের** এজ যোগ করতে থাকো: 3–4, 0–2, 4–5। **৫টা** এজের পর **১টা দ্বীপ** — শেষ।\n\nএই একটা ছবিই পুরো নিয়মটা বোঝায়:\n- V − 1-এর **কম** এজ → কোনো দ্বীপ বাকি থাকে → **যুক্ত নয়**;\n- V − 1-এর **বেশি** এজ → অন্তত একটা এজ কিছুই জোড়েনি → **সাইকেল** আছে;\n- **ঠিক V − 1**টা এজ আর যুক্ত → একটা **ট্রি**।'
+      ),
+      scene(G_W, {
+        edgeState: pick(G_W, MST),
+        nodeState: allNodes(G_W, 'done'),
+        panels: [{ type: 'edges', label: T('islands left after each edge', 'প্রতিটা এজের পর বাকি দ্বীপ'), rows: MST.map(([u, v], i) => ({ e: `${u}–${v}`, w: costOf([[u, v]]), state: 'tree', note: T(`→ ${islandsOf(6, MST.slice(0, i + 1)).count} islands`, `→ ${islandsOf(6, MST.slice(0, i + 1)).count}টা দ্বীপ`) })), notes: true }],
+        status: T('6 → 5 → 4 → 3 → 2 → 1 island', '৬ → ৫ → ৪ → ৩ → ২ → ১টা দ্বীপ')
+      })
+    ),
+    step(
+      T('There are many spanning trees', 'স্প্যানিং ট্রি অনেকগুলো'),
+      T(
+        'A graph usually has **many** spanning trees. For a complete graph Kₙ (every pair connected) there is a beautiful formula, **Cayley\'s formula**:\n\n> Kₙ has **nⁿ⁻²** spanning trees.\n\nThis K₄ has 4² = **16**; the green one is just one of them. K₁₀ already has 100,000,000. Trying them all and keeping the cheapest is **hopeless** — we need a smarter way.',
+        'একটা গ্রাফে সাধারণত **অনেকগুলো** স্প্যানিং ট্রি থাকে। কমপ্লিট গ্রাফ Kₙ-এর (প্রতিটা জোড়া যুক্ত) জন্য একটা সুন্দর সূত্র আছে, **কেইলির সূত্র (Cayley\'s formula)**:\n\n> Kₙ-এ **nⁿ⁻²**টা স্প্যানিং ট্রি।\n\nএই K₄-এ 4² = **16**টা; সবুজটা তার একটা মাত্র। K₁₀-এ ইতিমধ্যে ১০ কোটি। সবগুলো চেষ্টা করে সবচেয়ে সস্তাটা রাখা **অসম্ভব** — আরও বুদ্ধিমান উপায় লাগবে।'
+      ),
+      scene(K4, { edgeState: pick(K4, [[0, 1], [1, 2], [2, 3]]), status: T('K₄ → 4² = 16 spanning trees', 'K₄ → 4² = 16টা স্প্যানিং ট্রি') })
+    ),
+    step(
+      T('The minimum spanning tree (MST)', 'মিনিমাম স্প্যানিং ট্রি (MST)'),
+      T(
+        `Among all spanning trees, the one with the **smallest total weight** is the **Minimum Spanning Tree (MST)**.\n\nFor our villages it is the green tree: ${MST.map(([u, v]) => `${u}–${v}`).join(', ')} with cost **${costOf(MST)}** — cheaper than the ${costOf(TREE_A)} we saw before, and the same ${costOf(MST)} we got by dropping the priciest edge of each cycle.`,
+        `সব স্প্যানিং ট্রির মধ্যে যেটার **মোট ওজন সবচেয়ে কম**, সেটা **মিনিমাম স্প্যানিং ট্রি (MST)**।\n\nআমাদের গ্রামগুলোর জন্য সেটা সবুজ ট্রি: ${MST.map(([u, v]) => `${u}–${v}`).join(', ')}, খরচ **${costOf(MST)}** — আগের ${costOf(TREE_A)}-এর চেয়ে সস্তা, আর প্রতিটা সাইকেলের সবচেয়ে দামি এজ বাদ দিয়ে যে ${costOf(MST)} পেয়েছিলাম, সেটাই।`
+      ),
+      scene(G_W, { edgeState: pick(G_W, MST, 'reject'), nodeState: allNodes(G_W, 'done'), panels: [{ type: 'text', label: T('MST cost', 'MST খরচ'), text: `${MST.map(([u, v]) => costOf([[u, v]])).join(' + ')} = **${costOf(MST)}**` }], status: T(`MST cost = ${costOf(MST)}  (red = not used)`, `MST খরচ = ${costOf(MST)}  (লাল = ব্যবহার হয়নি)`) })
+    ),
+    /* ---------- part 2: when MST applies (no code) ---------- */
+    step(
+      T('When does MST make sense?', 'MST কখন খাটে?'),
+      T(
+        'Before using any MST algorithm, check these conditions:\n\n- **Undirected** — a cable carries power both ways. (For one-way edges the question is different and needs other algorithms.)\n- **Connected** — every vertex must be reachable, otherwise **no** spanning tree exists (next step).\n- **Any weights** — even **0 or negative**. MST algorithms only **compare** two weights, they never add weights along a path, so negatives cause no trouble (unlike Dijkstra).\n- **Ties are fine** — equal weights may give **more than one** MST, all with the same total. If all weights are different, the MST is **unique**.',
+        'যেকোনো MST অ্যালগরিদম চালানোর আগে এই শর্তগুলো দেখো:\n\n- **আনডিরেক্টেড** — কেবল দুই দিকেই বিদ্যুৎ নেয়। (এক-দিকের এজে প্রশ্নটাই আলাদা, অন্য অ্যালগরিদম লাগে।)\n- **যুক্ত (connected)** — প্রতিটা ভার্টেক্সে পৌঁছানো যেতে হবে, নইলে **কোনো** স্প্যানিং ট্রি নেই (পরের ধাপ)।\n- **যেকোনো ওজন** — এমনকি **0 বা নেগেটিভ**। MST অ্যালগরিদম শুধু দুটো ওজন **তুলনা** করে, পথ ধরে যোগ করে না, তাই নেগেটিভে সমস্যা নেই (Dijkstra-র মতো নয়)।\n- **সমান ওজন চলে** — সমান ওজনে **একাধিক** MST হতে পারে, সবগুলোর মোট একই। সব ওজন আলাদা হলে MST **একটাই**।'
+      ),
+      scene(G_W, {
+        edgeState: pick(G_W, MST),
+        panels: [{ type: 'list', label: T('MST checklist', 'MST চেকলিস্ট'), items: [T('undirected edges', 'আনডিরেক্টেড এজ'), T('connected graph (else: a forest)', 'যুক্ত গ্রাফ (নইলে: ফরেস্ট)'), T('any weights, even negative', 'যেকোনো ওজন, নেগেটিভও'), T('ties → several MSTs, same total', 'সমান ওজন → একাধিক MST, মোট একই')] }],
+        status: T('our villages pass every check', 'আমাদের গ্রামগুলো সব শর্ত মানে')
+      })
+    ),
+    step(
+      T('Not connected → a spanning forest', 'যুক্ত না → স্প্যানিং ফরেস্ট'),
+      T(
+        'Remove the route 3–4. Now {4, 5} can never be reached from {0, 1, 2, 3} — **two islands**, so **no spanning tree** exists.\n\nThe best we can do is the cheapest tree **inside each island**: a **minimum spanning forest**. It has V − (number of islands) = 6 − 2 = **4** edges.\n\nKeep this in mind: Kruskal builds a forest on its own, while Prim started from one vertex only ever covers **its own** island.',
+        '3–4 পথটা সরিয়ে দাও। এখন {0, 1, 2, 3} থেকে {4, 5}-এ কখনো যাওয়া যায় না — **দুটো দ্বীপ**, তাই **কোনো স্প্যানিং ট্রি নেই**।\n\nসবচেয়ে ভালো যা করা যায়: **প্রতিটা দ্বীপের ভেতরে** সবচেয়ে সস্তা ট্রি — একটা **মিনিমাম স্প্যানিং ফরেস্ট (forest)**। এতে V − (দ্বীপের সংখ্যা) = 6 − 2 = **4**টা এজ।\n\nমনে রেখো: ক্রুসকাল নিজে থেকেই ফরেস্ট বানায়, কিন্তু এক ভার্টেক্স থেকে শুরু করা প্রিম শুধু **নিজের** দ্বীপটাই ঢাকে।'
+      ),
+      scene(G_SPLIT, { edgeState: pick(G_SPLIT, [[1, 2], [1, 3], [0, 2], [4, 5]], 'reject'), nodeState: { 0: 'setA', 1: 'setA', 2: 'setA', 3: 'setA', 4: 'setB', 5: 'setB' }, status: T('2 islands → forest with 6 − 2 = 4 edges', '২টা দ্বীপ → 6 − 2 = 4 এজের ফরেস্ট') })
+    ),
+    step(
+      T('Equal weights → more than one MST', 'সমান ওজন → একাধিক MST'),
+      T(
+        'Three villages, every cable costs 2. Any **two** cables connect all three, so there are **3 different MSTs** — each costs 4.\n\nThat is why two correct programs may print **different edges** for the same graph, yet always the **same total**. When you test your code, compare the **total**, not the edge list.',
+        'তিনটা গ্রাম, প্রতিটা কেবলের খরচ 2। যেকোনো **দুটো** কেবল তিনজনকেই জোড়ে, তাই **৩টা আলাদা MST** — প্রতিটার খরচ 4।\n\nএজন্যই একই গ্রাফে দুটো সঠিক প্রোগ্রাম **আলাদা এজ** প্রিন্ট করতে পারে, কিন্তু **মোট** সবসময় একই। নিজের কোড টেস্ট করার সময় এজের তালিকা না, **মোট** মেলাও।'
+      ),
+      scene(TRI, { edgeState: { '0-1': 'tree', '1-2': 'tree', '0-2': 'dim' }, nodeState: allNodes(TRI, 'done'), status: T('drop any one of the three edges → 3 MSTs, all cost 4', 'তিনটার যেকোনো একটা বাদ → ৩টা MST, সবগুলোর খরচ 4') })
+    ),
+    step(
+      T('MST is not the shortest path', 'MST মানে সবচেয়ে ছোট পথ না'),
+      T(
+        'A very common mix-up. The MST here is 0–1, 1–2, 2–3 (cost 6); the road 0–3 (3) is left out because it is the priciest edge of the cycle.\n\nBut travel from **A = 0** to **B = 3** inside the MST: 0 → 1 → 2 → 3 = **6**. The direct road 0–3 costs only **3**!\n\n- **MST** minimises the cost of the **whole network** → Prim, Kruskal.\n- **Shortest path** minimises the trip between **two** vertices → Dijkstra, Bellman-Ford.\n\nDifferent questions, different algorithms.',
+        'খুব সাধারণ একটা গুলিয়ে ফেলা। এখানে MST হলো 0–1, 1–2, 2–3 (খরচ 6); 0–3 (3) বাদ, কারণ সাইকেলে ওটাই সবচেয়ে দামি।\n\nকিন্তু MST-এর ভেতর দিয়ে **A = 0** থেকে **B = 3** যাও: 0 → 1 → 2 → 3 = **6**। অথচ সরাসরি 0–3 রাস্তার খরচ মাত্র **3**!\n\n- **MST** কমায় **পুরো নেটওয়ার্কের** খরচ → প্রিম, ক্রুসকাল।\n- **সবচেয়ে ছোট পথ** কমায় **দুটো** ভার্টেক্সের মধ্যের যাত্রা → Dijkstra, Bellman-Ford।\n\nআলাদা প্রশ্ন, আলাদা অ্যালগরিদম।'
+      ),
+      scene(SQ, { edgeState: { '0-1': 'tree', '1-2': 'tree', '2-3': 'tree', '0-3': 'reject' }, nodeState: { 0: 'source', 3: 'current' }, tags: { 0: 'A', 3: 'B' }, status: T('A → B: 6 inside the MST, 3 by the direct road', 'A → B: MST-এর ভেতর দিয়ে 6, সরাসরি রাস্তায় 3') })
+    ),
+    /* ---------- part 3: the code — checking a spanning tree ---------- */
+    step(
+      T('Now in code: is this a spanning tree?', 'এবার কোডে: এটা কি স্প্যানিং ট্রি?'),
+      T(
+        'The code turns the island picture into two checks:\n\n1. **Exactly V − 1 edges?** (`chosen.length != V − 1` → false)\n2. **Is everything connected?** Start with `reached = {0}`, and keep spreading along the chosen edges: if one end of an edge is reached, the other end becomes reached too. At the end, every vertex must be reached.\n\nWhy no separate cycle check? V − 1 edges that connect everyone leave **no room** for a cycle (step "Five joins → one island"). Here the green tree passes both checks.',
+        'কোড দ্বীপের ছবিটাকে দুটো যাচাইয়ে বদলায়:\n\n1. **ঠিক V − 1টা এজ?** (`chosen.length != V − 1` → false)\n2. **সব কি যুক্ত?** `reached = {0}` দিয়ে শুরু করো, আর chosen এজ ধরে ছড়াতে থাকো: এজের এক মাথা reached হলে অন্য মাথাও reached। শেষে প্রতিটা ভার্টেক্স reached হতে হবে।\n\nআলাদা সাইকেল যাচাই কেন নেই? সবাইকে জোড়া V − 1টা এজে সাইকেলের **জায়গাই থাকে না** ("পাঁচটা জোড়া → একটা দ্বীপ" ধাপ)। এখানে সবুজ ট্রি দুটো যাচাইয়েই পাস।'
+      ),
+      scene(G_W, { edgeState: pick(G_W, TREE_A), nodeState: allNodes(G_W, 'done'), status: T(`5 edges ✓ · all 6 reached ✓ → true`, `৫টা এজ ✓ · ৬টাই reached ✓ → true`) }),
       ['count', 'conn']
     ),
     step(
       T('Too few edges: not connected', 'এজ কম: যুক্ত নয়'),
       T(
-        'Here only **4** edges are chosen. Vertex **5** is cut off — nobody can reach it.\n\nWith fewer than **V − 1** edges you can **never** connect V vertices. The code\'s first check (`chosen.length != V − 1`) already says **false**.',
-        'এখানে মাত্র **৪টা** এজ বাছা হয়েছে। ভার্টেক্স **5** বিচ্ছিন্ন — কেউ সেখানে পৌঁছাতে পারে না।\n\n**V − 1**-এর কম এজ দিয়ে V-টা ভার্টেক্স **কখনোই** জোড়া যায় না। কোডের প্রথম যাচাই (`chosen.length != V − 1`) আগেই বলে **false**।'
+        'Here only **4** edges are chosen. Vertex **5** is cut off — a second island.\n\nWith fewer than **V − 1** edges you can **never** connect V vertices. The code\'s first check (`chosen.length != V − 1`) already says **false**.',
+        'এখানে মাত্র **৪টা** এজ বাছা হয়েছে। ভার্টেক্স **5** বিচ্ছিন্ন — একটা দ্বিতীয় দ্বীপ।\n\n**V − 1**-এর কম এজ দিয়ে V-টা ভার্টেক্স **কখনোই** জোড়া যায় না। কোডের প্রথম যাচাই (`chosen.length != V − 1`) আগেই বলে **false**।'
       ),
       scene(G_W, { edgeState: pick(G_W, [[0, 1], [1, 3], [3, 4], [2, 3]]), nodeState: { 5: 'reject' }, status: T('4 edges → vertex 5 unreachable', '৪টা এজ → ভার্টেক্স 5-এ যাওয়া যায় না') }),
       'count'
@@ -1154,46 +1291,28 @@ const spanningTree = {
     step(
       T('A cycle: not a tree', 'সাইকেল: ট্রি নয়'),
       T(
-        'Now 5 edges again, but **0–1, 1–2, 0–2** form a **cycle**, so one of them is wasted — and vertex **4–5** are left out.\n\nA set of exactly V − 1 edges that reaches every vertex can **never** contain a cycle. So the code\'s second check — "is every vertex reached?" — is all we need.',
-        'আবার ৫টা এজ, কিন্তু **0–1, 1–2, 0–2** একটা **সাইকেল**, তাই এর একটা অপচয় — আর **4–5** বাদ পড়ে গেছে।\n\nঠিক V − 1টা এজ যদি প্রতিটা ভার্টেক্সে পৌঁছায়, তাতে **কখনো** সাইকেল থাকতে পারে না। তাই কোডের দ্বিতীয় যাচাই — "প্রতিটা ভার্টেক্সে পৌঁছানো গেছে?" — এটুকুই যথেষ্ট।'
+        'Now 5 edges again, but **0–1, 1–2, 0–2** form a **cycle** — one of them joined nothing — so vertex **5** is left out.\n\nThe count check passes (5 edges), but spreading from 0 never reaches 5, so the second check says **false**.',
+        'আবার ৫টা এজ, কিন্তু **0–1, 1–2, 0–2** একটা **সাইকেল** — এর একটা কিছুই জোড়েনি — তাই ভার্টেক্স **5** বাদ পড়েছে।\n\nগোনার যাচাই পাস (৫টা এজ), কিন্তু 0 থেকে ছড়িয়ে 5-এ কখনো পৌঁছায় না, তাই দ্বিতীয় যাচাই বলে **false**।'
       ),
       scene(G_W, { edgeState: { ...pick(G_W, [[1, 3], [3, 4]]), '0-1': 'reject', '1-2': 'reject', '0-2': 'reject' }, nodeState: { 5: 'reject' }, status: T('cycle 0–1–2 wastes an edge; 5 is unreachable', 'সাইকেল 0–1–2 একটা এজ নষ্ট করে; 5-এ যাওয়া যায় না') }),
       'conn'
     ),
     step(
-      T('There are many spanning trees', 'স্প্যানিং ট্রি অনেকগুলো'),
+      T('The MST passes the check', 'MST যাচাইয়ে পাস'),
       T(
-        'A graph usually has **many** spanning trees. For a complete graph Kₙ there is a beautiful formula, **Cayley\'s formula**:\n\n> Kₙ has **nⁿ⁻²** spanning trees.\n\nThis K₄ has 4² = **16** of them; the green one is just one. K₁₀ already has 100,000,000 — far too many to try one by one.',
-        'একটা গ্রাফে সাধারণত **অনেকগুলো** স্প্যানিং ট্রি থাকে। কমপ্লিট গ্রাফ Kₙ-এর জন্য একটা সুন্দর সূত্র আছে, **কেইলির সূত্র (Cayley\'s formula)**:\n\n> Kₙ-এ **nⁿ⁻²**টা স্প্যানিং ট্রি।\n\nএই K₄-এ 4² = **16**টা; সবুজটা তার একটা মাত্র। K₁₀-এ ইতিমধ্যে ১০ কোটি — একটা একটা করে চেষ্টা করা অসম্ভব।'
+        `Run the checker on the MST edges ${MST.map(([u, v]) => `${u}–${v}`).join(', ')}: 5 edges ✓, and spreading from 0 reaches all 6 vertices ✓ → **true**.\n\nBut notice: this code only **checks** a tree someone gives it. It can not **find** the cheapest one. That is the job of Prim and Kruskal.`,
+        `MST-এর এজ ${MST.map(([u, v]) => `${u}–${v}`).join(', ')}-এ যাচাইকারী চালাও: ৫টা এজ ✓, আর 0 থেকে ছড়িয়ে ৬টা ভার্টেক্সেই পৌঁছায় ✓ → **true**।\n\nকিন্তু খেয়াল করো: এই কোড কেউ একটা ট্রি দিলে শুধু **যাচাই** করে। সবচেয়ে সস্তাটা **খুঁজে বের** করতে পারে না। সেটা প্রিম আর ক্রুসকালের কাজ।`
       ),
-      scene(K4, { edgeState: pick(K4, [[0, 1], [1, 2], [2, 3]]), status: T('K₄ → 4² = 16 spanning trees', 'K₄ → 4² = 16টা স্প্যানিং ট্রি') }),
+      scene(G_W, { edgeState: pick(G_W, MST, 'reject'), nodeState: allNodes(G_W, 'done'), status: T('isSpanningTree(6, MST) → true', 'isSpanningTree(6, MST) → true') }),
       'yes'
     ),
     step(
-      T('The minimum spanning tree (MST)', 'মিনিমাম স্প্যানিং ট্রি (MST)'),
+      T('What we learned, and what is next', 'যা শিখলাম, আর এরপর কী'),
       T(
-        `Among all spanning trees, the one with the **smallest total weight** is the **Minimum Spanning Tree (MST)**.\n\nFor our villages it is the green tree: ${MST.map(([u, v]) => `${u}–${v}`).join(', ')} with cost **${costOf(MST)}**, cheaper than the ${costOf(TREE_A)} we saw before.\n\nThe code confirms it is a spanning tree: 5 edges, and spreading out from 0 reaches all 6 vertices.`,
-        `সব স্প্যানিং ট্রির মধ্যে যেটার **মোট ওজন সবচেয়ে কম**, সেটা **মিনিমাম স্প্যানিং ট্রি (MST)**।\n\nআমাদের গ্রামগুলোর জন্য সেটা সবুজ ট্রি: ${MST.map(([u, v]) => `${u}–${v}`).join(', ')}, খরচ **${costOf(MST)}** — আগের ${costOf(TREE_A)}-এর চেয়ে সস্তা।\n\nকোড নিশ্চিত করে এটা স্প্যানিং ট্রি: ৫টা এজ, আর 0 থেকে ছড়িয়ে ৬টা ভার্টেক্সেই পৌঁছানো যায়।`
+        '- The cheapest connected network never has a cycle → it is a **tree**.\n- A spanning tree on V vertices has exactly **V − 1** edges (6 islands → 1 island).\n- An edge inside one island makes a **cycle**; an edge between islands is useful.\n- MST needs an **undirected**, **connected** graph; weights may be negative; ties allow several MSTs.\n- MST ≠ shortest path.\n\n**Next lesson — "How MST Algorithms Think":** why grabbing the cheapest edge is safe (the **cut** and **cycle** rules), Prim and Kruskal **by hand**, and when to use which.',
+        '- সবচেয়ে সস্তা যুক্ত নেটওয়ার্কে কখনো সাইকেল থাকে না → এটা একটা **ট্রি**।\n- V ভার্টেক্সের স্প্যানিং ট্রিতে ঠিক **V − 1**টা এজ (৬টা দ্বীপ → ১টা দ্বীপ)।\n- একই দ্বীপের ভেতরের এজ **সাইকেল** বানায়; দুই দ্বীপের মধ্যের এজ কাজের।\n- MST-এ লাগে **আনডিরেক্টেড**, **যুক্ত** গ্রাফ; ওজন নেগেটিভ হতে পারে; সমান ওজনে একাধিক MST।\n- MST ≠ সবচেয়ে ছোট পথ।\n\n**পরের লেসন — "MST অ্যালগরিদম কীভাবে ভাবে":** সবচেয়ে সস্তা এজ নেওয়া কেন নিরাপদ (**কাট** আর **সাইকেল** নিয়ম), হাতে-কলমে প্রিম ও ক্রুসকাল, আর কখন কোনটা।'
       ),
-      scene(G_W, { edgeState: pick(G_W, MST, 'reject'), nodeState: allNodes(G_W, 'done'), panels: [{ type: 'text', label: T('MST cost', 'MST খরচ'), text: `${MST.map(([u, v]) => costOf([[u, v]])).join(' + ')} = **${costOf(MST)}**` }], status: T(`MST cost = ${costOf(MST)}  (red = not used)`, `MST খরচ = ${costOf(MST)}  (লাল = ব্যবহার হয়নি)`) }),
-      'yes'
-    ),
-    step(
-      T('The cut rule: why greedy works', 'কাট নিয়ম: লোভী পদ্ধতি কেন কাজ করে'),
-      T(
-        'Split the vertices into two groups — blue {0, 1, 2} and orange {3, 4, 5}. That split is called a **cut**.\n\nThe edges crossing it are 1–3 (2) and 2–3 (4). The **cut property** says: the **cheapest edge crossing any cut is always safe** to put in the MST. Here that is **1–3**.\n\nBoth Prim and Kruskal are built on this one idea.',
-        'ভার্টেক্সগুলো দুই দলে ভাগ করো — নীল {0, 1, 2} আর কমলা {3, 4, 5}। এই ভাগকে বলে **কাট (cut)**।\n\nএটা পার হওয়া এজ 1–3 (2) আর 2–3 (4)। **কাট প্রপার্টি** বলে: **যেকোনো কাট পার হওয়া সবচেয়ে সস্তা এজ MST-তে রাখা সবসময় নিরাপদ**। এখানে সেটা **1–3**।\n\nপ্রিম আর ক্রুসকাল দুটোই এই একটা ধারণার ওপর দাঁড়িয়ে।'
-      ),
-      scene(G_W, { nodeState: { 0: 'setA', 1: 'setA', 2: 'setA', 3: 'setB', 4: 'setB', 5: 'setB' }, edgeState: { '1-3': 'relax', '2-3': 'compare', '0-1': 'dim', '0-2': 'dim', '1-2': 'dim', '3-4': 'dim', '4-5': 'dim' }, status: T('crossing edges: 1–3 (2) ✓ cheapest, 2–3 (4)', 'পার হওয়া এজ: 1–3 (2) ✓ সবচেয়ে সস্তা, 2–3 (4)') })
-    ),
-    step(
-      T('Two ways to find the MST', 'MST খোঁজার দুটো উপায়'),
-      T(
-        '- **Prim** grows **one tree** from a start vertex; each round it adds the cheapest edge leaving the tree (a cut between "in the tree" and "not yet").\n- **Kruskal** looks at the **whole graph**, takes edges from cheapest to most expensive, and skips any that would make a cycle.\n\nBoth give the same total cost. The next two lessons show each one, step by step.',
-        '- **প্রিম** একটা শুরুর ভার্টেক্স থেকে **একটা ট্রি** বড় করে; প্রতি রাউন্ডে ট্রি থেকে বের হওয়া সবচেয়ে সস্তা এজ যোগ করে ("ট্রিতে আছে" আর "এখনো নেই"-এর মধ্যে একটা কাট)।\n- **ক্রুসকাল** **পুরো গ্রাফ** দেখে, সস্তা থেকে দামি ক্রমে এজ নেয়, আর সাইকেল বানালে বাদ দেয়।\n\nদুটোই একই মোট খরচ দেয়। পরের দুটো লেসনে প্রতিটা ধাপে ধাপে দেখানো হয়েছে।'
-      ),
-      scene(G_W, { edgeState: pick(G_W, MST), status: T(`both find cost ${costOf(MST)}`, `দুটোই খরচ ${costOf(MST)} পায়`) }),
-      'yes'
+      scene(G_W, { edgeState: pick(G_W, MST), nodeState: allNodes(G_W, 'done'), status: T(`MST cost ${costOf(MST)} — next: how to find it`, `MST খরচ ${costOf(MST)} — এরপর: কীভাবে খুঁজব`) })
     )
   ]
 };
