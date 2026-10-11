@@ -8,6 +8,7 @@
  * ------------------------------------------------------------------ */
 import { G_TRAV, G_W, G_BF, G_NEGCYCLE, G_FW, G_DAG } from '../../visuals/graphData.js';
 import { genBFS, genDFS, genDijkstra, genPrim, genKruskal, genBellmanFord, genFloyd, genKahn, genTopoDFS, weightMatrix } from '../../visuals/graphAlgos.js';
+import { primConcept, kruskalConcept, dijkstraConcept, bellmanConcept, floydConcept, bfsConcept, dfsConcept, kahnConcept, topoDfsConcept } from '../../visuals/algoConcepts.js';
 import { bfsProgram, dfsProgram, dijkstraProgram, primProgram, kruskalProgram, bellmanProgram, floydProgram, kahnProgram, topoDfsProgram } from '../../visuals/graphCode.js';
 
 const CYCLE3 = {
@@ -37,7 +38,7 @@ export const graphAlgorithmTopics = [
       }
     },
     bfsProgram(G_TRAV, 0),
-    genBFS(G_TRAV, 0)
+    [...bfsConcept(G_TRAV, 0), ...genBFS(G_TRAV, 0)]
   ),
   lesson(
     {
@@ -55,7 +56,7 @@ export const graphAlgorithmTopics = [
       }
     },
     dfsProgram(G_TRAV, 0),
-    genDFS(G_TRAV, 0)
+    [...dfsConcept(G_TRAV, 0), ...genDFS(G_TRAV, 0)]
   ),
   lesson(
     {
@@ -74,7 +75,7 @@ export const graphAlgorithmTopics = [
       }
     },
     primProgram(G_W),
-    genPrim(G_W)
+    [...primConcept(G_W), ...genPrim(G_W)]
   ),
   lesson(
     {
@@ -92,7 +93,7 @@ export const graphAlgorithmTopics = [
       }
     },
     kruskalProgram(G_W),
-    genKruskal(G_W)
+    [...kruskalConcept(G_W), ...genKruskal(G_W)]
   ),
   lesson(
     {
@@ -111,7 +112,7 @@ export const graphAlgorithmTopics = [
       }
     },
     dijkstraProgram(G_W, 0),
-    genDijkstra(G_W, 0)
+    [...dijkstraConcept(G_W, 0), ...genDijkstra(G_W, 0)]
   ),
   lesson(
     {
@@ -129,7 +130,7 @@ export const graphAlgorithmTopics = [
       }
     },
     bellmanProgram(G_BF, 0),
-    genBellmanFord(G_BF, 0, G_NEGCYCLE)
+    [...bellmanConcept(G_BF, 0), ...genBellmanFord(G_BF, 0, G_NEGCYCLE)]
   ),
   lesson(
     {
@@ -147,7 +148,7 @@ export const graphAlgorithmTopics = [
       }
     },
     floydProgram(G_FW, weightMatrix(G_FW)),
-    genFloyd(G_FW)
+    [...floydConcept(G_FW), ...genFloyd(G_FW)]
   ),
   lesson(
     {
@@ -165,7 +166,7 @@ export const graphAlgorithmTopics = [
       }
     },
     kahnProgram(G_DAG),
-    genKahn(G_DAG, CYCLE3)
+    [...kahnConcept(G_DAG), ...genKahn(G_DAG, CYCLE3)]
   ),
   lesson(
     {
@@ -183,6 +184,6 @@ export const graphAlgorithmTopics = [
       }
     },
     topoDfsProgram(G_DAG),
-    genTopoDFS(G_DAG)
+    [...topoDfsConcept(G_DAG), ...genTopoDFS(G_DAG)]
   )
 ];

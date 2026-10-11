@@ -226,8 +226,8 @@ export function genBFS(g, start) {
     push(
       T(`Take ${u} from the front`, `সামনে থেকে ${u} নাও`),
       T(
-        `The queue is not empty, so the loop runs again. Take the vertex at the **front**: **u = ${u}**, and print it.\n\n${u} is vertex number **${order.length}** that BFS visits.${queue.length ? ` Still waiting in line: ${list(queue)}.` : ' The line is now empty — but u may add new vertices.'}`,
-        `queue খালি নয়, তাই লুপ আবার চলে। **সামনে**র ভার্টেক্সটা নাও: **u = ${u}**, আর প্রিন্ট করো।\n\nBFS-এর ভিজিট করা **${order.length} নম্বর** ভার্টেক্স হলো ${u}।${queue.length ? ` লাইনে এখনো অপেক্ষায়: ${list(queue)}।` : ' লাইন এখন খালি — তবে u নতুন ভার্টেক্স যোগ করতে পারে।'}`
+        `\`queue.length > 0\` → \`${queue.length + 1} > 0\` → **true**: the queue is not empty, so the loop runs again. Take the vertex at the **front**: **u = ${u}**, and print it.\n\n${u} is vertex number **${order.length}** that BFS visits.${queue.length ? ` Still waiting in line: ${list(queue)}.` : ' The line is now empty — but u may add new vertices.'}`,
+        `\`queue.length > 0\` → \`${queue.length + 1} > 0\` → **true**: queue খালি নয়, তাই লুপ আবার চলে। **সামনে**র ভার্টেক্সটা নাও: **u = ${u}**, আর প্রিন্ট করো।\n\nBFS-এর ভিজিট করা **${order.length} নম্বর** ভার্টেক্স হলো ${u}।${queue.length ? ` লাইনে এখনো অপেক্ষায়: ${list(queue)}।` : ' লাইন এখন খালি — তবে u নতুন ভার্টেক্স যোগ করতে পারে।'}`
       ),
       frame({ cur: u, fresh: true, status: T(`u = ${u}  →  print ${u}`, `u = ${u}  →  প্রিন্ট ${u}`) }),
       ['whileCheck', 'pop', 'visit'],
@@ -243,8 +243,8 @@ export function genBFS(g, start) {
         push(
           T(`Neighbour ${v}: new → queue it`, `প্রতিবেশী ${v}: নতুন → queue-তে রাখো`),
           T(
-            `Check neighbour **v = ${v}**: \`visited[${v}]\` is **false**, so ${v} is new.\n\nMark it and put it at the **back** of the queue. It is one edge further than ${u}, so its level is **L${level[v]}**.\n\nThe green edge ${u}–${v} is how BFS first reached ${v}.`,
-            `প্রতিবেশী **v = ${v}** দেখো: \`visited[${v}]\` **false**, তাই ${v} নতুন।\n\nচিহ্ন দাও আর queue-এর **পেছনে** রাখো। এটা ${u}-এর চেয়ে এক এজ দূরে, তাই লেভেল **L${level[v]}**।\n\nসবুজ এজ ${u}–${v} দিয়েই BFS প্রথম ${v}-তে পৌঁছাল।`
+            `Check neighbour **v = ${v}**: \`!visited[${v}]\` → \`!false\` → **true**, so ${v} is new.\n\nMark it and put it at the **back** of the queue. It is one edge further than ${u}, so its level is **L${level[v]}**.\n\nThe green edge ${u}–${v} is how BFS first reached ${v}.`,
+            `প্রতিবেশী **v = ${v}** দেখো: \`!visited[${v}]\` → \`!false\` → **true**, তাই ${v} নতুন।\n\nচিহ্ন দাও আর queue-এর **পেছনে** রাখো। এটা ${u}-এর চেয়ে এক এজ দূরে, তাই লেভেল **L${level[v]}**।\n\nসবুজ এজ ${u}–${v} দিয়েই BFS প্রথম ${v}-তে পৌঁছাল।`
           ),
           frame({ cur: u, chk: { u, v }, chkKind: 'new', qHl: { [queue.length - 1]: 'relax' }, vHl: { [v]: 'relax' }, status: T(`visited[${v}] = false → mark ${v}, queue.push(${v})`, `visited[${v}] = false → ${v} চিহ্নিত, queue.push(${v})`) }),
           ['forNbr', 'ifNot', 'mark', 'push'],
@@ -255,8 +255,8 @@ export function genBFS(g, start) {
         push(
           T(`Neighbour ${v}: seen → skip`, `প্রতিবেশী ${v}: দেখা হয়েছে → বাদ`),
           T(
-            `Check neighbour **v = ${v}**: \`visited[${v}]\` is already **true** — ${v} is ${where.en}.\n\nSkip it. This one check is what stops BFS from walking around a **cycle** forever and from printing a vertex twice.`,
-            `প্রতিবেশী **v = ${v}** দেখো: \`visited[${v}]\` আগেই **true** — ${v} ${where.bn}।\n\nবাদ দাও। এই একটা যাচাই-ই BFS-কে **সাইকেলে** অনন্তকাল ঘোরা আর একই ভার্টেক্স দুবার প্রিন্ট করা থেকে বাঁচায়।`
+            `Check neighbour **v = ${v}**: \`!visited[${v}]\` → \`!true\` → **false** — ${v} is ${where.en}.\n\nSkip it. This one check is what stops BFS from walking around a **cycle** forever and from printing a vertex twice.`,
+            `প্রতিবেশী **v = ${v}** দেখো: \`!visited[${v}]\` → \`!true\` → **false** — ${v} ${where.bn}।\n\nবাদ দাও। এই একটা যাচাই-ই BFS-কে **সাইকেলে** অনন্তকাল ঘোরা আর একই ভার্টেক্স দুবার প্রিন্ট করা থেকে বাঁচায়।`
           ),
           frame({ cur: u, chk: { u, v }, chkKind: 'skip', vHl: { [v]: 'compare' }, status: T(`visited[${v}] = true → skip`, `visited[${v}] = true → বাদ`) }),
           ['forNbr', 'ifNot'],
@@ -406,8 +406,8 @@ export function genDFS(g, start) {
         push(
           T(`Neighbour ${v}: new → go deeper`, `প্রতিবেশী ${v}: নতুন → আরও গভীরে`),
           T(
-            `In dfs(${u}), check neighbour **v = ${v}**: \`visited[${v}]\` is **false**.\n\nDFS does not wait — it **immediately** calls \`dfs(${v})\` and goes deeper. The rest of ${u}'s neighbours will be checked later, when we come back.`,
-            `dfs(${u})-এ প্রতিবেশী **v = ${v}** দেখো: \`visited[${v}]\` **false**।\n\nDFS অপেক্ষা করে না — **সঙ্গে সঙ্গে** \`dfs(${v})\` কল করে আরও গভীরে যায়। ${u}-এর বাকি প্রতিবেশীদের পরে দেখা হবে, যখন আমরা ফিরে আসব।`
+            `In dfs(${u}), check neighbour **v = ${v}**: \`!visited[${v}]\` → \`!false\` → **true** — ${v} is new.\n\nDFS does not wait — it **immediately** calls \`dfs(${v})\` and goes deeper. The rest of ${u}'s neighbours will be checked later, when we come back.`,
+            `dfs(${u})-এ প্রতিবেশী **v = ${v}** দেখো: \`!visited[${v}]\` → \`!false\` → **true** — ${v} নতুন।\n\nDFS অপেক্ষা করে না — **সঙ্গে সঙ্গে** \`dfs(${v})\` কল করে আরও গভীরে যায়। ${u}-এর বাকি প্রতিবেশীদের পরে দেখা হবে, যখন আমরা ফিরে আসব।`
           ),
           frame({ chk: { u, v }, chkKind: 'new', status: T(`visited[${v}] = false → call dfs(${v})`, `visited[${v}] = false → dfs(${v}) কল`) }),
           ['forNbr', 'ifNot', 'recurse'],
@@ -428,8 +428,8 @@ export function genDFS(g, start) {
         push(
           T(`Neighbour ${v}: seen → skip`, `প্রতিবেশী ${v}: দেখা হয়েছে → বাদ`),
           T(
-            `In dfs(${u}), check neighbour **v = ${v}**: \`visited[${v}]\` is already **true**.\n\nSkip it — ${stack.includes(v) ? `${v} is still on the call stack (we came from there)` : `${v} was fully explored already`}. Without this check DFS would loop forever around a cycle.`,
-            `dfs(${u})-এ প্রতিবেশী **v = ${v}** দেখো: \`visited[${v}]\` আগেই **true**।\n\nবাদ দাও — ${stack.includes(v) ? `${v} এখনো কল স্ট্যাকে আছে (আমরা ওখান থেকেই এসেছি)` : `${v} আগেই পুরো দেখা হয়ে গেছে`}। এই যাচাই না থাকলে DFS সাইকেলে চিরকাল ঘুরত।`
+            `In dfs(${u}), check neighbour **v = ${v}**: \`!visited[${v}]\` → \`!true\` → **false**.\n\nSkip it — ${stack.includes(v) ? `${v} is still on the call stack (we came from there)` : `${v} was fully explored already`}. Without this check DFS would loop forever around a cycle.`,
+            `dfs(${u})-এ প্রতিবেশী **v = ${v}** দেখো: \`!visited[${v}]\` → \`!true\` → **false**।\n\nবাদ দাও — ${stack.includes(v) ? `${v} এখনো কল স্ট্যাকে আছে (আমরা ওখান থেকেই এসেছি)` : `${v} আগেই পুরো দেখা হয়ে গেছে`}। এই যাচাই না থাকলে DFS সাইকেলে চিরকাল ঘুরত।`
           ),
           frame({ chk: { u, v }, chkKind: 'skip', vHl: { [v]: 'compare' }, status: T(`visited[${v}] = true → skip`, `visited[${v}] = true → বাদ`) }),
           ['forNbr', 'ifNot'],
@@ -532,18 +532,6 @@ function genGreedy(g, kind, src) {
     now: round < V ? `round = ${round}` : `round = ${V}`,
     check: countCheck('round', round, V)
   });
-  const scanLoop = (finBefore, u) => forLoop({
-    label: T(`Scan loop: i walks over every vertex 0 … ${V - 1} and remembers the smallest \`${NAME}\` that is not ${D ? 'done' : 'in the tree'} yet. That one becomes u.`, `খোঁজার লুপ: i প্রতিটা ভার্টেক্স 0 … ${V - 1} ঘুরে দেখে, আর যারা এখনো ${D ? 'done নয়' : 'ট্রিতে নেই'} তাদের মধ্যে সবচেয়ে ছোট \`${NAME}\` মনে রাখে। সেটাই হয় u।`),
-    code: `for i = 0 … ${V - 1}`,
-    unit: T('vertex', 'ভার্টেক্স'),
-    values: [...Array(V).keys()],
-    at: V,
-    notes: Object.fromEntries([...Array(V).keys()].map((i) => [i, finBefore[i] ? FIN_WORD : `${NAME} ${fmt(val[i])}`])),
-    skip: [...Array(V).keys()].filter((i) => finBefore[i]),
-    best: u,
-    now: `u = ${u}`,
-    check: T(`smallest ${NAME} among the rest → u = ${u}`, `বাকিদের মধ্যে সবচেয়ে ছোট ${NAME} → u = ${u}`)
-  });
   const nbrLoop = (u, k) => forLoop({
     label: T(`Inner loop: visits each neighbour v of u = ${u} (with edge weight w) and asks "is the way through ${u} better?"`, `ভেতরের লুপ: u = ${u}-এর প্রতিটা প্রতিবেশী v (এজের ওজন w সহ) দেখে, আর জিজ্ঞেস করে "${u} হয়ে গেলে কি ভালো?"`),
     code: `for (v, w) in adj[${u}]`,
@@ -587,13 +575,45 @@ function genGreedy(g, kind, src) {
   );
   withNames(steps[steps.length - 1], D ? 'dijkstra' : 'prim');
 
+  // the first rounds trace the scan loop one vertex at a time; later rounds show the same checks as a list
+  const DETAILED_SCAN_ROUNDS = 2;
+  let syntaxShown = false;
   for (let round = 0; round < V; round++) {
-    let u = -1;
-    for (let i = 0; i < V; i++) if (!fin[i] && (u === -1 || val[i] < val[u])) u = i;
     const cand = [];
     for (let i = 0; i < V; i++) if (!fin[i]) cand.push(i);
     const finBefore = [...fin];
-    fin[u] = true;
+
+    // run the scan exactly like the code: if (!fin[i] && (u == -1 || val[i] < val[u])) u = i
+    const scan = [];
+    let u = -1;
+    for (let i = 0; i < V; i++) {
+      const uBefore = u;
+      const take = !fin[i] && (u === -1 || val[i] < val[u]);
+      if (take) u = i;
+      scan.push({ i, uBefore, take, uAfter: u });
+    }
+    const scanCond = (s) => {
+      if (fin[s.i]) return T(`\`!${FIN}[${s.i}]\` → \`!true\` → **false** — \`&&\` stops here, ${s.i} is already ${D ? 'done' : 'in the tree'}`, `\`!${FIN}[${s.i}]\` → \`!true\` → **false** — \`&&\` এখানেই থামে, ${s.i} আগেই ${D ? 'done' : 'ট্রিতে'}`);
+      if (s.uBefore === -1) return T(`\`!${FIN}[${s.i}] && (u == -1 || …)\` → \`true && (true || …)\` → **true** — no candidate yet, so u = ${s.i}`, `\`!${FIN}[${s.i}] && (u == -1 || …)\` → \`true && (true || …)\` → **true** — এখনো কোনো প্রার্থী নেই, তাই u = ${s.i}`);
+      const lt = val[s.i] < val[s.uBefore];
+      return T(
+        `\`${NAME}[${s.i}] < ${NAME}[u]\` → \`${fmt(val[s.i])} < ${fmt(val[s.uBefore])}\` → **${lt}**${lt ? ` → u = ${s.i}` : ` → u stays ${s.uBefore}`}`,
+        `\`${NAME}[${s.i}] < ${NAME}[u]\` → \`${fmt(val[s.i])} < ${fmt(val[s.uBefore])}\` → **${lt}**${lt ? ` → u = ${s.i}` : ` → u থাকে ${s.uBefore}`}`
+      );
+    };
+    const scanAt = (k, best = null) => forLoop({
+      label: T(`Scan loop: i walks over every vertex 0 … ${V - 1} and remembers the smallest \`${NAME}\` that is not ${D ? 'done' : 'in the tree'} yet. That one becomes u.`, `খোঁজার লুপ: i প্রতিটা ভার্টেক্স 0 … ${V - 1} ঘুরে দেখে, আর যারা এখনো ${D ? 'done নয়' : 'ট্রিতে নেই'} তাদের মধ্যে সবচেয়ে ছোট \`${NAME}\` মনে রাখে। সেটাই হয় u।`),
+      code: `for i = 0 … ${V - 1}`,
+      unit: T('vertex', 'ভার্টেক্স'),
+      values: [...Array(V).keys()],
+      at: k,
+      notes: Object.fromEntries([...Array(V).keys()].map((i) => [i, finBefore[i] ? FIN_WORD : `${NAME} ${fmt(val[i])}`])),
+      skip: [...Array(V).keys()].filter((i) => finBefore[i]),
+      best,
+      now: k < 0 ? "u = -1" : k < V ? `i = ${k}, u = ${scan[k].uBefore}` : `u = ${u}`,
+      check: k < 0 ? undefined : k < V ? countCheck("i", k, V) : T(`smallest ${NAME} among the rest → u = ${u}`, `বাকিদের মধ্যে সবচেয়ে ছোট ${NAME} → u = ${u}`)
+    });
+
     const loopIntro = round === 0
       ? T(
         `**Outer loop, round 1 of ${V}.** \`round = 0\` and 0 < ${V}, so the body runs. The body always does two things:\n1. the **scan loop** (\`for i\`) looks at all ${V} vertices and picks **u**;\n2. the **inner loop** (\`for (v, w)\`) checks the neighbours of u.\n\nThen \`round\` grows by 1 and everything repeats — ${V} rounds in total. The box above the code shows where each loop is.\n\n`,
@@ -603,7 +623,6 @@ function genGreedy(g, kind, src) {
         `**Outer loop, round ${round + 1} of ${V}.** \`round\` went up to ${round}, and ${round} < ${V}, so the body runs again.\n\n`,
         `**বাইরের লুপ, ${V}টার মধ্যে ${round + 1} নম্বর রাউন্ড।** \`round\` বেড়ে ${round} হলো, আর ${round} < ${V}, তাই ভেতরের কাজ আবার চলে।\n\n`
       );
-    const candTxt = cand.map((i) => `${NAME}[${i}] = ${fmt(val[i])}`).join(', ');
     const why = D && val[u] === Infinity
       ? T(
         `Its dist is still **∞**: no road from ${src} leads to ${u} at all. It can never be reached, so its neighbours cannot be improved through it.`,
@@ -615,33 +634,88 @@ function genGreedy(g, kind, src) {
         `অন্য কোনো পথ এটাকে হারাতে পারবে না: ${u}-এ যাওয়ার অন্য যেকোনো পথকে এমন ভার্টেক্স দিয়ে যেতে হবে যেটা ইতিমধ্যেই ${fmt(val[u])}-এর চেয়ে **দূরে**, আর ওজন কখনো নেগেটিভ নয়।`
       )
       : T(
-        parent[u] >= 0 ? `Edge **${parent[u]}–${u}** (cost ${val[u]}) joins the MST. It is the cheapest edge leaving the tree, so it is always safe to take.` : 'The tree starts here, with no edge yet.',
-        parent[u] >= 0 ? `এজ **${parent[u]}–${u}** (খরচ ${val[u]}) MST-তে ঢুকল। ট্রি থেকে বের হওয়া এটাই সবচেয়ে সস্তা এজ, তাই এটা নেওয়া সবসময় নিরাপদ।` : 'ট্রি এখান থেকে শুরু, এখনো কোনো এজ নেই।'
+        parent[u] >= 0 ? `Edge **${parent[u]}–${u}** (cost ${val[u]}) joins the MST. It is the cheapest edge leaving the tree, so it is always safe to take (the cut rule).` : 'The tree starts here, with no edge yet.',
+        parent[u] >= 0 ? `এজ **${parent[u]}–${u}** (খরচ ${val[u]}) MST-তে ঢুকল। ট্রি থেকে বের হওয়া এটাই সবচেয়ে সস্তা এজ, তাই এটা নেওয়া সবসময় নিরাপদ (কাট নিয়ম)।` : 'ট্রি এখান থেকে শুরু, এখনো কোনো এজ নেই।'
       );
-    push(
-      D ? T(`Round ${round + 1}: pick ${u} (dist ${fmt(val[u])})`, `রাউন্ড ${round + 1}: ${u} বাছো (dist ${fmt(val[u])})`) : T(`Round ${round + 1}: add ${u} to the tree`, `রাউন্ড ${round + 1}: ${u}-কে ট্রিতে নাও`),
-      T(
-        `${loopIntro.en}**Scan:** \`i\` goes 0 → ${V - 1}. Skip vertices already ${D ? 'done' : 'in the tree'}; among the rest (${candTxt}) the smallest is **${u}** (${fmt(val[u])}), so **u = ${u}** and \`${FIN}[${u}] = true\`.\n\n${why.en}`,
-        `${loopIntro.bn}**খোঁজা:** \`i\` 0 → ${V - 1} পর্যন্ত যায়। যারা আগেই ${D ? 'done' : 'ট্রিতে'} তাদের বাদ; বাকিদের মধ্যে (${candTxt}) সবচেয়ে ছোট **${u}** (${fmt(val[u])}), তাই **u = ${u}** আর \`${FIN}[${u}] = true\`।\n\n${why.bn}`
-      ),
-      frame({ cur: u, cand, aHl: Object.fromEntries(cand.map((i) => [i, i === u ? 'current' : 'compare'])), status: T(`smallest ${NAME} among unfinished → u = ${u}`, `শেষ-না-হওয়াদের মধ্যে সবচেয়ে ছোট ${NAME} → u = ${u}`) }),
-      ['loop', 'pick', 'mark'],
-      { u, [`${NAME}[u]`]: fmt(val[u]) },
-      [roundLoop(round), scanLoop(finBefore, u), nbrLoop(u, -1)]
-    );
+    const pickFrame = (k, extra = {}) => frame({ cur: k < V ? null : u, cand, aHl: Object.fromEntries(cand.map((i) => [i, k < V ? (i === k ? 'current' : i === scan[k].uBefore ? 'relax' : 'compare') : i === u ? 'current' : 'compare'])), ...extra });
 
+    if (round < DETAILED_SCAN_ROUNDS) {
+      push(
+        D ? T(`Round ${round + 1} begins: find the closest unfinished vertex`, `রাউন্ড ${round + 1} শুরু: সবচেয়ে কাছের শেষ-না-হওয়া ভার্টেক্স খোঁজো`) : T(`Round ${round + 1} begins: find the cheapest vertex to add`, `রাউন্ড ${round + 1} শুরু: যোগ করার সবচেয়ে সস্তা ভার্টেক্স খোঁজো`),
+        T(
+          `${loopIntro.en}First the scan. \`u = -1\` means "**no candidate yet**" — -1 is not a real vertex. Then \`i\` walks over every vertex and the test\n\n\`if (!${FIN}[i] && (u == -1 || ${NAME}[i] < ${NAME}[u])) u = i\`\n\nkeeps the best one seen so far. In words: "i is not ${D ? 'done' : 'in the tree'} **and** (we have no candidate yet **or** i is cheaper than the candidate)".${!syntaxShown ? '\n\n`!` means **NOT** (flips true/false). `&&` means **AND**: true only if both sides are true — if the left side is already false, it stops and does not even look at the right side. `||` means **OR**.' : ''}`,
+          `${loopIntro.bn}আগে খোঁজা। \`u = -1\` মানে "**এখনো কোনো প্রার্থী নেই**" — -1 কোনো আসল ভার্টেক্স না। তারপর \`i\` প্রতিটা ভার্টেক্স ঘোরে আর পরীক্ষা\n\n\`if (!${FIN}[i] && (u == -1 || ${NAME}[i] < ${NAME}[u])) u = i\`\n\nএ পর্যন্ত দেখা সেরাটা মনে রাখে। কথায়: "i ${D ? 'done নয়' : 'ট্রিতে নেই'} **এবং** (এখনো প্রার্থী নেই **অথবা** i প্রার্থীর চেয়ে সস্তা)"।${!syntaxShown ? '\n\n`!` মানে **NOT** (true/false উল্টে দেয়)। `&&` মানে **AND**: দুই পাশই সত্য হলে সত্য — বাম পাশ আগেই মিথ্যা হলে সেখানেই থামে, ডান পাশ দেখেই না। `||` মানে **OR (অথবা)**।' : ''}`
+        ),
+        frame({ cand, status: T('u = -1  (no candidate yet)', 'u = -1  (এখনো প্রার্থী নেই)') }),
+        ['loop', 'pick'],
+        { round, u: -1 },
+        [roundLoop(round), scanAt(-1)]
+      );
+      syntaxShown = true;
+      scan.forEach((s, k) => {
+        const c = scanCond(s);
+        push(
+          T(`Scan i = ${s.i}: ${fin[s.i] ? 'already ' + (D ? 'done' : 'in tree') + ', skip' : s.take ? `new best → u = ${s.i}` : `not better, u stays ${s.uBefore}`}`, `খোঁজা i = ${s.i}: ${fin[s.i] ? 'আগেই ' + (D ? 'done' : 'ট্রিতে') + ', বাদ' : s.take ? `নতুন সেরা → u = ${s.i}` : `ভালো না, u থাকে ${s.uBefore}`}`),
+          T(
+            `\`i = ${s.i}\`, current candidate \`u = ${s.uBefore}\`${s.uBefore >= 0 ? ` (${NAME} ${fmt(val[s.uBefore])})` : ''}.\n\n${c.en}\n\n${fin[s.i] ? `A vertex that is already ${D ? 'done' : 'in the tree'} is never picked again, so u stays ${s.uBefore}.` : s.take ? `${s.i} is the best candidate so far.` : `${s.uBefore} is still the best candidate.`}`,
+            `\`i = ${s.i}\`, বর্তমান প্রার্থী \`u = ${s.uBefore}\`${s.uBefore >= 0 ? ` (${NAME} ${fmt(val[s.uBefore])})` : ''}।\n\n${c.bn}\n\n${fin[s.i] ? `যে ভার্টেক্স আগেই ${D ? 'done' : 'ট্রিতে'}, তাকে আর কখনো বাছা হয় না, তাই u থাকে ${s.uBefore}।` : s.take ? `এ পর্যন্ত ${s.i}-ই সেরা প্রার্থী।` : `${s.uBefore}-ই এখনো সেরা প্রার্থী।`}`
+          ),
+          pickFrame(k, { status: T(`i = ${s.i} → u = ${s.uAfter}`, `i = ${s.i} → u = ${s.uAfter}`) }),
+          'pick',
+          { round, i: s.i, u: s.uAfter, [`${NAME}[i]`]: fmt(val[s.i]) },
+          [roundLoop(round), scanAt(k)]
+        );
+      });
+      fin[u] = true;
+      push(
+        D ? T(`Round ${round + 1}: ${u} is done (dist ${fmt(val[u])})`, `রাউন্ড ${round + 1}: ${u} done (dist ${fmt(val[u])})`) : T(`Round ${round + 1}: add ${u} to the tree`, `রাউন্ড ${round + 1}: ${u}-কে ট্রিতে নাও`),
+        T(
+          `\`i\` reached ${V}, so the scan stops with **u = ${u}**. Now \`${FIN}[${u}] = true\`.\n\n${why.en}`,
+          `\`i\` ${V}-এ পৌঁছাল, তাই খোঁজা থামে **u = ${u}** নিয়ে। এখন \`${FIN}[${u}] = true\`।\n\n${why.bn}`
+        ),
+        pickFrame(V, { status: T(`u = ${u} → ${FIN}[${u}] = true`, `u = ${u} → ${FIN}[${u}] = true`) }),
+        'mark',
+        { u, [`${NAME}[u]`]: fmt(val[u]) },
+        [roundLoop(round), scanAt(V, u), nbrLoop(u, -1)]
+      );
+    } else {
+      fin[u] = true;
+      const chain = scan.map((s) => `- i = ${s.i}: ${scanCond(s).en}`).join('\n');
+      const chainBn = scan.map((s) => `- i = ${s.i}: ${scanCond(s).bn}`).join('\n');
+      push(
+        D ? T(`Round ${round + 1}: pick ${u} (dist ${fmt(val[u])})`, `রাউন্ড ${round + 1}: ${u} বাছো (dist ${fmt(val[u])})`) : T(`Round ${round + 1}: add ${u} to the tree`, `রাউন্ড ${round + 1}: ${u}-কে ট্রিতে নাও`),
+        T(
+          `${loopIntro.en}**Scan** (same test as before, starting from \`u = -1\`):\n${chain}\n\nSo **u = ${u}** and \`${FIN}[${u}] = true\`.\n\n${why.en}`,
+          `${loopIntro.bn}**খোঁজা** (আগের মতোই পরীক্ষা, শুরু \`u = -1\` দিয়ে):\n${chainBn}\n\nতাই **u = ${u}** আর \`${FIN}[${u}] = true\`।\n\n${why.bn}`
+        ),
+        pickFrame(V, { status: T(`smallest ${NAME} among unfinished → u = ${u}`, `শেষ-না-হওয়াদের মধ্যে সবচেয়ে ছোট ${NAME} → u = ${u}`) }),
+        ['loop', 'pick', 'mark'],
+        { u, [`${NAME}[u]`]: fmt(val[u]) },
+        [roundLoop(round), scanAt(V, u), nbrLoop(u, -1)]
+      );
+    }
+
+    let firstNbr = round === 0;
     for (const [k, { v, w }] of adj[u].entries()) {
       const loops = [roundLoop(round), nbrLoop(u, k)];
+      const nbrSyntax = firstNbr
+        ? T(
+          `\n\n\`for (auto [v, w] : adj[${u}])\` takes the pairs of \`adj[${u}]\` one by one and splits each into **v** (the neighbour) and **w** (the weight of the edge to it). Here that is \`(${v}, ${w})\`.`,
+          `\n\n\`for (auto [v, w] : adj[${u}])\` \`adj[${u}]\`-এর জোড়াগুলো একটা একটা করে নেয় আর প্রতিটাকে ভাগ করে **v** (প্রতিবেশী) আর **w** (সেখানে যাওয়ার এজের ওজন)-এ। এখানে সেটা \`(${v}, ${w})\`।`
+        )
+        : { en: '', bn: '' };
+      firstNbr = false;
       if (fin[v]) {
+        const cond = `\`!${FIN}[${v}] && …\` → \`!true && …\` → **false**`;
         push(
           T(`${u} → ${v}: already final, skip`, `${u} → ${v}: আগেই চূড়ান্ত, বাদ`),
           T(
-            `Neighbour **${v}** is already ${D ? '**done** — its distance is final' : '**in the tree**'}, so the condition \`${D ? '!done[v]' : '!inTree[v]'}\` is false.\n\nNothing to do; move to the next neighbour.`,
-            `প্রতিবেশী **${v}** আগেই ${D ? '**done** — তার দূরত্ব চূড়ান্ত' : '**ট্রিতে আছে**'}, তাই শর্ত \`${D ? '!done[v]' : '!inTree[v]'}\` মিথ্যা।\n\nকিছু করার নেই; পরের প্রতিবেশীতে যাও।`
+            `Neighbour **${v}**, edge weight ${w}.\n\n${cond}\n\n${v} is already ${D ? '**done** — its distance is final' : '**in the tree**'}, so the left side is false and \`&&\` stops right there. Nothing to do; move to the next neighbour.${nbrSyntax.en}`,
+            `প্রতিবেশী **${v}**, এজের ওজন ${w}।\n\n${cond}\n\n${v} আগেই ${D ? '**done** — তার দূরত্ব চূড়ান্ত' : '**ট্রিতে আছে**'}, তাই বাম পাশ মিথ্যা আর \`&&\` সেখানেই থামে। কিছু করার নেই; পরের প্রতিবেশীতে যাও।${nbrSyntax.bn}`
           ),
-          frame({ cur: u, chk: { u, v }, chkKind: 'skip', status: T(`${v} is final → skip`, `${v} চূড়ান্ত → বাদ`) }),
+          frame({ cur: u, chk: { u, v }, chkKind: 'skip', status: `!${FIN}[${v}] → !true → false` }),
           ['forNbr', D ? 'ifRelax' : 'ifBetter'],
-          { u, v, w },
+          { u, v, w, [`${FIN}[v]`]: 'true' },
           loops
         );
         continue;
@@ -649,7 +723,9 @@ function genGreedy(g, kind, src) {
       const offer = D ? val[u] + w : w;
       const old = val[v];
       const better = offer < old;
-      const offerTxt = D ? `dist[${u}] + w = ${fmt(val[u])} + ${w} = **${fmt(offer)}**` : `w = **${w}**`;
+      const cmpCode = D ? `dist[${u}] + w < dist[${v}]` : `w < key[${v}]`;
+      const cmpVals = D ? `${fmt(val[u])} + ${w} < ${fmt(old)}` : `${w} < ${fmt(old)}`;
+      const cond = `\`!${FIN}[${v}] && ${cmpCode}\` → \`!false && ${cmpVals}\` → \`true && ${D ? `${fmt(offer)} < ${fmt(old)}` : `${better}`}\` → **${better}**`;
       if (better) {
         val[v] = offer;
         parent[v] = u;
@@ -658,14 +734,14 @@ function genGreedy(g, kind, src) {
         better ? T(`${u} → ${v}: ${offer} < ${fmt(old)}, update!`, `${u} → ${v}: ${offer} < ${fmt(old)}, আপডেট!`) : T(`${u} → ${v}: ${fmt(offer)} is not better`, `${u} → ${v}: ${fmt(offer)} ভালো নয়`),
         better
           ? T(
-            `Edge ${u}–${v} has weight ${w}. ${D ? `Going **through ${u}** costs ${offerTxt}.` : `Connecting ${v} through ${u} costs ${offerTxt}.`}\n\nIs ${offer} < \`${NAME}[${v}]\` (${fmt(old)})? **Yes** → set \`${NAME}[${v}] = ${offer}\`${D ? '' : ` and \`parent[${v}] = ${u}\``}.${D ? ' This is called **relaxing** the edge: we found a shorter road.' : ''}`,
-            `এজ ${u}–${v}-এর ওজন ${w}। ${D ? `**${u} হয়ে** গেলে খরচ ${offerTxt}।` : `${u} দিয়ে ${v}-কে জুড়লে খরচ ${offerTxt}।`}\n\n${offer} < \`${NAME}[${v}]\` (${fmt(old)})? **হ্যাঁ** → \`${NAME}[${v}] = ${offer}\`${D ? '' : ` আর \`parent[${v}] = ${u}\``}।${D ? ' একে বলে এজ **রিল্যাক্স (relax)** করা: আরও ছোট রাস্তা পাওয়া গেল।' : ''}`
+            `Neighbour **${v}**, edge weight ${w}. ${D ? `Going **through ${u}** would cost dist[${u}] + w = ${fmt(val[u])} + ${w} = **${offer}**.` : `Connecting ${v} through ${u} costs just this edge: **${w}**.`}\n\n${cond}\n\nSo the body runs: \`${NAME}[${v}] = ${offer}\`${D ? '' : ` and \`parent[${v}] = ${u}\``}.${D ? ' This is called **relaxing** the edge: we found a shorter road.' : ` The dashed edge ${u}–${v} is now ${v}'s best offer.`}${nbrSyntax.en}`,
+            `প্রতিবেশী **${v}**, এজের ওজন ${w}। ${D ? `**${u} হয়ে** গেলে খরচ dist[${u}] + w = ${fmt(val[u])} + ${w} = **${offer}**।` : `${u} দিয়ে ${v}-কে জুড়লে খরচ শুধু এই এজটা: **${w}**।`}\n\n${cond}\n\nতাই ভেতরের কাজ চলে: \`${NAME}[${v}] = ${offer}\`${D ? '' : ` আর \`parent[${v}] = ${u}\``}।${D ? ' একে বলে এজ **রিল্যাক্স (relax)** করা: আরও ছোট রাস্তা পাওয়া গেল।' : ` ড্যাশ দেওয়া এজ ${u}–${v} এখন ${v}-এর সেরা অফার।`}${nbrSyntax.bn}`
           )
           : T(
-            `Edge ${u}–${v} has weight ${w}. ${D ? `Going through ${u} would cost ${offerTxt}` : `Connecting ${v} through ${u} would cost ${offerTxt}`}.\n\nIs ${fmt(offer)} < \`${NAME}[${v}]\` (${fmt(old)})? **No** — the old offer is ${offer === old ? 'just as good' : 'better'}, so keep it.`,
-            `এজ ${u}–${v}-এর ওজন ${w}। ${D ? `${u} হয়ে গেলে খরচ হতো ${offerTxt}` : `${u} দিয়ে ${v}-কে জুড়লে খরচ হতো ${offerTxt}`}।\n\n${fmt(offer)} < \`${NAME}[${v}]\` (${fmt(old)})? **না** — পুরনোটা ${offer === old ? 'সমান ভালো' : 'আরও ভালো'}, তাই সেটাই থাকুক।`
+            `Neighbour **${v}**, edge weight ${w}. ${D ? `Going through ${u} would cost ${fmt(val[u])} + ${w} = ${fmt(offer)}` : `Connecting ${v} through ${u} would cost ${w}`}.\n\n${cond}\n\nThe old offer (${fmt(old)}) is ${offer === old ? 'just as good' : 'better'}, so nothing changes.${nbrSyntax.en}`,
+            `প্রতিবেশী **${v}**, এজের ওজন ${w}। ${D ? `${u} হয়ে গেলে খরচ হতো ${fmt(val[u])} + ${w} = ${fmt(offer)}` : `${u} দিয়ে ${v}-কে জুড়লে খরচ হতো ${w}`}।\n\n${cond}\n\nপুরনো অফার (${fmt(old)}) ${offer === old ? 'সমান ভালো' : 'আরও ভালো'}, তাই কিছু বদলায় না।${nbrSyntax.bn}`
           ),
-        frame({ cur: u, chk: { u, v }, chkKind: better ? 'better' : 'worse', aHl: { [v]: better ? 'relax' : 'compare' }, status: better ? T(`${NAME}[${v}]: ${fmt(old)} → ${offer}`, `${NAME}[${v}]: ${fmt(old)} → ${offer}`) : T(`${fmt(offer)} ≥ ${fmt(old)} → keep ${fmt(old)}`, `${fmt(offer)} ≥ ${fmt(old)} → ${fmt(old)}-ই থাকুক`) }),
+        frame({ cur: u, chk: { u, v }, chkKind: better ? 'better' : 'worse', aHl: { [v]: better ? 'relax' : 'compare' }, status: better ? T(`${cmpVals} → true → ${NAME}[${v}] = ${offer}`, `${cmpVals} → true → ${NAME}[${v}] = ${offer}`) : T(`${cmpVals} → false → keep ${fmt(old)}`, `${cmpVals} → false → ${fmt(old)}-ই থাকুক`) }),
         better ? ['forNbr', D ? 'ifRelax' : 'ifBetter', D ? 'relax' : 'update'] : ['forNbr', D ? 'ifRelax' : 'ifBetter'],
         { u, v, w, [D ? 'dist[u] + w' : 'w']: fmt(offer), [`${NAME}[v]`]: fmt(old) },
         loops
@@ -798,8 +874,8 @@ export function genKruskal(g) {
   push(
     T('Sort the edges by weight', 'এজগুলো ওজন অনুযায়ী সাজাও'),
     T(
-      `\`kruskal(edges, ${V})\` starts by **sorting** the edges from cheapest to most expensive: ${sorted.map((e) => `${e.u}–${e.v} (${e.w})`).join(', ')}.\n\nWe will walk down this list **once**, from the top.`,
-      `\`kruskal(edges, ${V})\` শুরুতেই এজগুলো সবচেয়ে সস্তা থেকে দামি ক্রমে **সাজায়**: ${sorted.map((e) => `${e.u}–${e.v} (${e.w})`).join(', ')}।\n\nআমরা এই তালিকা ওপর থেকে **একবার** নিচে নামব।`
+      `\`kruskal(edges, ${V})\` starts by **sorting** the edges from cheapest to most expensive: ${sorted.map((e) => `${e.u}–${e.v} (${e.w})`).join(', ')}.\n\nEach edge is a triple \`[u, v, w]\`, so \`e[2]\` is its **weight**. The comparator \`(a, b) => a[2] - b[2]\` tells the sort: "a negative answer means a comes first" — so the edge with the smaller weight goes first. Edges with equal weight keep their input order.\n\nWe will walk down this list **once**, from the top.`,
+      `\`kruskal(edges, ${V})\` শুরুতেই এজগুলো সবচেয়ে সস্তা থেকে দামি ক্রমে **সাজায়**: ${sorted.map((e) => `${e.u}–${e.v} (${e.w})`).join(', ')}।\n\nপ্রতিটা এজ একটা তিন-সংখ্যার দল \`[u, v, w]\`, তাই \`e[2]\` হলো তার **ওজন**। তুলনাকারী \`(a, b) => a[2] - b[2]\` সর্টকে বলে: "উত্তর নেগেটিভ হলে a আগে" — তাই কম ওজনের এজ আগে যায়। সমান ওজনের এজ ইনপুটের ক্রমেই থাকে।\n\nআমরা এই তালিকা ওপর থেকে **একবার** নিচে নামব।`
     ),
     frame({ statusText: T('sorted: cheapest first', 'সাজানো: সস্তা আগে') }),
     ['call', 'header', 'sort']
@@ -820,15 +896,20 @@ export function genKruskal(g) {
     const fu = find(e.u);
     const fv = find(e.v);
     const pathTxt = (f) => (f.path.length > 1 ? f.path.join(' → ') : `${f.path[0]} (its own leader)`);
+    // the while loop of find(x), one check per line: parent[x] != x → x = parent[x]
+    const whileTxt = (f, lang) => f.path.map((x, i) => (i < f.path.length - 1
+      ? `\`parent[${x}] != ${x}\` → \`${f.path[i + 1]} != ${x}\` → true → x = ${f.path[i + 1]}`
+      : `\`parent[${x}] != ${x}\` → \`${x} != ${x}\` → false → ${lang === 'bn' ? 'লুপ থামে, ফেরত' : 'loop stops, return'} **${x}**`)).map((l) => `    - ${l}`).join('\n');
+    const firstEdge = k === 0;
     const pathTxtBn = (f) => (f.path.length > 1 ? f.path.join(' → ') : `${f.path[0]} (নিজেই লিডার)`);
     push(
       T(`Edge ${e.u}–${e.v} (${e.w}): find the leaders`, `এজ ${e.u}–${e.v} (${e.w}): লিডার খোঁজো`),
       T(
-        `Next cheapest edge: **${e.u}–${e.v}** with weight ${e.w}.\n\n- \`find(${e.u})\`: ${pathTxt(fu)} → leader **${fu.root}**\n- \`find(${e.v})\`: ${pathTxt(fv)} → leader **${fv.root}**`,
-        `পরের সবচেয়ে সস্তা এজ: **${e.u}–${e.v}**, ওজন ${e.w}।\n\n- \`find(${e.u})\`: ${pathTxtBn(fu)} → লিডার **${fu.root}**\n- \`find(${e.v})\`: ${pathTxtBn(fv)} → লিডার **${fv.root}**`
+        `Next cheapest edge: **${e.u}–${e.v}** with weight ${e.w}.${firstEdge ? ' (`for (const [u, v, w] of sorted)` splits each triple into the two ends **u**, **v** and the weight **w**.)' : ''}\n\n\`find(x)\` climbs \`parent\` links until it reaches a vertex that points to **itself** — the leader:\n\n- \`find(${e.u})\`: ${pathTxt(fu)}\n${whileTxt(fu, 'en')}\n- \`find(${e.v})\`: ${pathTxt(fv)}\n${whileTxt(fv, 'en')}\n\nSo \`ru = ${fu.root}\`, \`rv = ${fv.root}\`.`,
+        `পরের সবচেয়ে সস্তা এজ: **${e.u}–${e.v}**, ওজন ${e.w}।${firstEdge ? ' (`for (const [u, v, w] of sorted)` প্রতিটা তিন-সংখ্যার দলকে ভাগ করে দুই মাথা **u**, **v** আর ওজন **w**-তে।)' : ''}\n\n\`find(x)\` \`parent\` লিংক ধরে ওপরে ওঠে, যতক্ষণ না এমন ভার্টেক্সে পৌঁছায় যে **নিজের দিকেই** নির্দেশ করে — সে-ই লিডার:\n\n- \`find(${e.u})\`: ${pathTxtBn(fu)}\n${whileTxt(fu, 'bn')}\n- \`find(${e.v})\`: ${pathTxtBn(fv)}\n${whileTxt(fv, 'bn')}\n\nতাই \`ru = ${fu.root}\`, \`rv = ${fv.root}\`।`
       ),
       frame({ curIdx: k, nodeHl: { [e.u]: 'compare', [e.v]: 'compare' }, pHl: Object.fromEntries([...fu.path, ...fv.path].map((x) => [x, 'compare'])), statusText: T(`find(${e.u}) = ${fu.root},  find(${e.v}) = ${fv.root}`, `find(${e.u}) = ${fu.root},  find(${e.v}) = ${fv.root}`) }),
-      ['forEdge', 'find'],
+      ['forEdge', 'find', 'findLoop'],
       { u: e.u, v: e.v, w: e.w, ru: fu.root, rv: fv.root }
     );
     if (fu.root !== fv.root) {
@@ -838,10 +919,10 @@ export function genKruskal(g) {
       push(
         T(`Different groups → take ${e.u}–${e.v}`, `আলাদা দল → ${e.u}–${e.v} নাও`),
         T(
-          `Leaders ${fu.root} ≠ ${fv.root}: the two ends are in **different groups**, so this edge cannot make a cycle.\n\n**Take it**: total += ${e.w} → **${total}**. Then join the groups: \`parent[${fu.root}] = ${fv.root}\` — now ${fv.root} leads them both.`,
-          `লিডার ${fu.root} ≠ ${fv.root}: দুই মাথা **আলাদা দলে**, তাই এই এজ সাইকেল বানাতে পারে না।\n\n**নিয়ে নাও**: total += ${e.w} → **${total}**। তারপর দল দুটো জোড়ো: \`parent[${fu.root}] = ${fv.root}\` — এখন ${fv.root} দুই দলেরই লিডার।`
+          `\`ru != rv\` → \`${fu.root} != ${fv.root}\` → **true**\n\nDifferent leaders: the two ends are in **different groups**, so this edge cannot make a cycle.\n\n**Take it**: total += ${e.w} → **${total}**. Then join the groups: \`parent[ru] = rv\` → \`parent[${fu.root}] = ${fv.root}\` — leader ${fu.root} now points to ${fv.root}, so ${fv.root} leads them both. (Only the **leader** is re-pointed; the other members still reach ${fv.root} through it.)`,
+          `\`ru != rv\` → \`${fu.root} != ${fv.root}\` → **true**\n\nআলাদা লিডার: দুই মাথা **আলাদা দলে**, তাই এই এজ সাইকেল বানাতে পারে না।\n\n**নিয়ে নাও**: total += ${e.w} → **${total}**। তারপর দল দুটো জোড়ো: \`parent[ru] = rv\` → \`parent[${fu.root}] = ${fv.root}\` — লিডার ${fu.root} এখন ${fv.root}-এর দিকে নির্দেশ করে, তাই ${fv.root} দুই দলেরই লিডার। (শুধু **লিডারকেই** নতুন দিকে ঘোরানো হয়; বাকি সদস্যরা তার মধ্য দিয়েই ${fv.root}-এ পৌঁছায়।)`
         ),
-        frame({ pHl: { [fu.root]: 'relax' }, statusText: T(`take ${e.u}–${e.v}, total = ${total}`, `${e.u}–${e.v} নেওয়া হলো, total = ${total}`) }),
+        frame({ pHl: { [fu.root]: 'relax' }, statusText: T(`${fu.root} != ${fv.root} → true → take ${e.u}–${e.v}, total = ${total}`, `${fu.root} != ${fv.root} → true → ${e.u}–${e.v} নেওয়া হলো, total = ${total}`) }),
         ['ifDiff', 'take', 'union'],
         { ru: fu.root, rv: fv.root, total }
       );
@@ -850,10 +931,10 @@ export function genKruskal(g) {
       push(
         T(`Same group → skip ${e.u}–${e.v}`, `একই দল → ${e.u}–${e.v} বাদ`),
         T(
-          `Both leaders are **${fu.root}**: ${e.u} and ${e.v} are **already connected** through edges we took.\n\nAdding ${e.u}–${e.v} would close a **cycle** (a loop) — a tree never has one. **Skip it.**`,
-          `দুই লিডারই **${fu.root}**: নেওয়া এজগুলো দিয়ে ${e.u} আর ${e.v} **আগেই যুক্ত**।\n\n${e.u}–${e.v} যোগ করলে একটা **সাইকেল** (লুপ) বন্ধ হবে — ট্রিতে কখনো সাইকেল থাকে না। **বাদ দাও।**`
+          `\`ru != rv\` → \`${fu.root} != ${fv.root}\` → **false**\n\nBoth leaders are **${fu.root}**: ${e.u} and ${e.v} are **already connected** through edges we took.\n\nAdding ${e.u}–${e.v} would close a **cycle** (a loop) — a tree never has one. **Skip it.**`,
+          `\`ru != rv\` → \`${fu.root} != ${fv.root}\` → **false**\n\nদুই লিডারই **${fu.root}**: নেওয়া এজগুলো দিয়ে ${e.u} আর ${e.v} **আগেই যুক্ত**।\n\n${e.u}–${e.v} যোগ করলে একটা **সাইকেল** (লুপ) বন্ধ হবে — ট্রিতে কখনো সাইকেল থাকে না। **বাদ দাও।**`
         ),
-        frame({ nodeHl: { [e.u]: 'reject', [e.v]: 'reject' }, statusText: T(`${fu.root} = ${fv.root} → cycle → skip`, `${fu.root} = ${fv.root} → সাইকেল → বাদ`) }),
+        frame({ nodeHl: { [e.u]: 'reject', [e.v]: 'reject' }, statusText: T(`${fu.root} != ${fv.root} → false → cycle → skip`, `${fu.root} != ${fv.root} → false → সাইকেল → বাদ`) }),
         ['ifDiff', 'skip'],
         { ru: fu.root, rv: fv.root }
       );
@@ -1180,11 +1261,20 @@ export function genFloyd(g) {
     const before = D.map((r) => [...r]);
     for (let i = 0; i < V; i++) for (let j = 0; j < V; j++) if (before[i][k] + before[k][j] < D[i][j]) changes.push([i, j]);
     loopsNow = () => [kRow(k), iRow(-1), jRow(-1)];
+    // every cell the round really tests (diagonal, row k and column k can never change), with real values
+    const plus = (x, y) => (x === Infinity || y === Infinity ? Infinity : x + y);
+    const checks = [];
+    for (let i = 0; i < V; i++) for (let j = 0; j < V; j++) {
+      if (i === j || i === k || j === k) continue;
+      const via = plus(before[i][k], before[k][j]);
+      checks.push(`- D[${i}][${j}]: \`${fmt(before[i][k])} + ${fmt(before[k][j])} = ${fmt(via)} < ${fmt(before[i][j])}\` → **${via < before[i][j]}**`);
+    }
+    const checkList = checks.join('\n');
     push(
       T(`k = ${k}: allow stops at vertex ${k}`, `k = ${k}: ভার্টেক্স ${k}-এ থামার অনুমতি`),
       T(
-        `Now every route may **pass through vertex ${k}** on the way. For each cell we ask: is **i → ${k} → j** shorter than the best i → j we know?\n\nThe purple **row ${k}** and **column ${k}** never change in this round (going through ${k} to reach ${k} adds nothing). ${changes.length ? `This round improves **${changes.length}** cell${changes.length > 1 ? 's' : ''}.` : 'This round improves nothing.'}`,
-        `এখন প্রতিটা রাস্তা পথে **ভার্টেক্স ${k} হয়ে** যেতে পারে। প্রতিটা ঘরে প্রশ্ন: **i → ${k} → j** কি জানা সেরা i → j-এর চেয়ে ছোট?\n\nবেগুনি **সারি ${k}** আর **কলাম ${k}** এই রাউন্ডে বদলায় না (${k}-এ যেতে ${k} হয়ে গেলে কিছু যোগ হয় না)। ${changes.length ? `এই রাউন্ডে **${changes.length}টা** ঘর উন্নত হয়।` : 'এই রাউন্ডে কিছুই উন্নত হয় না।'}`
+        `Now every route may **pass through vertex ${k}** on the way. For each cell we ask: is **i → ${k} → j** shorter than the best i → j we know?\n\nThe purple **row ${k}** and **column ${k}** never change in this round (going through ${k} to reach ${k} adds nothing). ${changes.length ? `This round improves **${changes.length}** cell${changes.length > 1 ? 's' : ''}.` : 'This round improves nothing.'}\n\nThe test \`D[i][k] + D[k][j] < D[i][j]\` for every other cell (∞ + anything = ∞, so a missing leg can never help):\n${checkList}`,
+        `এখন প্রতিটা রাস্তা পথে **ভার্টেক্স ${k} হয়ে** যেতে পারে। প্রতিটা ঘরে প্রশ্ন: **i → ${k} → j** কি জানা সেরা i → j-এর চেয়ে ছোট?\n\nবেগুনি **সারি ${k}** আর **কলাম ${k}** এই রাউন্ডে বদলায় না (${k}-এ যেতে ${k} হয়ে গেলে কিছু যোগ হয় না)। ${changes.length ? `এই রাউন্ডে **${changes.length}টা** ঘর উন্নত হয়।` : 'এই রাউন্ডে কিছুই উন্নত হয় না।'}\n\nবাকি প্রতিটা ঘরে পরীক্ষা \`D[i][k] + D[k][j] < D[i][j]\` (∞ + যেকোনো কিছু = ∞, তাই একটা অংশ না থাকলে কখনো কাজে আসে না):\n${checkList}`
       ),
       frame({ k, statusText: T(`k = ${k}`, `k = ${k}`) }),
       'kLoop',
@@ -1345,12 +1435,12 @@ export function genKahn(g, cycleDemo) {
         zero ? T(`Arrow ${u} → ${v}: ${v} is now free`, `তীর ${u} → ${v}: ${v} এখন মুক্ত`) : T(`Arrow ${u} → ${v}: ${v} still waits`, `তীর ${u} → ${v}: ${v} এখনো অপেক্ষায়`),
         zero
           ? T(
-            `\`indeg[${v}]\` goes down to **0** — ${v} is not waiting for anything any more.\n\nPut **${v}** at the back of the queue.`,
-            `\`indeg[${v}]\` কমে **0** — ${v} আর কোনো কিছুর অপেক্ষায় নেই।\n\n**${v}**-কে queue-এর পেছনে রাখো।`
+            `\`indeg[${v}]--\` → ${indeg[v] + 1} − 1 = **0**. Then \`indeg[${v}] == 0\` → \`0 == 0\` → **true** — ${v} is not waiting for anything any more.\n\nPut **${v}** at the back of the queue.`,
+            `\`indeg[${v}]--\` → ${indeg[v] + 1} − 1 = **0**। তারপর \`indeg[${v}] == 0\` → \`0 == 0\` → **true** — ${v} আর কোনো কিছুর অপেক্ষায় নেই।\n\n**${v}**-কে queue-এর পেছনে রাখো।`
           )
           : T(
-            `\`indeg[${v}]\` goes down to **${indeg[v]}** — ${v} still waits for ${indeg[v]} more task${indeg[v] > 1 ? 's' : ''}, so it cannot join the queue yet.`,
-            `\`indeg[${v}]\` কমে **${indeg[v]}** — ${v} এখনো আরও ${indeg[v]}টা কাজের অপেক্ষায়, তাই এখনো queue-তে ঢুকতে পারে না।`
+            `\`indeg[${v}]--\` → ${indeg[v] + 1} − 1 = **${indeg[v]}**. Then \`indeg[${v}] == 0\` → \`${indeg[v]} == 0\` → **false** — ${v} still waits for ${indeg[v]} more task${indeg[v] > 1 ? 's' : ''}, so it cannot join the queue yet.`,
+            `\`indeg[${v}]--\` → ${indeg[v] + 1} − 1 = **${indeg[v]}**। তারপর \`indeg[${v}] == 0\` → \`${indeg[v]} == 0\` → **false** — ${v} এখনো আরও ${indeg[v]}টা কাজের অপেক্ষায়, তাই এখনো queue-তে ঢুকতে পারে না।`
           ),
         frame({ cur: u, chk: { u, v }, iHl: { [v]: zero ? 'relax' : 'compare' }, qHl: zero ? { [queue.length - 1]: 'relax' } : {}, statusText: T(`indeg[${v}] = ${indeg[v]}${zero ? ` → queue.push(${v})` : ''}`, `indeg[${v}] = ${indeg[v]}${zero ? ` → queue.push(${v})` : ''}`) }),
         zero ? ['forNbr', 'dec', 'ifZero', 'push'] : ['forNbr', 'dec', 'ifZero'],

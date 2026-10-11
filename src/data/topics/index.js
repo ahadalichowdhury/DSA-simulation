@@ -8,6 +8,9 @@ import { treeTopics } from './trees.js';
 import { treePlaygroundTopics } from './tree-playground.js';
 import { graphConceptTopics } from './graph-concepts.js';
 import { mstConceptTopics } from './mst-concepts.js';
+import { spConceptTopics } from './sp-concepts.js';
+import { traversalConceptTopics } from './traversal-concepts.js';
+import { topoConceptTopics } from './topo-concepts.js';
 import { graphAlgorithmTopics } from './graph-algorithms.js';
 import { graphPlaygroundTopics } from './graph-playground.js';
 
@@ -71,6 +74,9 @@ const raw = [
   ...treePlaygroundTopics,
   ...graphConceptTopics,
   ...mstConceptTopics,
+  ...spConceptTopics,
+  ...traversalConceptTopics,
+  ...topoConceptTopics,
   ...graphAlgorithmTopics,
   ...graphPlaygroundTopics
 ];

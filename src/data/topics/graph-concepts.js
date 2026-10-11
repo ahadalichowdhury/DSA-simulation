@@ -8,6 +8,7 @@
  * ------------------------------------------------------------------ */
 import { G_INTRO, G_W, G_DAG, adjOf, edgeRows } from '../../visuals/graphData.js';
 import { program } from '../../visuals/codeTags.js';
+import { forLoop, countCheck, eachCheck } from '../../visuals/loops.js';
 
 // identical text is code (e.g. `dist[3]: ∞ → 6`), so it is stored once as a plain string
 const T = (en, bn) => (en === bn ? en : { en, bn });
@@ -76,6 +77,45 @@ const NO_CYCLE_TREE = {
   edges: [{ u: 0, v: 1 }, { u: 0, v: 2 }, { u: 1, v: 3 }, { u: 2, v: 4 }]
 };
 
+/** The neighbour loop of the intro code, one edge per step, with both checks and their real values. */
+function nbrTrace(g, x) {
+  const printed = [];
+  return g.edges.map((e, k) => {
+    const a = e.u === x;
+    const b = e.v === x;
+    if (a) printed.push(e.v);
+    if (b) printed.push(e.u);
+    const loops = [forLoop({
+      label: T(`Walk through every edge once and print the other end whenever one end is ${x}.`, `প্রতিটা এজ একবার ঘোরো, আর এক মাথা ${x} হলে অন্য মাথাটা প্রিন্ট করো।`),
+      code: 'for (u, v) in E',
+      unit: T('edge', 'এজ'),
+      values: g.edges.map((d) => `${d.u}–${d.v}`),
+      at: k,
+      skip: g.edges.map((d, i) => (d.u !== x && d.v !== x ? i : -1)).filter((i) => i >= 0 && i < k),
+      now: `u = ${e.u}, v = ${e.v}`,
+      check: eachCheck(g.edges.length - 1 - k)
+    })];
+    const hit = a || b;
+    return {
+      title: T(`Edge (${e.u}, ${e.v}): ${hit ? `print ${a ? e.v : e.u}` : 'not touching 1'}`, `এজ (${e.u}, ${e.v}): ${hit ? `${a ? e.v : e.u} প্রিন্ট` : '1-কে ছোঁয় না'}`),
+      explanation: T(
+        `${k === 0 ? '`for (u, v) in E` takes the next pair and splits it into **u** (first number) and **v** (second).\n\n' : ''}Edge **(${e.u}, ${e.v}):** u = ${e.u}, v = ${e.v}.\n\n- \`u == ${x}\` → \`${e.u} == ${x}\` → **${a}**${a ? ` → print **${e.v}**` : ''}\n- \`v == ${x}\` → \`${e.v} == ${x}\` → **${b}**${b ? ` → print **${e.u}**` : ''}\n\n${hit ? `So ${a ? e.v : e.u} is a neighbour of ${x}.` : `This edge does not touch ${x}, so nothing is printed.`} Printed so far: ${printed.length ? printed.join(', ') : '—'}.`,
+        `${k === 0 ? '`for (u, v) in E` পরের জোড়াটা নিয়ে **u** (প্রথম সংখ্যা) আর **v** (দ্বিতীয়)-তে ভাগ করে।\n\n' : ''}এজ **(${e.u}, ${e.v}):** u = ${e.u}, v = ${e.v}।\n\n- \`u == ${x}\` → \`${e.u} == ${x}\` → **${a}**${a ? ` → **${e.v}** প্রিন্ট` : ''}\n- \`v == ${x}\` → \`${e.v} == ${x}\` → **${b}**${b ? ` → **${e.u}** প্রিন্ট` : ''}\n\n${hit ? `তাই ${a ? e.v : e.u} হলো ${x}-এর প্রতিবেশী।` : `এই এজ ${x}-কে ছোঁয় না, তাই কিছু প্রিন্ট হয় না।`} এ পর্যন্ত প্রিন্ট: ${printed.length ? printed.join(', ') : '—'}।`
+      ),
+      scene: scene(g, {
+        nodeState: { [x]: 'current', ...Object.fromEntries(printed.map((p) => [p, 'relax'])) },
+        edgeState: { ...Object.fromEntries(g.edges.map((d) => [ek(d.u, d.v), 'dim'])), [ek(e.u, e.v)]: hit ? 'relax' : 'compare' },
+        tags: e.u === e.v ? {} : { [e.u]: 'u', [e.v]: 'v' },
+        panels: [edgeTable(g, { [k]: hit ? 'relax' : 'compare' }), { type: 'output', label: T('printed', 'প্রিন্ট হয়েছে'), items: [...printed], fresh: hit }],
+        status: `u == ${x} → ${a} · v == ${x} → ${b}`
+      }),
+      line: 'nbr',
+      state: { u: e.u, v: e.v },
+      loops
+    };
+  });
+}
+
 const whatIsGraph = {
   id: 'graph-what-is',
   name: { en: 'What is a Graph?', bn: 'গ্রাফ কী?' },
@@ -137,12 +177,13 @@ const whatIsGraph = {
     step(
       T('Neighbours (adjacent vertices)', 'প্রতিবেশী (অ্যাডজাসেন্ট ভার্টেক্স)'),
       T(
-        'Two vertices joined by an edge are **neighbours** — the official word is **adjacent**.\n\nThe neighbours of **1** are **0, 2 and 3**: from Sylhet you can drive straight to Dhaka, Rajshahi or Chattogram.\n\nThe code finds them by walking through every edge and printing the **other end** whenever one end is 1.',
-        'একটা এজ দিয়ে যুক্ত দুটো ভার্টেক্স হলো **প্রতিবেশী** — আনুষ্ঠানিক শব্দ **অ্যাডজাসেন্ট (adjacent)**।\n\n**1**-এর প্রতিবেশী **0, 2 আর 3**: সিলেট থেকে সরাসরি ঢাকা, রাজশাহী বা চট্টগ্রামে যাওয়া যায়।\n\nকোড প্রতিটা এজ ঘুরে দেখে, আর এক মাথা 1 হলে **অন্য মাথাটা** প্রিন্ট করে এদের খুঁজে পায়।'
+        'Two vertices joined by an edge are **neighbours** — the official word is **adjacent**.\n\nThe neighbours of **1** are **0, 2 and 3**: from Sylhet you can drive straight to Dhaka, Rajshahi or Chattogram.\n\nThe code finds them by walking through every edge and printing the **other end** whenever one end is 1. Next we run that loop edge by edge.',
+        'একটা এজ দিয়ে যুক্ত দুটো ভার্টেক্স হলো **প্রতিবেশী** — আনুষ্ঠানিক শব্দ **অ্যাডজাসেন্ট (adjacent)**।\n\n**1**-এর প্রতিবেশী **0, 2 আর 3**: সিলেট থেকে সরাসরি ঢাকা, রাজশাহী বা চট্টগ্রামে যাওয়া যায়।\n\nকোড প্রতিটা এজ ঘুরে দেখে, আর এক মাথা 1 হলে **অন্য মাথাটা** প্রিন্ট করে এদের খুঁজে পায়। এরপর লুপটা এজ ধরে ধরে চালাব।'
       ),
       scene(G_INTRO, { nodeState: { 1: 'current', 0: 'compare', 2: 'compare', 3: 'compare', 4: 'dim' }, edgeState: { '0-1': 'compare', '1-2': 'compare', '1-3': 'compare', '0-2': 'dim', '2-4': 'dim', '3-4': 'dim' }, edgeFrom: { '0-1': 1, '1-2': 1, '1-3': 1 }, panels: [edgeTable(G_INTRO, { 0: 'compare', 2: 'compare', 3: 'compare' })], status: T('neighbours of 1: 0, 2, 3', '1-এর প্রতিবেশী: 0, 2, 3') }),
       'nbr'
     ),
+    ...nbrTrace(G_INTRO, 1),
     step(
       T('Is every graph a tree? No!', 'প্রতিটা গ্রাফ কি ট্রি? না!'),
       T(
@@ -907,6 +948,42 @@ const SPARSE = {
   edges: [[0, 1], [1, 2], [2, 3], [0, 4], [5, 6], [3, 7], [6, 7]].map(([u, v]) => ({ u, v }))
 };
 
+/** hasEdge(a, b) on an edge list, one row per step, with the real comparison. */
+function scanTrace(g, a, b) {
+  const steps = [];
+  for (let k = 0; k < g.edges.length; k++) {
+    const e = g.edges[k];
+    const hit = (e.u === a && e.v === b) || (e.u === b && e.v === a);
+    steps.push({
+      title: T(`Row ${k + 1}: (${e.u}, ${e.v}) ${hit ? `= (${a}, ${b}) ✓` : `≠ (${a}, ${b})`}`, `সারি ${k + 1}: (${e.u}, ${e.v}) ${hit ? `= (${a}, ${b}) ✓` : `≠ (${a}, ${b})`}`),
+      explanation: T(
+        `Row ${k + 1} is **(${e.u}, ${e.v})**. Is it (${a}, ${b}) or (${b}, ${a})?\n\n\`(${e.u}, ${e.v}) == (${a}, ${b})\` → **${e.u === a && e.v === b}**, \`(${e.u}, ${e.v}) == (${b}, ${a})\` → **${e.u === b && e.v === a}**\n\n${hit ? `Found it → **return true**. We had to read ${k + 1} rows to get here. If the edge did not exist we would read **all ${g.edges.length}** rows before saying "no" — that is why an edge test on an edge list is **O(E)**.` : 'No → go on to the next row.'}`,
+        `সারি ${k + 1} হলো **(${e.u}, ${e.v})**। এটা কি (${a}, ${b}) বা (${b}, ${a})?\n\n\`(${e.u}, ${e.v}) == (${a}, ${b})\` → **${e.u === a && e.v === b}**, \`(${e.u}, ${e.v}) == (${b}, ${a})\` → **${e.u === b && e.v === a}**\n\n${hit ? `পাওয়া গেছে → **true ফেরত**। এখানে আসতে ${k + 1}টা সারি পড়তে হলো। এজটা না থাকলে "না" বলার আগে **সব ${g.edges.length}টা** সারি পড়তে হতো — এজন্যই এজ লিস্টে এজ যাচাই **O(E)**।` : 'না → পরের সারিতে যাও।'}`
+      ),
+      scene: scene(g, {
+        nodeState: { [a]: 'current', [b]: 'current', ...(hit ? {} : { [e.u]: 'compare', [e.v]: 'compare' }) },
+        edgeState: { [ek(e.u, e.v)]: hit ? 'relax' : 'compare' },
+        panels: [{ type: 'edges', label: T('edges', 'edges'), rows: g.edges.map((d, i) => ({ e: `${d.u}–${d.v}`, w: d.w, state: i < k ? 'reject' : i === k ? (hit ? 'tree' : 'current') : '' })) }],
+        status: hit ? T(`(${e.u}, ${e.v}) matches → return true`, `(${e.u}, ${e.v}) মেলে → true ফেরত`) : T(`(${e.u}, ${e.v}) ≠ (${a}, ${b}) → next row`, `(${e.u}, ${e.v}) ≠ (${a}, ${b}) → পরের সারি`)
+      }),
+      line: 'scan',
+      state: { u: e.u, v: e.v },
+      loops: [forLoop({
+        label: T('Read the edge rows one by one until the pair is found.', 'জোড়াটা না পাওয়া পর্যন্ত এজের সারিগুলো একটা একটা পড়ো।'),
+        code: 'for (u, v, w) in edges',
+        unit: T('row', 'সারি'),
+        values: g.edges.map((d) => `${d.u}–${d.v}`),
+        at: k,
+        skip: [...Array(k).keys()],
+        now: `u = ${e.u}, v = ${e.v}`,
+        check: hit ? T('found → return true (the loop stops early)', 'পাওয়া গেছে → true ফেরত (লুপ আগেই থামে)') : eachCheck(g.edges.length - 1 - k)
+      })]
+    });
+    if (hit) break;
+  }
+  return steps;
+}
+
 const edgeList = {
   id: 'graph-edge-list',
   name: { en: 'Edge List & Which to Choose', bn: 'এজ লিস্ট আর কোনটা বাছবে' },
@@ -932,12 +1009,13 @@ const edgeList = {
     step(
       T('Is 1–3 an edge? Scan the list', '1–3 কি এজ? তালিকা দেখো'),
       T(
-        'To test one edge we have no shortcut: read the rows **one by one** until we find (1, 3) — here it is the 4th row.\n\nIf the edge did not exist we would read **all E rows** before saying "no". So an edge test costs **O(E)**, and listing neighbours also costs O(E).',
-        'একটা এজ যাচাইয়ের কোনো শর্টকাট নেই: (1, 3) না পাওয়া পর্যন্ত সারিগুলো **একটা একটা করে** পড়ো — এখানে এটা ৪র্থ সারি।\n\nএজটা না থাকলে "না" বলার আগে **সব E-টা সারি** পড়তে হতো। তাই এজ যাচাইয়ে খরচ **O(E)**, প্রতিবেশী বের করতেও O(E)।'
+        'To test one edge we have no shortcut: `hasEdge(1, 3)` must read the rows **one by one** until it finds (1, 3) or (3, 1) — the edge has no direction, so both spellings count.\n\nLet\'s run the loop row by row.',
+        'একটা এজ যাচাইয়ের কোনো শর্টকাট নেই: `hasEdge(1, 3)`-কে সারিগুলো **একটা একটা করে** পড়তে হয়, যতক্ষণ না (1, 3) বা (3, 1) পায় — এজের দিক নেই, তাই দুই লেখাই চলে।\n\nচলো লুপটা সারি ধরে ধরে চালাই।'
       ),
-      scene(G_W, { nodeState: { 1: 'current', 3: 'current' }, edgeState: { '1-3': 'relax' }, panels: [{ type: 'edges', label: T('edges', 'edges'), rows: G_W.edges.map((e, i) => ({ e: `${e.u}–${e.v}`, w: e.w, state: i < 3 ? 'reject' : i === 3 ? 'tree' : '' })) }], status: T('rows 1–3 ✗, row 4 ✓', 'সারি ১–৩ ✗, সারি ৪ ✓') }),
-      ['has', 'scan']
+      scene(G_W, { nodeState: { 1: 'current', 3: 'current' }, panels: [{ type: 'edges', label: T('edges', 'edges'), rows: G_W.edges.map((e) => ({ e: `${e.u}–${e.v}`, w: e.w })) }], status: 'hasEdge(1, 3)' }),
+      'has'
     ),
+    ...scanTrace(G_W, 1, 3),
     step(
       T('Where the edge list shines', 'এজ লিস্ট কোথায় ভালো'),
       T(
@@ -992,100 +1070,107 @@ const spanCode = (() => {
   const text = {
     s1: ['IS-SPANNING-TREE(V, chosen)', 'IS-SPANNING-TREE(V, chosen)'],
     s2: ['    if chosen does not have exactly V − 1 edges: return false', '    chosen-এ ঠিক V − 1টা এজ না থাকলে: false'],
-    s3: ['    reached = {0}', '    reached = {0}'],
-    s4: ['    repeat V times: for each chosen edge (u, v):', '    V বার করো: প্রতিটা chosen এজ (u, v)-এর জন্য:'],
-    s5: ['        if u or v is reached: mark both reached', '        u বা v reached হলে: দুটোকেই reached করো'],
-    s6: ['    return (every vertex is reached)', '    (প্রতিটা ভার্টেক্স reached কিনা) ফেরত দাও'],
+    s3: ['    reached = [false, false, …]      ← V boxes', '    reached = [false, false, …]      ← V-টা বক্স'],
+    s4: ['    reached[0] = true', '    reached[0] = true'],
+    s5: ['    for round = 0 to V − 1:', '    round = 0 থেকে V − 1 পর্যন্ত:'],
+    s6: ['        for each chosen edge (u, v):', '        প্রতিটা chosen এজ (u, v)-এর জন্য:'],
+    s7: ['            if reached[u] or reached[v]:', '            reached[u] অথবা reached[v] হলে:'],
+    s8: ['                reached[u] = reached[v] = true', '                reached[u] = reached[v] = true'],
+    s9: ['    return (every vertex is reached)', '    (প্রতিটা ভার্টেক্স reached কিনা) ফেরত দাও'],
+    s10: ['print IS-SPANNING-TREE(6, [(1,2), (1,3), (3,4), (0,2), (4,5)])', 'প্রিন্ট IS-SPANNING-TREE(6, [(1,2), (1,3), (3,4), (0,2), (4,5)])'],
     c1: ['1. A tree on V vertices has exactly V − 1 edges', '১. V ভার্টেক্সের ট্রিতে ঠিক V − 1টা এজ'],
     c2: ['2. Spread out from 0 along the chosen edges', '২. chosen এজ ধরে 0 থেকে ছড়িয়ে পড়ো'],
     c3: ['3. V − 1 edges + everything connected = no room for a cycle', '৩. V − 1 এজ + সব যুক্ত = সাইকেলের জায়গা নেই']
   };
   const src = {
-    pseudo: '{{s1}}  @header\n{{s2}}  @count\n{{s3}}  @conn\n{{s4}}  @conn\n{{s5}}  @conn\n{{s6}}  @yes',
+    pseudo: '{{s1}}  @header\n{{s2}}  @count\n{{s3}}  @init\n{{s4}}  @start\n{{s5}}  @round\n{{s6}}  @edge\n{{s7}}  @check\n{{s8}}  @mark\n{{s9}}  @ret\n\n{{s10}}  @call,print',
     js: `function isSpanningTree(V, chosen) {  @header
-    // {{c1}}  @count
+    // {{c1}}
     if (chosen.length !== V - 1) return false;  @count
 
-    // {{c2}}  @conn
-    const reached = new Array(V).fill(false);  @conn
-    reached[0] = true;  @conn
-    for (let round = 0; round < V; round++)  @conn
-        for (const [u, v] of chosen)  @conn
-            if (reached[u] || reached[v]) reached[u] = reached[v] = true;  @conn
+    // {{c2}}
+    const reached = new Array(V).fill(false);  @init
+    reached[0] = true;  @start
+    for (let round = 0; round < V; round++)  @round
+        for (const [u, v] of chosen)  @edge
+            if (reached[u] || reached[v])  @check
+                reached[u] = reached[v] = true;  @mark
 
-    // {{c3}}  @yes
-    return reached.every(Boolean);  @yes
+    // {{c3}}
+    return reached.every(Boolean);  @ret
 }
 
-const chosen = [[1, 2], [1, 3], [3, 4], [0, 2], [4, 5]];
-console.log(isSpanningTree(6, chosen));   // true  @yes`,
+const chosen = [[1, 2], [1, 3], [3, 4], [0, 2], [4, 5]];  @call
+console.log(isSpanningTree(6, chosen));   // true  @call,print`,
     java: `import java.util.*;
 
 public class Main {
 
     static boolean isSpanningTree(int V, int[][] chosen) {  @header
-        // {{c1}}  @count
+        // {{c1}}
         if (chosen.length != V - 1) return false;  @count
 
-        // {{c2}}  @conn
-        boolean[] reached = new boolean[V];  @conn
-        reached[0] = true;  @conn
-        for (int round = 0; round < V; round++)  @conn
-            for (int[] e : chosen)  @conn
-                if (reached[e[0]] || reached[e[1]]) reached[e[0]] = reached[e[1]] = true;  @conn
+        // {{c2}}
+        boolean[] reached = new boolean[V];  @init
+        reached[0] = true;  @start
+        for (int round = 0; round < V; round++)  @round
+            for (int[] e : chosen)  @edge
+                if (reached[e[0]] || reached[e[1]])  @check
+                    reached[e[0]] = reached[e[1]] = true;  @mark
 
-        // {{c3}}  @yes
-        for (boolean r : reached) if (!r) return false;  @yes
-        return true;  @yes
+        // {{c3}}
+        for (boolean r : reached) if (!r) return false;  @ret
+        return true;  @ret
     }
 
     public static void main(String[] args) {
-        int[][] chosen = {{1, 2}, {1, 3}, {3, 4}, {0, 2}, {4, 5}};
-        System.out.println(isSpanningTree(6, chosen));   // true  @yes
+        int[][] chosen = {{1, 2}, {1, 3}, {3, 4}, {0, 2}, {4, 5}};  @call
+        System.out.println(isSpanningTree(6, chosen));   // true  @call,print
     }
 }`,
     python: `def is_spanning_tree(V, chosen):  @header
-    # {{c1}}  @count
+    # {{c1}}
     if len(chosen) != V - 1:  @count
         return False  @count
 
-    # {{c2}}  @conn
-    reached = [False] * V  @conn
-    reached[0] = True  @conn
-    for _ in range(V):  @conn
-        for u, v in chosen:  @conn
-            if reached[u] or reached[v]:  @conn
-                reached[u] = reached[v] = True  @conn
+    # {{c2}}
+    reached = [False] * V  @init
+    reached[0] = True  @start
+    for round in range(V):  @round
+        for u, v in chosen:  @edge
+            if reached[u] or reached[v]:  @check
+                reached[u] = reached[v] = True  @mark
 
-    # {{c3}}  @yes
-    return all(reached)  @yes
+    # {{c3}}
+    return all(reached)  @ret
 
 
-chosen = [(1, 2), (1, 3), (3, 4), (0, 2), (4, 5)]
-print(is_spanning_tree(6, chosen))   # True  @yes`,
+chosen = [(1, 2), (1, 3), (3, 4), (0, 2), (4, 5)]  @call
+print(is_spanning_tree(6, chosen))   # True  @call,print`,
     cpp: `#include <iostream>
 #include <vector>
 using namespace std;
 
 bool isSpanningTree(int V, vector<pair<int, int>>& chosen) {  @header
-    // {{c1}}  @count
+    // {{c1}}
     if ((int)chosen.size() != V - 1) return false;  @count
 
-    // {{c2}}  @conn
-    vector<bool> reached(V, false);  @conn
-    reached[0] = true;  @conn
-    for (int round = 0; round < V; round++)  @conn
-        for (auto [u, v] : chosen)  @conn
-            if (reached[u] || reached[v]) reached[u] = reached[v] = true;  @conn
+    // {{c2}}
+    vector<bool> reached(V, false);  @init
+    reached[0] = true;  @start
+    for (int round = 0; round < V; round++)  @round
+        for (auto [u, v] : chosen)  @edge
+            if (reached[u] || reached[v])  @check
+                reached[u] = reached[v] = true;  @mark
 
-    // {{c3}}  @yes
-    for (bool r : reached) if (!r) return false;  @yes
-    return true;  @yes
+    // {{c3}}
+    for (bool r : reached) if (!r) return false;  @ret
+    return true;  @ret
 }
 
 int main() {
-    vector<pair<int, int>> chosen = {{1, 2}, {1, 3}, {3, 4}, {0, 2}, {4, 5}};
-    cout << isSpanningTree(6, chosen) << endl;   // 1  @yes
+    vector<pair<int, int>> chosen = {{1, 2}, {1, 3}, {3, 4}, {0, 2}, {4, 5}};  @call
+    cout << isSpanningTree(6, chosen) << endl;   // 1  @call,print
     return 0;
 }`
   };
@@ -1140,6 +1225,224 @@ function islandsOf(V, pairs) {
   return { count: groups.size, text: T(`**${groups.size} islands:** ${list}`, `**${groups.size}টা দ্বীপ:** ${list}`) };
 }
 const islandPanel = (pairs) => ({ type: 'text', label: T('islands (groups that can reach each other)', 'দ্বীপ (যারা একে অন্যের কাছে পৌঁছাতে পারে)'), text: islandsOf(6, pairs).text });
+
+/**
+ * Dry run of isSpanningTree(V, chosen), one step per executed line, like a
+ * debugger: every edge of every round shows its `||` check with real values.
+ * Rounds that change nothing are folded into one summary step.
+ */
+function spanTrace(g, chosen) {
+  const V = g.V;
+  const steps = [];
+  const reached = Array(V).fill(false);
+  const TF = (b) => (b ? 'true' : 'false');
+  const en = (e) => `${e[0]}–${e[1]}`;
+  const chosenKeys = new Set(chosen.map(([u, v]) => ek(...(g.edges.some((e) => e.u === u && e.v === v) ? [u, v] : [v, u]))));
+  const reachedList = () => reached.map((r, i) => (r ? i : null)).filter((x) => x != null);
+  const set = (xs) => `{${xs.join(', ')}}`;
+
+  const view = ({ cur = null, fresh = [], cond = null, ret = null, status = null } = {}) => {
+    const edgeState = {};
+    for (const e of g.edges) {
+      const k = ek(e.u, e.v);
+      edgeState[k] = !chosenKeys.has(k) ? 'dim' : reached[e.u] && reached[e.v] ? 'tree' : '';
+    }
+    const nodeState = {};
+    reached.forEach((r, i) => { if (r) nodeState[i] = 'visited'; });
+    const hl = {};
+    reached.forEach((r, i) => { if (r) hl[i] = 'done'; });
+    if (cur) {
+      const [u, v] = cur;
+      edgeState[ek(...(g.edges.some((e) => e.u === u && e.v === v) ? [u, v] : [v, u]))] = 'compare';
+      for (const x of [u, v]) if (!reached[x]) nodeState[x] = 'compare';
+      hl[u] = hl[v] = 'compare';
+    }
+    for (const x of fresh) { nodeState[x] = 'relax'; hl[x] = 'relax'; }
+    const panels = [
+      { type: 'array', label: T('reached[ ] — can we get here from 0 using chosen edges?', 'reached[ ] — chosen এজ দিয়ে 0 থেকে এখানে আসা যায়?'), cells: reached.map(TF), hl },
+      { type: 'edges', label: T('chosen — the edges we test', 'chosen — যে এজগুলো যাচাই করছি'), head: [T('(u, v)', '(u, v)')], rows: chosen.map((e) => ({ e: `(${e[0]}, ${e[1]})`, state: cur === e ? 'current' : '' })) }
+    ];
+    if (cond) panels.push({ type: 'text', label: T('the condition', 'শর্তটা'), text: cond });
+    if (ret) panels.push({ type: 'text', label: T('result', 'ফলাফল'), text: ret });
+    return scene(g, { nodeState, edgeState, tags: cur ? { [cur[0]]: 'u', [cur[1]]: 'v' } : { 0: 'start' }, panels, ...(status ? { status } : {}) });
+  };
+
+  const roundLoop = (r) => forLoop({
+    label: T('Repeat the whole pass over the edges V times, so "reached" can spread further each time.', 'এজগুলোর ওপর পুরো পাসটা V বার করো, যাতে প্রতিবার "reached" আরও ছড়াতে পারে।'),
+    code: 'for round = 0 … V − 1',
+    unit: T('round', 'রাউন্ড'),
+    values: Array.from({ length: V }, (_, i) => i),
+    at: r,
+    now: r < V ? `round = ${r}` : `round = ${V}`,
+    check: countCheck('round', r, V)
+  });
+  const edgeLoop = (k, skip) => forLoop({
+    label: T('Inside one round: test every chosen edge, in list order.', 'এক রাউন্ডের ভেতরে: তালিকার ক্রমে প্রতিটা chosen এজ যাচাই।'),
+    code: 'for (u, v) in chosen',
+    unit: T('edge', 'এজ'),
+    values: chosen.map(en),
+    at: k,
+    skip,
+    now: `u = ${chosen[k][0]}, v = ${chosen[k][1]}`,
+    check: eachCheck(chosen.length - 1 - k)
+  });
+  const push = (title, explanation, sc, line, state, loops) => steps.push({ title, explanation, scene: sc, line, ...(state ? { state } : {}), ...(loops ? { loops } : {}) });
+
+  push(
+    T('main() calls the function', 'main() ফাংশনটা কল করে'),
+    T(
+      `The program calls \`isSpanningTree(6, chosen)\`:\n\n- \`V = 6\` — the graph has 6 vertices (0 … 5);\n- \`chosen\` — the ${chosen.length} edges we want to test, each a pair \`(u, v)\`: ${chosen.map((e) => `(${e[0]}, ${e[1]})`).join(', ')}. These are the MST edges.\n\nIn the picture, chosen edges are drawn normally; the other edges of the graph are faded — the function never looks at them.`,
+      `প্রোগ্রাম কল করে \`isSpanningTree(6, chosen)\`:\n\n- \`V = 6\` — গ্রাফে ৬টা ভার্টেক্স (0 … 5);\n- \`chosen\` — যে ${chosen.length}টা এজ যাচাই করব, প্রতিটা একটা জোড়া \`(u, v)\`: ${chosen.map((e) => `(${e[0]}, ${e[1]})`).join(', ')}। এগুলোই MST-এর এজ।\n\nছবিতে chosen এজগুলো স্বাভাবিকভাবে আঁকা; গ্রাফের বাকি এজ ঝাপসা — ফাংশন ওগুলো দেখেই না।`
+    ),
+    view(), 'call', { V, 'chosen.length': chosen.length }
+  );
+  push(
+    T('Check 1: exactly V − 1 edges?', 'যাচাই ১: ঠিক V − 1টা এজ?'),
+    T(
+      `\`chosen.length\` = ${chosen.length}, and \`V − 1\` = ${V - 1}.\n\nThe test is \`${chosen.length} != ${V - 1}\` → **${chosen.length !== V - 1}**. So we do **not** return false; the function goes on to the next line.\n\n(Remember the islands: fewer than V − 1 edges can never connect everyone; more than V − 1 must contain a cycle.)`,
+      `\`chosen.length\` = ${chosen.length}, আর \`V − 1\` = ${V - 1}।\n\nপরীক্ষা \`${chosen.length} != ${V - 1}\` → **${chosen.length !== V - 1}**। তাই false ফেরত দিই **না**; ফাংশন পরের লাইনে যায়।\n\n(দ্বীপের কথা মনে করো: V − 1-এর কম এজ কখনো সবাইকে জোড়ে না; বেশি হলে সাইকেল থাকবেই।)`
+    ),
+    view(), 'count', { 'chosen.length': chosen.length, 'V − 1': V - 1 }
+  );
+  push(
+    T('Make the reached[ ] array', 'reached[ ] অ্যারে বানাও'),
+    T(
+      `\`reached\` gets **${V} boxes**, one per vertex, all \`false\`.\n\n\`reached[v]\` answers one question: "**can we get from vertex 0 to v using only the chosen edges?**" At the start we have not gone anywhere, so every answer is \`false\`.`,
+      `\`reached\` পায় **${V}টা বক্স**, প্রতিটা ভার্টেক্সের জন্য একটা, সব \`false\`।\n\n\`reached[v]\` একটা প্রশ্নের উত্তর দেয়: "**শুধু chosen এজ দিয়ে 0 থেকে v-তে যাওয়া যায়?**" শুরুতে আমরা কোথাও যাইনি, তাই সব উত্তর \`false\`।`
+    ),
+    view(), 'init', { V }
+  );
+  reached[0] = true;
+  push(
+    T('Start at vertex 0', 'ভার্টেক্স 0 থেকে শুরু'),
+    T(
+      '`reached[0] = true` — we stand at vertex 0, so 0 is reachable from itself.\n\nWhy 0? Any start works: in a connected graph, if everyone is reachable from 0, everyone is reachable from everyone. 0 is simply the easiest.',
+      '`reached[0] = true` — আমরা ভার্টেক্স 0-তে দাঁড়িয়ে, তাই 0 নিজের কাছে পৌঁছানো যায়।\n\n0 কেন? যেকোনো শুরু চলে: যুক্ত গ্রাফে 0 থেকে সবার কাছে গেলে সবাই সবার কাছে যায়। 0 সবচেয়ে সহজ, এই যা।'
+    ),
+    view({ fresh: [0] }), 'start', { 'reached[0]': 'true' }
+  );
+
+  let firstEdge = true;
+  let firstOr = true;
+  let firstMark = true;
+  let r = 0;
+  for (; r < V; r++) {
+    const before = reachedList();
+    // a quiet round (nothing new) means every later round is quiet too: fold them into one step
+    const willChange = (() => { const p = [...reached]; for (const [u, v] of chosen) if (p[u] || p[v]) p[u] = p[v] = true; return p.some((x, i) => x !== reached[i]); })();
+    if (!willChange) break;
+
+    if (r === 0) {
+      push(
+        T('Round 0 begins', 'রাউন্ড ০ শুরু'),
+        T(
+          `The outer loop starts: \`round = 0\`, and \`0 < ${V}\` is true, so the body runs.\n\nOne **round** = walk through **every** chosen edge once, in list order. Why might we need more than one round? Watch this round closely — the answer shows up at its end.`,
+          `বাইরের লুপ শুরু: \`round = 0\`, আর \`0 < ${V}\` সত্য, তাই ভেতরের কাজ চলে।\n\nএক **রাউন্ড** = তালিকার ক্রমে **প্রতিটা** chosen এজ একবার করে দেখা। একাধিক রাউন্ড কেন লাগতে পারে? এই রাউন্ডটা মন দিয়ে দেখো — শেষে উত্তর পাবে।`
+        ),
+        view(), 'round', { round: 0 }, [roundLoop(0)]
+      );
+    }
+    const skipped = [];
+    chosen.forEach((e, k) => {
+      const [u, v] = e;
+      const ok = reached[u] || reached[v];
+      const loops = [roundLoop(r), edgeLoop(k, skipped)];
+      const cond = `\`reached[${u}] || reached[${v}]\` → \`${TF(reached[u])} || ${TF(reached[v])}\` → **${TF(ok)}**`;
+      const bindEn = firstEdge ? `\n\n\`for (u, v) in chosen\` takes the next pair out of the list and splits it into two names: **u = ${u}** (first number) and **v = ${v}** (second). In C++ that is \`auto [u, v]\`, in JS \`const [u, v]\`, in Python \`u, v\`.` : '';
+      const bindBn = firstEdge ? `\n\n\`for (u, v) in chosen\` তালিকা থেকে পরের জোড়াটা নিয়ে দুটো নামে ভাগ করে: **u = ${u}** (প্রথম সংখ্যা) আর **v = ${v}** (দ্বিতীয়)। C++-এ এটা \`auto [u, v]\`, JS-এ \`const [u, v]\`, Python-এ \`u, v\`।` : '';
+      const orEn = firstOr ? '\n\n`||` means **OR**: the whole test is true if **at least one** side is true. (`true || false` → true, `false || false` → false.)' : '';
+      const orBn = firstOr ? '\n\n`||` মানে **OR (অথবা)**: **অন্তত একটা** পাশ সত্য হলেই পুরো পরীক্ষা সত্য। (`true || false` → true, `false || false` → false।)' : '';
+      firstEdge = false;
+      firstOr = false;
+      push(
+        T(`Round ${r}, edge (${u}, ${v}): ${reached[u] && reached[v] ? 'both ends reached' : ok ? 'one end is reached' : 'nobody reached yet'}`, `রাউন্ড ${r}, এজ (${u}, ${v}): ${reached[u] && reached[v] ? 'দুই মাথাই reached' : ok ? 'এক মাথা reached' : 'এখনো কেউ reached না'}`),
+        ok
+          ? T(
+            `Edge (${u}, ${v}): is either end already reachable?\n\n${cond}${reached[u] && reached[v] ? `\n\nBoth ends are already reached. The test is still true, so the next line runs — it just will not change anything.` : `\n\n**${reached[u] ? u : v}** is reachable, and this edge connects it to **${reached[u] ? v : u}** — so ${reached[u] ? v : u} is reachable too. True → the next line runs.`}${bindEn}${orEn}`,
+            `এজ (${u}, ${v}): কোনো এক মাথা কি আগেই পৌঁছানো যায়?\n\n${cond}${reached[u] && reached[v] ? `\n\nদুই মাথাই আগে থেকে reached। পরীক্ষা তবুও সত্য, তাই পরের লাইন চলবে — শুধু কিছু বদলাবে না।` : `\n\n**${reached[u] ? u : v}**-তে পৌঁছানো যায়, আর এই এজ তাকে **${reached[u] ? v : u}**-এর সঙ্গে জোড়ে — তাই ${reached[u] ? v : u}-তেও পৌঁছানো যায়। সত্য → পরের লাইন চলবে।`}${bindBn}${orBn}`
+          )
+          : T(
+            `Edge (${u}, ${v}): is either end already reachable?\n\n${cond}\n\nNeither ${u} nor ${v} is reachable yet, so this edge cannot carry us anywhere **now**. False → skip the next line and go to the next edge. (It gets another chance next round.)${bindEn}${orEn}`,
+            `এজ (${u}, ${v}): কোনো এক মাথা কি আগেই পৌঁছানো যায়?\n\n${cond}\n\n${u} বা ${v} কোনোটাতেই এখনো পৌঁছানো যায় না, তাই এই এজ **এখন** আমাদের কোথাও নিতে পারে না। মিথ্যা → পরের লাইন বাদ, পরের এজে যাও। (পরের রাউন্ডে আবার সুযোগ পাবে।)${bindBn}${orBn}`
+          ),
+        view({ cur: e, cond, status: `reached[${u}] || reached[${v}] → ${TF(reached[u])} || ${TF(reached[v])} → ${TF(ok)}` }), 'check', { round: r, u, v, [`reached[${u}]`]: TF(reached[u]), [`reached[${v}]`]: TF(reached[v]) }, loops
+      );
+      if (!ok) { skipped.push(k); return; }
+      const fresh = [u, v].filter((x) => !reached[x]);
+      reached[u] = reached[v] = true;
+      const chainEn = firstMark ? `\n\n\`reached[${u}] = reached[${v}] = true\` runs **right to left**: first \`reached[${v}] = true\`, then \`reached[${u}]\` gets that same value (true). One line, both ends marked.` : '';
+      const chainBn = firstMark ? `\n\n\`reached[${u}] = reached[${v}] = true\` চলে **ডান থেকে বামে**: আগে \`reached[${v}] = true\`, তারপর \`reached[${u}]\` সেই একই মান (true) পায়। এক লাইনে দুই মাথাই চিহ্নিত।` : '';
+      firstMark = false;
+      push(
+        T(fresh.length ? `Mark both ends → ${fresh.join(', ')} is new` : 'Mark both ends → nothing new', fresh.length ? `দুই মাথা চিহ্নিত → ${fresh.join(', ')} নতুন` : 'দুই মাথা চিহ্নিত → নতুন কিছু না'),
+        fresh.length
+          ? T(
+            `\`reached[${u}]\` and \`reached[${v}]\` both become \`true\`. **${fresh.join(', ')}** just became reachable (green pop); reached is now ${set(reachedList())}.${chainEn}`,
+            `\`reached[${u}]\` আর \`reached[${v}]\` দুটোই \`true\` হলো। **${fresh.join(', ')}** এইমাত্র পৌঁছানোর যোগ্য হলো (সবুজ); reached এখন ${set(reachedList())}।${chainBn}`
+          )
+          : T(
+            `Both were already \`true\`; writing \`true\` again changes nothing. Harmless — the code does not bother to check first.${chainEn}`,
+            `দুটোই আগে থেকে \`true\`; আবার \`true\` লিখলে কিছু বদলায় না। ক্ষতি নেই — কোড আগে যাচাই করার ঝামেলায় যায় না।${chainBn}`
+          ),
+        view({ cur: e, fresh, status: T(`reached[${u}] = reached[${v}] = true${fresh.length ? ` → ${fresh.join(', ')} is new` : ' → nothing new'}`, `reached[${u}] = reached[${v}] = true${fresh.length ? ` → ${fresh.join(', ')} নতুন` : ' → নতুন কিছু না'}`) }), 'mark', { round: r, u, v, [`reached[${u}]`]: 'true', [`reached[${v}]`]: 'true' }, loops
+      );
+    });
+
+    // end of round: explain why another round may be needed
+    const after = reachedList();
+    const missed = chosen.filter((e, k) => skipped.includes(k) && (reached[e[0]] || reached[e[1]]));
+    const next = r + 1;
+    const missedEn = missed.length ? `\n\nLook at ${missed.map((e) => `(${e[0]}, ${e[1]})`).join(', ')}: when ${missed.length === 1 ? 'its' : 'their'} turn came, neither end was reached yet, so ${missed.length === 1 ? 'it was' : 'they were'} skipped. Later in the same round, other edges made ${missed.length === 1 ? 'one of its ends' : 'their ends'} reachable — but the loop had already passed. **That is why the outer loop exists:** another round gives these edges a second chance.` : '';
+    const missedBn = missed.length ? `\n\n${missed.map((e) => `(${e[0]}, ${e[1]})`).join(', ')} দেখো: এর পালা যখন এসেছিল, কোনো মাথাই তখন reached ছিল না, তাই বাদ গেছে। একই রাউন্ডে পরে অন্য এজ এর মাথা reached করেছে — কিন্তু লুপ ততক্ষণে পার হয়ে গেছে। **এজন্যই বাইরের লুপ:** আরেক রাউন্ড এই এজগুলোকে দ্বিতীয় সুযোগ দেয়।` : '';
+    const nextChange = (() => { const p = [...reached]; for (const [u, v] of chosen) if (p[u] || p[v]) p[u] = p[v] = true; return p.some((x, i) => x !== reached[i]); })();
+    if (nextChange) {
+      push(
+        T(`Round ${r} done → round ${next}`, `রাউন্ড ${r} শেষ → রাউন্ড ${next}`),
+        T(
+          `Round ${r} finished: reached went from ${set(before)} to ${set(after)}.${missedEn}\n\nNow \`round = ${next}\`, and \`${next} < ${V}\` is true → round ${next} begins.`,
+          `রাউন্ড ${r} শেষ: reached ${set(before)} থেকে ${set(after)} হলো।${missedBn}\n\nএখন \`round = ${next}\`, আর \`${next} < ${V}\` সত্য → রাউন্ড ${next} শুরু।`
+        ),
+        view(), 'round', { round: next }, [roundLoop(next)]
+      );
+    } else {
+      r = next;
+      break;
+    }
+  }
+
+  // every remaining round is quiet: fold them into one step
+  const quiet = Array.from({ length: V - r }, (_, i) => r + i);
+  const all = reached.every(Boolean);
+  push(
+    T(quiet.length ? `Rounds ${quiet[0]}–${quiet[quiet.length - 1]}: nothing new, then the loop stops` : 'The loop stops', quiet.length ? `রাউন্ড ${quiet[0]}–${quiet[quiet.length - 1]}: নতুন কিছু না, তারপর লুপ থামে` : 'লুপ থামে'),
+    T(
+      `After round ${r - 1}, reached = ${set(reachedList())}. ${quiet.length ? `The code does not know it is finished, so it still runs rounds ${quiet.join(', ')}: every test gives the same answer as before and **nothing changes**. ` : ''}Then \`round = ${V}\`, \`${V} < ${V}\` is false → the outer loop ends.\n\n**Why are V rounds always enough?** Each round spreads "reached" at least **one more edge** along any path from 0. A path in a tree has at most V − 1 edges. Worst case: the edges are listed in exactly the wrong order and only **one** new vertex appears per round.\n\n> Tip: a \`changed\` flag could stop the loop as soon as a round adds nothing. BFS or DFS do the same job in O(V + E).`,
+      `রাউন্ড ${r - 1}-এর পর reached = ${set(reachedList())}। ${quiet.length ? `কোড জানে না যে কাজ শেষ, তাই রাউন্ড ${quiet.join(', ')} তবুও চলে: প্রতিটা পরীক্ষা আগের মতোই উত্তর দেয়, **কিছুই বদলায় না**। ` : ''}তারপর \`round = ${V}\`, \`${V} < ${V}\` মিথ্যা → বাইরের লুপ শেষ।\n\n**V রাউন্ড সবসময় যথেষ্ট কেন?** প্রতি রাউন্ডে "reached" 0 থেকে যেকোনো পথ ধরে অন্তত **আরও এক এজ** ছড়ায়। ট্রিতে একটা পথে সর্বোচ্চ V − 1টা এজ। সবচেয়ে খারাপ ক্ষেত্রে এজগুলো একদম উল্টো ক্রমে থাকে আর প্রতি রাউন্ডে মাত্র **একটা** নতুন ভার্টেক্স আসে।\n\n> টিপস: একটা \`changed\` ফ্ল্যাগ রাখলে কোনো রাউন্ডে নতুন কিছু না এলেই লুপ থামানো যায়। BFS বা DFS একই কাজ O(V + E)-তে করে।`
+    ),
+    view(), 'round', { round: V }, [roundLoop(V)]
+  );
+  push(
+    T(`Check 2: is every vertex reached? → ${all}`, `যাচাই ২: প্রতিটা ভার্টেক্স reached? → ${all}`),
+    T(
+      all
+        ? `Look at the array: every box is \`true\`. Everyone can be reached from 0 → the chosen edges **connect** all ${V} vertices.\n\nWith exactly V − 1 edges and everything connected, there is no room for a cycle → it is a **spanning tree** → return **true**.`
+        : `Some boxes are still \`false\` → those vertices can not be reached from 0 → not connected → return **false**.`,
+      all
+        ? `অ্যারেটা দেখো: প্রতিটা বক্স \`true\`। 0 থেকে সবার কাছে যাওয়া যায় → chosen এজগুলো ${V}টা ভার্টেক্সকেই **জোড়ে**।\n\nঠিক V − 1টা এজ আর সব যুক্ত, তাই সাইকেলের জায়গা নেই → এটা **স্প্যানিং ট্রি** → **true** ফেরত।`
+        : `কিছু বক্স এখনো \`false\` → ওই ভার্টেক্সে 0 থেকে যাওয়া যায় না → যুক্ত নয় → **false** ফেরত।`
+    ),
+    view({ ret: `**${all}**` }), 'ret', { result: TF(all) }
+  );
+  push(
+    T('Back in main: print the answer', 'main-এ ফিরে: উত্তর প্রিন্ট'),
+    T(
+      `The function returns \`${all}\` and main prints it. (C++ prints booleans as \`1\` / \`0\`, Python as \`True\` / \`False\`.)\n\nThis code can only **check** a tree someone gives it. Finding the **cheapest** one is the job of Prim and Kruskal.`,
+      `ফাংশন \`${all}\` ফেরত দেয় আর main সেটা প্রিন্ট করে। (C++ বুলিয়ান প্রিন্ট করে \`1\` / \`0\`, Python \`True\` / \`False\`।)\n\nএই কোড কেউ একটা ট্রি দিলে শুধু **যাচাই** করতে পারে। **সবচেয়ে সস্তাটা** খুঁজে বের করা প্রিম আর ক্রুসকালের কাজ।`
+    ),
+    view({ ret: `**${all}**` }), 'print'
+  );
+  return steps;
+}
 
 const spanningTree = {
   id: 'graph-spanning-tree',
@@ -1271,19 +1574,19 @@ const spanningTree = {
     ),
     /* ---------- part 3: the code — checking a spanning tree ---------- */
     step(
-      T('Now in code: is this a spanning tree?', 'এবার কোডে: এটা কি স্প্যানিং ট্রি?'),
+      T('The plan of the checker code', 'যাচাইকারী কোডের পরিকল্পনা'),
       T(
-        'The code turns the island picture into two checks:\n\n1. **Exactly V − 1 edges?** (`chosen.length != V − 1` → false)\n2. **Is everything connected?** Start with `reached = {0}`, and keep spreading along the chosen edges: if one end of an edge is reached, the other end becomes reached too. At the end, every vertex must be reached.\n\nWhy no separate cycle check? V − 1 edges that connect everyone leave **no room** for a cycle (step "Five joins → one island"). Here the green tree passes both checks.',
-        'কোড দ্বীপের ছবিটাকে দুটো যাচাইয়ে বদলায়:\n\n1. **ঠিক V − 1টা এজ?** (`chosen.length != V − 1` → false)\n2. **সব কি যুক্ত?** `reached = {0}` দিয়ে শুরু করো, আর chosen এজ ধরে ছড়াতে থাকো: এজের এক মাথা reached হলে অন্য মাথাও reached। শেষে প্রতিটা ভার্টেক্স reached হতে হবে।\n\nআলাদা সাইকেল যাচাই কেন নেই? সবাইকে জোড়া V − 1টা এজে সাইকেলের **জায়গাই থাকে না** ("পাঁচটা জোড়া → একটা দ্বীপ" ধাপ)। এখানে সবুজ ট্রি দুটো যাচাইয়েই পাস।'
+        'Someone hands us a list of edges. Is it a spanning tree? The code turns the island picture into **two checks**:\n\n1. **Exactly V − 1 edges?** If not, answer false right away.\n2. **Is everything connected?** Put a mark on vertex 0. Then look at every chosen edge: if **one end** is marked, mark the **other end** too — power flows along that cable. Keep doing this; at the end every vertex must be marked.\n\nWhy no separate cycle check? V − 1 edges that connect everyone leave **no room** for a cycle (step "Five joins → one island").\n\nNext we run the code on the MST edges, **one line at a time**, with the real values.',
+        'কেউ আমাদের একটা এজের তালিকা দিল। এটা কি স্প্যানিং ট্রি? কোড দ্বীপের ছবিটাকে **দুটো যাচাইয়ে** বদলায়:\n\n1. **ঠিক V − 1টা এজ?** না হলে সঙ্গে সঙ্গে false।\n2. **সব কি যুক্ত?** ভার্টেক্স 0-তে একটা চিহ্ন দাও। তারপর প্রতিটা chosen এজ দেখো: **এক মাথায়** চিহ্ন থাকলে **অন্য মাথাতেও** চিহ্ন দাও — ওই কেবল ধরে বিদ্যুৎ যায়। এভাবে চালিয়ে যাও; শেষে প্রতিটা ভার্টেক্সে চিহ্ন থাকতে হবে।\n\nআলাদা সাইকেল যাচাই কেন নেই? সবাইকে জোড়া V − 1টা এজে সাইকেলের **জায়গাই থাকে না** ("পাঁচটা জোড়া → একটা দ্বীপ" ধাপ)।\n\nএরপর MST-এর এজগুলোতে কোডটা চালাব, **একবারে এক লাইন**, আসল মান দিয়ে।'
       ),
-      scene(G_W, { edgeState: pick(G_W, TREE_A), nodeState: allNodes(G_W, 'done'), status: T(`5 edges ✓ · all 6 reached ✓ → true`, `৫টা এজ ✓ · ৬টাই reached ✓ → true`) }),
-      ['count', 'conn']
+      scene(G_W, { edgeState: pick(G_W, MST), tags: { 0: 'start' }, nodeState: { 0: 'visited' }, status: T('check 1: count the edges · check 2: spread from 0', 'যাচাই ১: এজ গোনো · যাচাই ২: 0 থেকে ছড়াও') })
     ),
+    ...spanTrace(G_W, MST),
     step(
       T('Too few edges: not connected', 'এজ কম: যুক্ত নয়'),
       T(
-        'Here only **4** edges are chosen. Vertex **5** is cut off — a second island.\n\nWith fewer than **V − 1** edges you can **never** connect V vertices. The code\'s first check (`chosen.length != V − 1`) already says **false**.',
-        'এখানে মাত্র **৪টা** এজ বাছা হয়েছে। ভার্টেক্স **5** বিচ্ছিন্ন — একটা দ্বিতীয় দ্বীপ।\n\n**V − 1**-এর কম এজ দিয়ে V-টা ভার্টেক্স **কখনোই** জোড়া যায় না। কোডের প্রথম যাচাই (`chosen.length != V − 1`) আগেই বলে **false**।'
+        'Other inputs: here only **4** edges are chosen. Vertex **5** is cut off — a second island.\n\nThe very first check catches it: `4 != 5` → true → **return false**. The loops never even run.',
+        'অন্য ইনপুট: এখানে মাত্র **৪টা** এজ বাছা হয়েছে। ভার্টেক্স **5** বিচ্ছিন্ন — একটা দ্বিতীয় দ্বীপ।\n\nএকদম প্রথম যাচাইতেই ধরা পড়ে: `4 != 5` → true → **false ফেরত**। লুপগুলো চলেই না।'
       ),
       scene(G_W, { edgeState: pick(G_W, [[0, 1], [1, 3], [3, 4], [2, 3]]), nodeState: { 5: 'reject' }, status: T('4 edges → vertex 5 unreachable', '৪টা এজ → ভার্টেক্স 5-এ যাওয়া যায় না') }),
       'count'
@@ -1291,20 +1594,11 @@ const spanningTree = {
     step(
       T('A cycle: not a tree', 'সাইকেল: ট্রি নয়'),
       T(
-        'Now 5 edges again, but **0–1, 1–2, 0–2** form a **cycle** — one of them joined nothing — so vertex **5** is left out.\n\nThe count check passes (5 edges), but spreading from 0 never reaches 5, so the second check says **false**.',
-        'আবার ৫টা এজ, কিন্তু **0–1, 1–2, 0–2** একটা **সাইকেল** — এর একটা কিছুই জোড়েনি — তাই ভার্টেক্স **5** বাদ পড়েছে।\n\nগোনার যাচাই পাস (৫টা এজ), কিন্তু 0 থেকে ছড়িয়ে 5-এ কখনো পৌঁছায় না, তাই দ্বিতীয় যাচাই বলে **false**।'
+        'Now 5 edges again, but **0–1, 1–2, 0–2** form a **cycle** — one of them joined nothing — so vertex **5** is left out.\n\nCheck 1 passes (`5 != 5` is false). The loops run and mark 0, 1, 2, 3, 4 — but no chosen edge touches 5, so `reached[5]` stays **false** and check 2 returns **false**.',
+        'আবার ৫টা এজ, কিন্তু **0–1, 1–2, 0–2** একটা **সাইকেল** — এর একটা কিছুই জোড়েনি — তাই ভার্টেক্স **5** বাদ পড়েছে।\n\nযাচাই ১ পাস (`5 != 5` মিথ্যা)। লুপ চলে আর 0, 1, 2, 3, 4 চিহ্নিত করে — কিন্তু কোনো chosen এজ 5-কে ছোঁয় না, তাই `reached[5]` **false**-ই থাকে আর যাচাই ২ **false** ফেরত দেয়।'
       ),
       scene(G_W, { edgeState: { ...pick(G_W, [[1, 3], [3, 4]]), '0-1': 'reject', '1-2': 'reject', '0-2': 'reject' }, nodeState: { 5: 'reject' }, status: T('cycle 0–1–2 wastes an edge; 5 is unreachable', 'সাইকেল 0–1–2 একটা এজ নষ্ট করে; 5-এ যাওয়া যায় না') }),
-      'conn'
-    ),
-    step(
-      T('The MST passes the check', 'MST যাচাইয়ে পাস'),
-      T(
-        `Run the checker on the MST edges ${MST.map(([u, v]) => `${u}–${v}`).join(', ')}: 5 edges ✓, and spreading from 0 reaches all 6 vertices ✓ → **true**.\n\nBut notice: this code only **checks** a tree someone gives it. It can not **find** the cheapest one. That is the job of Prim and Kruskal.`,
-        `MST-এর এজ ${MST.map(([u, v]) => `${u}–${v}`).join(', ')}-এ যাচাইকারী চালাও: ৫টা এজ ✓, আর 0 থেকে ছড়িয়ে ৬টা ভার্টেক্সেই পৌঁছায় ✓ → **true**।\n\nকিন্তু খেয়াল করো: এই কোড কেউ একটা ট্রি দিলে শুধু **যাচাই** করে। সবচেয়ে সস্তাটা **খুঁজে বের** করতে পারে না। সেটা প্রিম আর ক্রুসকালের কাজ।`
-      ),
-      scene(G_W, { edgeState: pick(G_W, MST, 'reject'), nodeState: allNodes(G_W, 'done'), status: T('isSpanningTree(6, MST) → true', 'isSpanningTree(6, MST) → true') }),
-      'yes'
+      'ret'
     ),
     step(
       T('What we learned, and what is next', 'যা শিখলাম, আর এরপর কী'),
