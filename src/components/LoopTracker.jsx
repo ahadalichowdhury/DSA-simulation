@@ -1,5 +1,5 @@
-import React from 'react';
-import { Repeat } from 'lucide-react';
+import React, { useState } from 'react';
+import { Repeat, ChevronDown } from 'lucide-react';
 import { t } from '../visuals/utils.js';
 
 const NTH = { en: (i, n, u) => `${u} ${i} of ${n}`, bn: (i, n, u) => `${n}টার মধ্যে ${i} নম্বর ${u}` };
@@ -25,21 +25,46 @@ function progress(loop, lang) {
  * (a loop's `depth` says how far it is indented; it defaults to its place):
  * ✓ = passes already done, yellow = the pass running now (the same yellow as
  * the highlighted code line), outlined = passes still to come.
+ *
+ * It starts folded to one line (each loop's current value) so it does not push
+ * the code down; the reader can open it, and the choice is remembered.
  */
+const OPEN_KEY = 'algosim-loops-open';
+const readOpen = () => { try { return localStorage.getItem(OPEN_KEY) === '1'; } catch { return false; } };
 export default function LoopTracker({ loops, lang }) {
+  const [open, setOpen] = useState(readOpen);
   if (!loops || !loops.length) return null;
+  const toggle = () => setOpen((o) => {
+    try { localStorage.setItem(OPEN_KEY, o ? '0' : '1'); } catch {}
+    return !o;
+  });
+  // folded view: one short pill per loop — its variable right now, or how far it is
+  const summary = loops.map((loop) => t(loop.now, lang) || progress(loop, lang));
   return (
-    <div className="loop-tracker" aria-label={lang === 'bn' ? 'লুপ ট্র্যাকার' : 'Loop tracker'}>
-      <div className="loop-tracker-head">
+    <div className={`loop-tracker${open ? '' : ' folded'}`} aria-label={lang === 'bn' ? 'লুপ ট্র্যাকার' : 'Loop tracker'}>
+      <button type="button" className="loop-tracker-head" onClick={toggle} aria-expanded={open}>
         <Repeat size={13} />
         <span>{lang === 'bn' ? 'লুপ এখন কোথায়' : 'Where the loops are now'}</span>
-        <span className="loop-legend" aria-hidden="true">
-          <span className="loop-chip done"><b>{lang === 'bn' ? 'শেষ' : 'done'}</b></span>
-          <span className="loop-chip current"><b>{lang === 'bn' ? 'এখন' : 'now'}</b></span>
-          <span className="loop-chip todo"><b>{lang === 'bn' ? 'বাকি' : 'next'}</b></span>
-        </span>
-      </div>
-      {loops.map((loop, depth) => (
+        {!open && (
+          <span className="loop-summary">
+            {summary.map((x, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <span className="loop-summary-sep">›</span>}
+                <code>{x}</code>
+              </React.Fragment>
+            ))}
+          </span>
+        )}
+        {open && (
+          <span className="loop-legend" aria-hidden="true">
+            <span className="loop-chip done"><b>{lang === 'bn' ? 'শেষ' : 'done'}</b></span>
+            <span className="loop-chip current"><b>{lang === 'bn' ? 'এখন' : 'now'}</b></span>
+            <span className="loop-chip todo"><b>{lang === 'bn' ? 'বাকি' : 'next'}</b></span>
+          </span>
+        )}
+        <ChevronDown size={15} className="loop-caret" />
+      </button>
+      {open && loops.map((loop, depth) => (
         <div key={depth} className={`loop-row${loop.paused ? ' paused' : ''}`} style={{ '--depth': loop.depth ?? depth }}>
           <div className="loop-line1">
             <code className="loop-code">{t(loop.code, lang)}</code>

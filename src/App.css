@@ -2135,7 +2135,14 @@ code{font-family:var(--font-mono);font-size:.92em;padding:0 4px;border-radius:4p
 
 /* loop tracker: which pass of which loop the highlighted line belongs to */
 .loop-tracker{margin:0 0 8px;padding:9px 11px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-primary);display:flex;flex-direction:column;gap:9px}
-.loop-tracker-head{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-secondary)}
+.loop-tracker-head{display:flex;align-items:center;gap:6px;width:100%;padding:0;border:0;background:none;cursor:pointer;text-align:left;font:inherit;font-size:12px;font-weight:700;color:var(--text-secondary)}
+.loop-tracker-head:focus-visible{outline:2px solid var(--purple);outline-offset:3px;border-radius:6px}
+.loop-tracker.folded{padding:6px 11px}
+.loop-caret{margin-left:auto;flex:none;color:var(--text-muted);transition:transform .2s}
+.loop-tracker:not(.folded) .loop-caret{margin-left:6px;transform:rotate(180deg)}
+.loop-summary{display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;white-space:nowrap;font-weight:500}
+.loop-summary code{font-family:var(--font-mono);font-size:11.5px;padding:1px 6px;border-radius:6px;background:var(--bg-secondary);color:var(--text-primary);overflow:hidden;text-overflow:ellipsis}
+.loop-summary-sep{color:var(--text-muted)}
 .loop-tracker-head svg{color:var(--purple)}
 .loop-row{margin-left:calc(var(--depth) * 14px);padding-left:10px;border-left:3px solid color-mix(in srgb,var(--purple) calc(70% - var(--depth) * 20%),transparent);display:flex;flex-direction:column;gap:4px}
 .loop-line1{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
