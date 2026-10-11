@@ -10,6 +10,7 @@ import { program } from './codeTags.js';
 import { genTraverse } from './bstGenerator.js';
 import { TEXT as BST_TEXT, traversalFn } from './bstCode.js';
 import { planStep } from './algoPlans.js';
+import { forLoop, whileLoop, eachCheck, ENDED } from './loops.js';
 
 const T = (en, bn) => (en === bn ? en : { en, bn });
 const fmt = (a) => (a.length ? a.join(', ') : '—');
@@ -625,7 +626,25 @@ function genLevelOrder(root, vals) {
   const subsNow = () => Object.fromEntries(out.map((v, i) => [v, `#${i + 1}`]));
   const panel = (hl = {}) => ({ type: 'queue', label: T('queue — the waiting line', 'queue — অপেক্ষার লাইন'), items: queue.map((n) => n.v), hl, empty: T('empty', 'খালি') });
   const scene = (o) => frame(root, { output: [...out], outputLabel: T('Level-order output:', 'লেভেল-অর্ডার আউটপুট:'), subs: subsNow(), ...o });
-  const push = (title, explanation, sc, line, state) => steps.push({ title, explanation, scene: sc, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, sc, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene: sc, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  const whileRow = (cur, ended = false) => whileLoop({
+    label: T('Loop: runs while a node waits in the queue. Each pass prints the node at the front and puts its children at the back.', 'লুপ: queue-তে কোনো নোড অপেক্ষায় থাকলে চলে। প্রতি পাসে সামনের নোড প্রিন্ট করে আর তার চাইল্ডদের পেছনে রাখে।'),
+    code: 'while (queue is not empty)',
+    unit: T('pass', 'পাস'),
+    pass: ended ? undefined : out.length,
+    items: [
+      ...out.filter((v) => v !== cur || ended).map((v) => ({ t: String(v), s: 'done' })),
+      ...(cur != null && !ended ? [{ t: String(cur), s: 'current' }] : []),
+      ...queue.map((n) => ({ t: String(n.v), s: 'todo', note: T('waiting', 'অপেক্ষায়') }))
+    ],
+    now: cur != null && !ended ? `node = ${cur}` : undefined,
+    check: ended
+      ? T('queue is empty ✗ the loop ends', 'queue খালি ✗ লুপ শেষ')
+      : T(`the queue was not empty ✓ so pass ${out.length} runs`, `queue খালি ছিল না ✓ তাই ${out.length} নম্বর পাস চলে`)
+  });
+
 
   push(
     T('main(): levelOrder(root)', 'main() কল করে: levelOrder(root)'),
@@ -648,6 +667,7 @@ function genLevelOrder(root, vals) {
   while (queue.length) {
     const n = queue.shift();
     out.push(n.v);
+    loopsNow = () => [whileRow(n.v)];
     push(
       T(`Take ${n.v} from the front, print it`, `সামনে থেকে ${n.v} নাও, প্রিন্ট করো`),
       T(
@@ -672,6 +692,7 @@ function genLevelOrder(root, vals) {
       );
     }
   }
+  loopsNow = () => [whileRow(null, true)];
   push(
     T('Queue empty → level order done ✓', 'queue খালি → লেভেল অর্ডার শেষ ✓'),
     T(
@@ -699,7 +720,19 @@ function genAvl(vals) {
   const steps = [];
   const box = { root: null };
   let rotations = 0;
-  const push = (title, explanation, sc, line, state) => steps.push({ title, explanation, scene: sc, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, sc, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene: sc, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  const valuesRow = (at) => forLoop({
+    label: T(`main() puts your values in one by one: ${vals.length} passes, one insert each.`, `main() তোমার মানগুলো একটা একটা করে বসায়: ${vals.length}টা পাস, প্রতিটায় একটা ইনসার্ট।`),
+    code: `for v in [${vals.join(', ')}]`,
+    unit: T('value', 'মান'),
+    values: vals,
+    at,
+    now: at < vals.length ? `v = ${vals[at]}` : undefined,
+    check: at < vals.length ? eachCheck(vals.length - 1 - at) : ENDED
+  });
+
   const scene = (o) => frame(box.root, { pending: vals, subs: box.root ? bfSubs(box.root) : {}, ...o });
 
   push(
@@ -713,6 +746,7 @@ function genAvl(vals) {
   );
 
   vals.forEach((key, idx) => {
+    loopsNow = () => [valuesRow(idx)];
     push(
       T(`insert(root, ${key})`, `insert(root, ${key})`),
       T(`Insert **${key}** (value ${idx + 1} of ${vals.length}). First it walks down like a normal BST insert.`, `**${key}** ইনসার্ট করো (${vals.length}টার মধ্যে ${idx + 1} নম্বর)। প্রথমে সাধারণ BST ইনসার্টের মতো নিচে নামে।`),
@@ -800,6 +834,7 @@ function genAvl(vals) {
     box.root = ins(box.root, (c) => { box.root = c; });
   });
 
+  loopsNow = () => [valuesRow(vals.length)];
   push(
     T(`AVL tree ready: height ${heightOf(box.root)}`, `AVL ট্রি তৈরি: উচ্চতা ${heightOf(box.root)}`),
     T(
@@ -817,10 +852,11 @@ function genAvl(vals) {
 
 const heapPanel = (arr, hl = {}) => ({ type: 'array', label: T('the heap is really this array', 'হিপ আসলে এই অ্যারে'), cells: [...arr], hl });
 
-function siftUpSteps(heap, push, sceneOf, idx) {
+function siftUpSteps(heap, push, sceneOf, idx, onPass = () => {}) {
   let i = heap.length - 1;
-  for (;;) {
+  for (let pass = 1; ; pass++) {
     if (i === 0) {
+      onPass(pass, i, false);
       push(
         T(`${heap[0]} reached the root`, `${heap[0]} রুটে পৌঁছেছে`),
         T(`**${heap[0]}** is at index 0 — the root has no parent, so the loop stops. It is the smallest value so far.`, `**${heap[0]}** ইনডেক্স 0-তে — রুটের কোনো প্যারেন্ট নেই, তাই লুপ থামে। এ পর্যন্ত এটাই সবচেয়ে ছোট মান।`),
@@ -833,6 +869,7 @@ function siftUpSteps(heap, push, sceneOf, idx) {
     if (heap[p] > heap[i]) {
       const a = heap[i];
       const b = heap[p];
+      onPass(pass, i, true);
       push(
         T(`Parent ${b} > ${a} → swap`, `প্যারেন্ট ${b} > ${a} → অদলবদল`),
         T(`The parent of index ${i} is index ${p} (\`(${i} − 1) / 2\`), holding **${b}**. ${b} > ${a}, which breaks the heap rule (a parent must be ≤ its children). **Swap** them: ${a} moves up.`, `ইনডেক্স ${i}-এর প্যারেন্ট ইনডেক্স ${p} (\`(${i} − 1) / 2\`), তাতে **${b}**। ${b} > ${a}, যা হিপের নিয়ম ভাঙে (প্যারেন্টকে চাইল্ডের ≤ হতে হবে)। **অদলবদল** করো: ${a} ওপরে ওঠে।`),
@@ -850,6 +887,7 @@ function siftUpSteps(heap, push, sceneOf, idx) {
       );
       i = p;
     } else {
+      onPass(pass, i, false);
       push(
         T(`Parent ${heap[p]} ≤ ${heap[i]} → stop`, `প্যারেন্ট ${heap[p]} ≤ ${heap[i]} → থামো`),
         T(`The parent **${heap[p]}** is not bigger than **${heap[i]}**, so the heap rule holds. ${heap[i]} stays at index ${i}.`, `প্যারেন্ট **${heap[p]}** **${heap[i]}**-এর চেয়ে বড় নয়, তাই হিপের নিয়ম ঠিক আছে। ${heap[i]} ইনডেক্স ${i}-এই থাকে।`),
@@ -865,7 +903,30 @@ function siftUpSteps(heap, push, sceneOf, idx) {
 function genHeapBuild(vals) {
   const steps = [];
   const heap = [];
-  const push = (title, explanation, sc, line, state) => steps.push({ title, explanation, scene: sc, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, sc, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene: sc, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  const valuesRow = (at) => forLoop({
+    label: T(`main() puts your values in one by one: ${vals.length} passes, one insert each.`, `main() তোমার মানগুলো একটা একটা করে বসায়: ${vals.length}টা পাস, প্রতিটায় একটা ইনসার্ট।`),
+    code: `for v in [${vals.join(', ')}]`,
+    unit: T('value', 'মান'),
+    values: vals,
+    at,
+    now: at < vals.length ? `v = ${vals[at]}` : undefined,
+    check: at < vals.length ? eachCheck(vals.length - 1 - at) : ENDED
+  });
+  const siftRow = (pass, i, goOn) => whileLoop({
+    label: T('Sift-up loop: while the new value has a parent that is bigger, swap them. Each pass climbs one level.', 'ওপরে তোলার লুপ: নতুন মানের প্যারেন্ট বড় হলে অদলবদল। প্রতি পাসে এক লেভেল ওপরে।'),
+    code: 'while (i > 0 && heap[parent] > heap[i])',
+    unit: T('pass', 'পাস'),
+    pass,
+    now: `i = ${i}`,
+    check: goOn
+      ? T('i > 0 and the parent is bigger ✓ swap', 'i > 0 আর প্যারেন্ট বড় ✓ অদলবদল')
+      : i === 0 ? T('i = 0 (the root) ✗ the loop ends', 'i = 0 (রুট) ✗ লুপ শেষ') : T('the parent is not bigger ✗ the loop ends', 'প্যারেন্ট বড় নয় ✗ লুপ শেষ'),
+    depth: 1
+  });
+
   const sceneOf = (o, idx) => frame(fromArray(heap), { pending: vals, pendingIndex: idx, ...o, panels: [heapPanel(heap, o.hl)] });
 
   push(
@@ -879,6 +940,7 @@ function genHeapBuild(vals) {
   );
   vals.forEach((x, idx) => {
     heap.push(x);
+    loopsNow = () => [valuesRow(idx)];
     push(
       T(`insert(heap, ${x}): add at the end`, `insert(heap, ${x}): শেষে যোগ`),
       T(`Add **${x}** at the **end** of the array (index ${heap.length - 1}). In the picture that is the next free spot of the last row — the tree stays complete.${heap.length > 1 ? ' Now it may be smaller than its parent, so it may need to bubble up.' : ''}`, `**${x}**-কে অ্যারের **শেষে** যোগ করো (ইনডেক্স ${heap.length - 1})। ছবিতে এটা শেষ সারির পরের খালি জায়গা — ট্রি কমপ্লিট থাকে।${heap.length > 1 ? ' এখন এটা প্যারেন্টের চেয়ে ছোট হতে পারে, তাই ওপরে উঠতে হতে পারে।' : ''}`),
@@ -886,8 +948,9 @@ function genHeapBuild(vals) {
       [`put${idx}`, 'hHeader', 'hPush'],
       { value: x, i: heap.length - 1 }
     );
-    siftUpSteps(heap, push, sceneOf, idx);
+    siftUpSteps(heap, push, sceneOf, idx, (pass, i, goOn) => { loopsNow = () => [valuesRow(idx), siftRow(pass, i, goOn)]; });
   });
+  loopsNow = () => [valuesRow(vals.length)];
   push(
     T(`Min-heap ready: root ${heap[0]}`, `মিন-হিপ তৈরি: রুট ${heap[0]}`),
     T(
@@ -909,7 +972,18 @@ function genHeapExtract(vals) {
     for (let i = heap.length - 1; i > 0;) { const p = Math.floor((i - 1) / 2); if (heap[p] <= heap[i]) break; [heap[i], heap[p]] = [heap[p], heap[i]]; i = p; }
   }
   const out = [];
-  const push = (title, explanation, sc, line, state) => steps.push({ title, explanation, scene: sc, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, sc, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene: sc, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  const sinkRow = (pass, i, goOn) => whileLoop({
+    label: T('Sink loop: each pass compares the value with its children and swaps it with the smaller child. It stops when no child is smaller.', 'নামানোর লুপ: প্রতি পাসে মানটাকে তার চাইল্ডদের সঙ্গে তুলনা করে ছোট চাইল্ডের সঙ্গে অদলবদল করে। কোনো চাইল্ড ছোট না হলে থামে।'),
+    code: 'while (true)   // sinkDown',
+    unit: T('pass', 'পাস'),
+    pass,
+    now: `i = ${i}`,
+    check: goOn ? T('a child is smaller ✓ swap and go on', 'একটা চাইল্ড ছোট ✓ অদলবদল করে চলো') : T('no child is smaller ✗ break, the loop ends', 'কোনো চাইল্ড ছোট নয় ✗ break, লুপ শেষ')
+  });
+
   const sceneOf = (o) => frame(fromArray(heap), { output: [...out], outputLabel: T('returned:', 'ফেরত দিল:'), ...o, panels: [heapPanel(heap, o.hl)] });
 
   push(
@@ -947,7 +1021,7 @@ function genHeapExtract(vals) {
       sceneOf({ cursor: heap[0], states: states({ bad: heap[0] }), hl: { 0: 'compare' }, status: T('sinkDown(heap, 0)', 'sinkDown(heap, 0)') }),
       ['eSink', 'sHeader']
     );
-    for (;;) {
+    for (let pass = 1; ; pass++) {
       const l = 2 * i + 1;
       const r = 2 * i + 2;
       let s = i;
@@ -956,6 +1030,7 @@ function genHeapExtract(vals) {
       const kids = [l, r].filter((k) => k < heap.length);
       const kidTxt = kids.length ? kids.map((k) => `${heap[k]} (index ${k})`).join(' and ') : 'none';
       const kidTxtBn = kids.length ? kids.map((k) => `${heap[k]} (ইনডেক্স ${k})`).join(' আর ') : 'নেই';
+      loopsNow = () => [sinkRow(pass, i, s !== i)];
       if (s === i) {
         push(
           T(`${heap[i]} is in place → stop`, `${heap[i]} জায়গামতো → থামো`),
@@ -986,6 +1061,7 @@ function genHeapExtract(vals) {
       i = s;
     }
   }
+  loopsNow = () => null;
   push(
     T(`extractMin returns ${min}`, `extractMin ফেরত দেয় ${min}`),
     T(

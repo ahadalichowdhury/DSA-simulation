@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { t, texToHtml } from '../visuals/utils.js';
 import { termsFor } from '../data/glossary.js';
+import LoopTracker from './LoopTracker';
 
 marked.setOptions({ breaks: true, gfm: true });
 
@@ -299,6 +300,8 @@ const InfoPanel = ({
                 ))}
               </div>
             </div>
+
+            <LoopTracker loops={step.loops} lang={lang} />
 
             <div className={`code-block${topic?.lineMap ? ' traced' : ''}`} ref={codeBlockRef}>
               <div className="code-container">

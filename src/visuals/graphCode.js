@@ -540,7 +540,7 @@ function greedyProgram(g, kind, src) {
     ${parentInit('python').join('\n    ')}${D ? '' : '\n    '}${finPy} = [False] * V  @init
     ${arr}[${startV}] = 0  @init
 
-    for _ in range(V):  @loop
+    for round in range(V):  @loop
         # {{${P}_c1}}  @pick
         u = -1  @pick
         for i in range(V):  @pick

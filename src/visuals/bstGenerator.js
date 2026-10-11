@@ -9,6 +9,8 @@
  * search, insert, delete, update (= delete + insert) and traverse.
  */
 
+import { whileLoop } from './loops.js';
+
 const B = (en, bn) => ({ en, bn });
 
 /* ======================= tree helpers ======================= */
@@ -418,17 +420,31 @@ function traceSearch(root, key) {
   let n = root;
   const scene = (o) => frame(root, { keyBadge: key, ...o });
   const st = (more) => statesOf({ path: path.slice(0, -1), dim: [...skipped], ...more });
+  // the search loop: one pass per node on the way down
+  const row = (check, ended = false) => whileLoop({
+    label: B('Search loop: each pass looks at one node, then moves root one level down (left or right). It stops when the value is found or root becomes null.', 'খোঁজার লুপ: প্রতি পাসে একটা নোড দেখে, তারপর root-কে এক লেভেল নিচে (বামে বা ডানে) নামায়। মান পেলে বা root null হলে থামে।'),
+    code: 'while (root != null)',
+    unit: B('pass', 'পাস'),
+    pass: ended ? undefined : path.length,
+    items: path.map((v, i) => ({ t: String(v), s: i === path.length - 1 && !ended ? 'current' : 'done' })),
+    now: ended ? 'root = null' : `root = ${path[path.length - 1]}`,
+    check
+  });
+  let loopsNow = () => null;
+  const add = (step) => { const loops = loopsNow(); steps.push(loops ? { ...step, loops } : step); };
   for (;;) {
     if (!n) {
       const last = path[path.length - 1];
-      steps.push({
+      loopsNow = () => [row(B('root is null ✗ the loop ends', 'root null ✗ লুপ শেষ'), true)];
+      add({
         title: B('while (root != null) → false', 'while (root != null) → মিথ্যা'),
         explanation: B(`\`root\` is now **null** — we walked off the tree${last != null ? ` below **${last}**` : ''}. The loop condition is **false**, so the loop ends.`, `\`root\` এখন **null** — আমরা ট্রি থেকে বেরিয়ে গেছি${last != null ? ` (**${last}**-এর নিচে)` : ''}। লুপের শর্ত **মিথ্যা**, তাই লুপ শেষ।`),
         line: ['whileCheck'],
         state: { value: key, 'root != null': false },
         scene: scene({ cursor: last, lit: litEdges(path), states: st({ bad: last }), status: B('root is <b>null</b> → loop ends', 'root <b>null</b> → লুপ শেষ') })
       });
-      steps.push({
+      loopsNow = () => null;
+      add({
         title: B(`return null → ${key} not found`, `null ফেরত → ${key} নেই`),
         explanation: B(`If **${key}** were in the tree it would have been on this path. So the function returns **null**: not found. We checked only ${path.length} node${path.length === 1 ? '' : 's'}.`, `**${key}** থাকলে এই পথেই থাকত। তাই ফাংশন **null** ফেরত দেয়: পাওয়া যায়নি। দেখা হয়েছে মাত্র ${path.length}টি নোড।`),
         line: ['notFound'],
@@ -439,7 +455,8 @@ function traceSearch(root, key) {
     }
     path.push(n.v);
     const lit = litEdges(path);
-    steps.push({
+    loopsNow = () => [row(B('root is not null ✓ the body runs', 'root null নয় ✓ ভেতরের কাজ চলে'))];
+    add({
       title: B(`while (root != null) → true (root = ${n.v})`, `while (root != null) → সত্য (root = ${n.v})`),
       explanation: B(`\`root\` points to **${n.v}**, which is not null, so the loop body runs.`, `\`root\` দেখাচ্ছে **${n.v}**-কে, যেটা null নয়, তাই লুপের ভেতরটা চলে।`),
       line: ['whileCheck'],
@@ -447,7 +464,7 @@ function traceSearch(root, key) {
       scene: scene({ cursor: n.v, lit, states: st({ cmp: n.v }), status: B(`root = <b>${n.v}</b> → keep looking`, `root = <b>${n.v}</b> → খোঁজা চলবে`) })
     });
     const eq = key === n.v;
-    steps.push({
+    add({
       title: B(`Is ${key} == ${n.v}? ${eq ? 'Yes' : 'No'}`, `${key} == ${n.v}? ${eq ? 'হ্যাঁ' : 'না'}`),
       explanation: eq ? B(`\`value == root.data\` → **${key} == ${n.v}** is **true**. Found it!`, `\`value == root.data\` → **${key} == ${n.v}** **সত্য**। পেয়ে গেছি!`) : B(`\`value == root.data\` → **${key} == ${n.v}** is **false**. Not this node — decide which way to go.`, `\`value == root.data\` → **${key} == ${n.v}** **মিথ্যা**। এই নোড নয় — কোন দিকে যাবে ঠিক করো।`),
       line: ['ifEq'],
@@ -455,7 +472,8 @@ function traceSearch(root, key) {
       scene: scene({ cursor: n.v, lit, states: st({ [eq ? 'found' : 'cmp']: n.v }), status: B(`${key} == ${n.v} → <b>${yes(eq).en}</b>`, `${key} == ${n.v} → <b>${yes(eq).bn}</b>`) })
     });
     if (eq) {
-      steps.push({
+      loopsNow = () => [row(B('found it → return leaves the loop at once', 'পেয়ে গেছি → return সঙ্গে সঙ্গে লুপ থেকে বের করে দেয়'))];
+      add({
         title: B(`return root → found ${key} ✓`, `root ফেরত → ${key} পাওয়া গেছে ✓`),
         explanation: B(`The function returns this node. It took **${path.length}** comparison${path.length === 1 ? '' : 's'} — the work depends on the tree's height, **O(h)**, not on how many nodes it has.`, `ফাংশন এই নোডটা ফেরত দেয়। তুলনা লেগেছে **${path.length}** বার — কাজ নির্ভর করে ট্রির উচ্চতার ওপর, **O(h)**, নোডের সংখ্যার ওপর নয়।`),
         line: ['retFound'],
@@ -467,7 +485,7 @@ function traceSearch(root, key) {
     const less = key < n.v;
     const dir = less ? 'l' : 'r';
     const child = n[dir];
-    steps.push({
+    add({
       title: B(`Is ${key} < ${n.v}? ${less ? 'Yes' : 'No'}`, `${key} < ${n.v}? ${less ? 'হ্যাঁ' : 'না'}`),
       explanation: less ? B(`**${key} < ${n.v}** is **true**: ${key} can only be in the left subtree. The whole right side is ignored.`, `**${key} < ${n.v}** **সত্য**: ${key} শুধু বাম সাব-ট্রিতে থাকতে পারে। পুরো ডান দিক বাদ।`) : B(`**${key} < ${n.v}** is **false**: so it must be bigger, and can only be in the right subtree. The whole left side is ignored.`, `**${key} < ${n.v}** **মিথ্যা**: তাই এটা বড়, শুধু ডান সাব-ট্রিতে থাকতে পারে। পুরো বাম দিক বাদ।`),
       line: ['ifLess'],
@@ -475,7 +493,7 @@ function traceSearch(root, key) {
       scene: scene({ cursor: n.v, lit, states: st({ cmp: n.v }), status: B(`${key} &lt; ${n.v} → <b>${yes(less).en}</b>`, `${key} &lt; ${n.v} → <b>${yes(less).bn}</b>`) })
     });
     skipped.push(...subtreeVals(less ? n.r : n.l));
-    steps.push({
+    add({
       title: B(`root = root.${less ? 'left' : 'right'} (${child ? child.v : 'null'})`, `root = root.${less ? 'left' : 'right'} (${child ? child.v : 'null'})`),
       explanation: child ? B(`\`root\` moves to the ${sideName(dir).en} child, **${child.v}**.`, `\`root\` ${sideName(dir).bn} চাইল্ড **${child.v}**-এ যায়।`) : B(`The ${sideName(dir).en} child of ${n.v} is **null**, so \`root\` becomes null.`, `${n.v}-এর ${sideName(dir).bn} চাইল্ড **null**, তাই \`root\` null হয়ে যায়।`),
       line: [less ? 'moveLeft' : 'moveRight'],
@@ -682,9 +700,20 @@ function traceDelete(root, key, ctx = {}) {
     state: { value: key, successor: s.v },
     scene: succScene({ cursor: s.v, states: statesOf({ target: key, succ: s.v, dim: dimLeft }), status: B(`successor = <b>${s.v}</b>`, `successor = <b>${s.v}</b>`) })
   });
+  const succRow = (hasLeft) => whileLoop({
+    label: B('Successor loop: keep going left. The leftmost node of the right subtree is the smallest value bigger than the deleted one.', 'সাকসেসর লুপ: বামে যেতেই থাকো। ডান সাব-ট্রির সবচেয়ে বামের নোডই মোছা মানের চেয়ে বড়দের মধ্যে সবচেয়ে ছোট।'),
+    code: 'while (successor.left != null)',
+    unit: B('pass', 'পাস'),
+    pass: succPath.length - 1,
+    items: succPath.slice(1).map((v, i, a) => ({ t: String(v), s: i === a.length - 1 ? 'current' : 'done' })),
+    now: `successor = ${s.v}`,
+    check: hasLeft ? B('it has a left child ✓ move left', 'বাম চাইল্ড আছে ✓ বামে যাও') : B('no left child ✗ the loop ends', 'বাম চাইল্ড নেই ✗ লুপ শেষ')
+  });
   for (;;) {
     const hasLeft = !!s.l;
+    const loops = [succRow(hasLeft)];
     steps.push({
+      loops,
       title: T(B(`successor.left != null? ${hasLeft ? 'Yes' : 'No'}`, `successor.left != null? ${hasLeft ? 'হ্যাঁ' : 'না'}`)),
       explanation: hasLeft
         ? B(`**${s.v}** has a left child (**${s.l.v}**), so a smaller candidate exists — the loop continues.`, `**${s.v}**-এর বাম চাইল্ড (**${s.l.v}**) আছে, মানে আরও ছোট আছে — লুপ চলবে।`)
@@ -697,6 +726,7 @@ function traceDelete(root, key, ctx = {}) {
     s = s.l;
     succPath.push(s.v);
     steps.push({
+      loops: [succRow(!!s.l)],
       title: T(B(`successor = successor.left (${s.v})`, `successor = successor.left (${s.v})`)),
       explanation: B(`Move left to **${s.v}** — smaller values are always on the left.`, `বামে **${s.v}**-এ যাও — ছোট মান সবসময় বামে থাকে।`),
       line: L('succMove'),

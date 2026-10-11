@@ -9,6 +9,7 @@
  */
 import { adjOf } from './graphData.js';
 import { planStep } from './algoPlans.js';
+import { forLoop, whileLoop, countCheck, eachCheck, ENDED } from './loops.js';
 
 // identical text is code (e.g. `dist[3]: ∞ → 6`), so it is stored once as a plain string
 const T = (en, bn) => (en === bn ? en : { en, bn });
@@ -154,7 +155,35 @@ export function genBFS(g, start) {
       status
     };
   };
-  const push = (title, explanation, scene, line, state) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, scene, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  const whileRow = (cur, label, ended = false) => whileLoop({
+    label,
+    code: 'while (queue is not empty)',
+    unit: T('pass', 'পাস'),
+    pass: ended ? undefined : order.length,
+    items: [
+      ...order.filter((x) => x !== cur || ended).map((x) => ({ t: String(x), s: 'done' })),
+      ...(cur != null && !ended ? [{ t: String(cur), s: 'current' }] : []),
+      ...queue.map((x) => ({ t: String(x), s: 'todo', note: T('waiting', 'অপেক্ষায়') }))
+    ],
+    now: cur != null && !ended ? `u = ${cur}` : undefined,
+    check: ended
+      ? T('queue is empty ✗ the loop ends', 'queue খালি ✗ লুপ শেষ')
+      : T(`the queue was not empty ✓ so pass ${order.length} runs`, `queue খালি ছিল না ✓ তাই ${order.length} নম্বর পাস চলে`)
+  });
+  const BFS_WHILE = T('Outer loop: runs while someone is waiting in the queue. Each pass takes the vertex at the front (u) and checks its neighbours.', 'বাইরের লুপ: queue-তে কেউ অপেক্ষায় থাকলে চলতেই থাকে। প্রতি পাসে সামনের ভার্টেক্স (u) নিয়ে তার প্রতিবেশীদের দেখে।');
+  const nbrRow = (u, k) => forLoop({
+    label: T(`Inner loop: checks each neighbour v of u = ${u}, left to right. New ones join the back of the queue.`, `ভেতরের লুপ: u = ${u}-এর প্রতিটা প্রতিবেশী v বাম থেকে ডানে দেখে। নতুনরা queue-এর পেছনে ঢোকে।`),
+    code: `for v in adj[${u}]`,
+    unit: T('neighbour', 'প্রতিবেশী'),
+    values: adj[u].map((x) => x.v),
+    at: k,
+    now: k >= 0 && k < adj[u].length ? `v = ${adj[u][k].v}` : undefined,
+    check: k >= 0 && k < adj[u].length ? eachCheck(adj[u].length - 1 - k) : undefined
+  });
+
 
   push(
     T('Step 0: build the graph', 'ধাপ ০: গ্রাফ বানানো'),
@@ -193,6 +222,7 @@ export function genBFS(g, start) {
   while (queue.length) {
     const u = queue.shift();
     order.push(u);
+    loopsNow = () => [whileRow(u, BFS_WHILE), nbrRow(u, -1)];
     push(
       T(`Take ${u} from the front`, `সামনে থেকে ${u} নাও`),
       T(
@@ -203,7 +233,8 @@ export function genBFS(g, start) {
       ['whileCheck', 'pop', 'visit'],
       { u }
     );
-    for (const { v } of adj[u]) {
+    for (const [k, { v }] of adj[u].entries()) {
+      loopsNow = () => [whileRow(u, BFS_WHILE), nbrRow(u, k)];
       if (!visited[v]) {
         visited[v] = true;
         level[v] = level[u] + 1;
@@ -236,6 +267,7 @@ export function genBFS(g, start) {
     done.add(u);
   }
 
+  loopsNow = () => [whileRow(null, BFS_WHILE, true)];
   const byLevel = [];
   level.forEach((l, v) => { if (l != null) (byLevel[l] = byLevel[l] || []).push(v); });
   push(
@@ -248,6 +280,7 @@ export function genBFS(g, start) {
     'whileCheck'
   );
 
+  loopsNow = () => null;
   push(
     T('What BFS gave us', 'BFS থেকে কী পেলাম'),
     T(
@@ -300,7 +333,31 @@ export function genDFS(g, start) {
       status
     };
   };
-  const push = (title, explanation, scene, line, state) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, scene, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  // where each waiting dfs(x) call is inside its own `for v in adj[x]` loop
+  const pos = {};
+  const dfsRows = (calls, depth0 = 0) => calls.map((x, d) => {
+    const top = d === calls.length - 1;
+    const k = pos[x];
+    return {
+      ...forLoop({
+        label: top
+          ? T(`Running now: dfs(${x}) checks each neighbour of ${x}, left to right.`, `এখন চলছে: dfs(${x}) ${x}-এর প্রতিটা প্রতিবেশী বাম থেকে ডানে দেখে।`)
+          : T(`Paused at v = ${adj[x][k] ? adj[x][k].v : '?'}: dfs(${x}) waits for the call below it to return, then moves to its next neighbour.`, `v = ${adj[x][k] ? adj[x][k].v : '?'}-তে থেমে আছে: dfs(${x}) তার নিচের কলটা রিটার্ন করার অপেক্ষায়, তারপর পরের প্রতিবেশীতে যাবে।`),
+        code: `dfs(${x}): for v in adj[${x}]`,
+        unit: T('neighbour', 'প্রতিবেশী'),
+        values: adj[x].map((e) => e.v),
+        at: k,
+        now: top && k >= 0 && k < adj[x].length ? `v = ${adj[x][k].v}` : undefined,
+        check: top && k >= 0 && k < adj[x].length ? eachCheck(adj[x].length - 1 - k) : top && k >= adj[x].length ? ENDED : undefined,
+        depth: depth0 + d
+      }),
+      ...(top ? {} : { paused: true })
+    };
+  });
+
 
   push(
     T('Step 0: build the graph', 'ধাপ ০: গ্রাফ বানানো'),
@@ -323,6 +380,7 @@ export function genDFS(g, start) {
   );
   withNames(steps[steps.length - 1], 'dfs');
 
+  loopsNow = () => dfsRows(stack);
   const firstDive = [];
   let backtracked = false;
   const enter = (u, from) => {
@@ -330,6 +388,7 @@ export function genDFS(g, start) {
     visited[u] = true;
     stack.push(u);
     order.push(u);
+    pos[u] = -1;
     push(
       T(`Enter dfs(${u})`, `dfs(${u})-এ ঢোকা`),
       T(
@@ -340,7 +399,8 @@ export function genDFS(g, start) {
       ['header', 'mark', 'visit'],
       { u }
     );
-    for (const { v } of adj[u]) {
+    for (const [k, { v }] of adj[u].entries()) {
+      pos[u] = k;
       if (!visited[v]) {
         tree.push([u, v]);
         push(
@@ -377,6 +437,7 @@ export function genDFS(g, start) {
         );
       }
     }
+    pos[u] = adj[u].length;
     const parent = stack.length > 1 ? stack[stack.length - 2] : null;
     push(
       T(`dfs(${u}) is done → backtrack`, `dfs(${u}) শেষ → ব্যাকট্র্যাক`),
@@ -457,7 +518,43 @@ function genGreedy(g, kind, src) {
       status
     };
   };
-  const push = (title, explanation, scene, line, state) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, scene, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+
+  const FIN_WORD = D ? T('done', 'done') : T('in tree', 'ট্রিতে');
+  const roundLoop = (round) => forLoop({
+    label: T(`Outer loop: runs ${V} times, once per vertex. Each round ${D ? 'finishes' : 'adds'} exactly one vertex${D ? '' : ' to the tree'}.`, `বাইরের লুপ: ${V} বার চলে, প্রতি ভার্টেক্সে একবার। প্রতি রাউন্ডে ঠিক একটা ভার্টেক্স ${D ? 'শেষ (done) হয়' : 'ট্রিতে যোগ হয়'}।`),
+    code: `for round = 0 … ${V - 1}`,
+    unit: T('round', 'রাউন্ড'),
+    values: [...Array(V).keys()],
+    at: round,
+    now: round < V ? `round = ${round}` : `round = ${V}`,
+    check: countCheck('round', round, V)
+  });
+  const scanLoop = (finBefore, u) => forLoop({
+    label: T(`Scan loop: i walks over every vertex 0 … ${V - 1} and remembers the smallest \`${NAME}\` that is not ${D ? 'done' : 'in the tree'} yet. That one becomes u.`, `খোঁজার লুপ: i প্রতিটা ভার্টেক্স 0 … ${V - 1} ঘুরে দেখে, আর যারা এখনো ${D ? 'done নয়' : 'ট্রিতে নেই'} তাদের মধ্যে সবচেয়ে ছোট \`${NAME}\` মনে রাখে। সেটাই হয় u।`),
+    code: `for i = 0 … ${V - 1}`,
+    unit: T('vertex', 'ভার্টেক্স'),
+    values: [...Array(V).keys()],
+    at: V,
+    notes: Object.fromEntries([...Array(V).keys()].map((i) => [i, finBefore[i] ? FIN_WORD : `${NAME} ${fmt(val[i])}`])),
+    skip: [...Array(V).keys()].filter((i) => finBefore[i]),
+    best: u,
+    now: `u = ${u}`,
+    check: T(`smallest ${NAME} among the rest → u = ${u}`, `বাকিদের মধ্যে সবচেয়ে ছোট ${NAME} → u = ${u}`)
+  });
+  const nbrLoop = (u, k) => forLoop({
+    label: T(`Inner loop: visits each neighbour v of u = ${u} (with edge weight w) and asks "is the way through ${u} better?"`, `ভেতরের লুপ: u = ${u}-এর প্রতিটা প্রতিবেশী v (এজের ওজন w সহ) দেখে, আর জিজ্ঞেস করে "${u} হয়ে গেলে কি ভালো?"`),
+    code: `for (v, w) in adj[${u}]`,
+    unit: T('neighbour', 'প্রতিবেশী'),
+    values: adj[u].map((x) => x.v),
+    notes: Object.fromEntries(adj[u].map((x, i) => [i, `w ${x.w}`])),
+    at: k,
+    now: k >= 0 && k < adj[u].length ? `v = ${adj[u][k].v}, w = ${adj[u][k].w}` : undefined,
+    check: k >= 0 && k < adj[u].length ? eachCheck(adj[u].length - 1 - k) : undefined,
+    depth: 1
+  });
 
   push(
     T('Step 0: build the weighted graph', 'ধাপ ০: ওজনসহ গ্রাফ বানানো'),
@@ -495,7 +592,17 @@ function genGreedy(g, kind, src) {
     for (let i = 0; i < V; i++) if (!fin[i] && (u === -1 || val[i] < val[u])) u = i;
     const cand = [];
     for (let i = 0; i < V; i++) if (!fin[i]) cand.push(i);
+    const finBefore = [...fin];
     fin[u] = true;
+    const loopIntro = round === 0
+      ? T(
+        `**Outer loop, round 1 of ${V}.** \`round = 0\` and 0 < ${V}, so the body runs. The body always does two things:\n1. the **scan loop** (\`for i\`) looks at all ${V} vertices and picks **u**;\n2. the **inner loop** (\`for (v, w)\`) checks the neighbours of u.\n\nThen \`round\` grows by 1 and everything repeats — ${V} rounds in total. The box above the code shows where each loop is.\n\n`,
+        `**বাইরের লুপ, ${V}টার মধ্যে ১ নম্বর রাউন্ড।** \`round = 0\` আর 0 < ${V}, তাই ভেতরের কাজ চলে। ভেতরে সবসময় দুটো কাজ:\n১. **খোঁজার লুপ** (\`for i\`) ${V}টা ভার্টেক্সই দেখে **u** বাছে;\n২. **ভেতরের লুপ** (\`for (v, w)\`) u-এর প্রতিবেশীদের দেখে।\n\nতারপর \`round\` ১ বাড়ে আর সব আবার হয় — মোট ${V} রাউন্ড। কোডের ওপরের বক্স দেখায় কোন লুপ কোথায় আছে।\n\n`
+      )
+      : T(
+        `**Outer loop, round ${round + 1} of ${V}.** \`round\` went up to ${round}, and ${round} < ${V}, so the body runs again.\n\n`,
+        `**বাইরের লুপ, ${V}টার মধ্যে ${round + 1} নম্বর রাউন্ড।** \`round\` বেড়ে ${round} হলো, আর ${round} < ${V}, তাই ভেতরের কাজ আবার চলে।\n\n`
+      );
     const candTxt = cand.map((i) => `${NAME}[${i}] = ${fmt(val[i])}`).join(', ');
     const why = D && val[u] === Infinity
       ? T(
@@ -514,15 +621,17 @@ function genGreedy(g, kind, src) {
     push(
       D ? T(`Round ${round + 1}: pick ${u} (dist ${fmt(val[u])})`, `রাউন্ড ${round + 1}: ${u} বাছো (dist ${fmt(val[u])})`) : T(`Round ${round + 1}: add ${u} to the tree`, `রাউন্ড ${round + 1}: ${u}-কে ট্রিতে নাও`),
       T(
-        `Look only at vertices that are **not ${D ? 'done' : 'in the tree'}**: ${candTxt}.\n\nThe smallest is **${u}** (${fmt(val[u])}), so mark \`${FIN}[${u}] = true\`.\n\n${why.en}`,
-        `শুধু **${D ? 'done নয়' : 'ট্রিতে নেই'}** এমন ভার্টেক্স দেখো: ${candTxt}।\n\nসবচেয়ে ছোট **${u}** (${fmt(val[u])}), তাই \`${FIN}[${u}] = true\`।\n\n${why.bn}`
+        `${loopIntro.en}**Scan:** \`i\` goes 0 → ${V - 1}. Skip vertices already ${D ? 'done' : 'in the tree'}; among the rest (${candTxt}) the smallest is **${u}** (${fmt(val[u])}), so **u = ${u}** and \`${FIN}[${u}] = true\`.\n\n${why.en}`,
+        `${loopIntro.bn}**খোঁজা:** \`i\` 0 → ${V - 1} পর্যন্ত যায়। যারা আগেই ${D ? 'done' : 'ট্রিতে'} তাদের বাদ; বাকিদের মধ্যে (${candTxt}) সবচেয়ে ছোট **${u}** (${fmt(val[u])}), তাই **u = ${u}** আর \`${FIN}[${u}] = true\`।\n\n${why.bn}`
       ),
       frame({ cur: u, cand, aHl: Object.fromEntries(cand.map((i) => [i, i === u ? 'current' : 'compare'])), status: T(`smallest ${NAME} among unfinished → u = ${u}`, `শেষ-না-হওয়াদের মধ্যে সবচেয়ে ছোট ${NAME} → u = ${u}`) }),
       ['loop', 'pick', 'mark'],
-      { u, [`${NAME}[u]`]: fmt(val[u]) }
+      { u, [`${NAME}[u]`]: fmt(val[u]) },
+      [roundLoop(round), scanLoop(finBefore, u), nbrLoop(u, -1)]
     );
 
-    for (const { v, w } of adj[u]) {
+    for (const [k, { v, w }] of adj[u].entries()) {
+      const loops = [roundLoop(round), nbrLoop(u, k)];
       if (fin[v]) {
         push(
           T(`${u} → ${v}: already final, skip`, `${u} → ${v}: আগেই চূড়ান্ত, বাদ`),
@@ -532,7 +641,8 @@ function genGreedy(g, kind, src) {
           ),
           frame({ cur: u, chk: { u, v }, chkKind: 'skip', status: T(`${v} is final → skip`, `${v} চূড়ান্ত → বাদ`) }),
           ['forNbr', D ? 'ifRelax' : 'ifBetter'],
-          { u, v, w }
+          { u, v, w },
+          loops
         );
         continue;
       }
@@ -557,7 +667,8 @@ function genGreedy(g, kind, src) {
           ),
         frame({ cur: u, chk: { u, v }, chkKind: better ? 'better' : 'worse', aHl: { [v]: better ? 'relax' : 'compare' }, status: better ? T(`${NAME}[${v}]: ${fmt(old)} → ${offer}`, `${NAME}[${v}]: ${fmt(old)} → ${offer}`) : T(`${fmt(offer)} ≥ ${fmt(old)} → keep ${fmt(old)}`, `${fmt(offer)} ≥ ${fmt(old)} → ${fmt(old)}-ই থাকুক`) }),
         better ? ['forNbr', D ? 'ifRelax' : 'ifBetter', D ? 'relax' : 'update'] : ['forNbr', D ? 'ifRelax' : 'ifBetter'],
-        { u, v, w, [D ? 'dist[u] + w' : 'w']: fmt(offer), [`${NAME}[v]`]: fmt(old) }
+        { u, v, w, [D ? 'dist[u] + w' : 'w']: fmt(offer), [`${NAME}[v]`]: fmt(old) },
+        loops
       );
     }
   }
@@ -568,11 +679,13 @@ function genGreedy(g, kind, src) {
     push(
       T('All distances are final', 'সব দূরত্ব চূড়ান্ত'),
       T(
-        `Every vertex is done. Shortest distances from ${src}:\n\n${val.map((d, v) => (pathTo(v) ? `- to **${v}**: ${d}  (${pathTo(v)})` : `- to **${v}**: ∞ — cannot be reached`)).join('\n')}\n\nThe **green edges** form the **shortest-path tree**: follow them from ${src} to get each route.`,
-        `সব ভার্টেক্স done। ${src} থেকে সবচেয়ে ছোট দূরত্ব:\n\n${val.map((d, v) => (pathTo(v) ? `- **${v}** পর্যন্ত: ${d}  (${pathTo(v)})` : `- **${v}** পর্যন্ত: ∞ — পৌঁছানো যায় না`)).join('\n')}\n\n**সবুজ এজগুলো** মিলে **শর্টেস্ট-পাথ ট্রি**: ${src} থেকে এগুলো ধরে গেলে প্রতিটা রাস্তা পাবে।`
+        `\`round\` reached ${V}, and ${V} < ${V} is false, so the outer loop stops. Every vertex is done. Shortest distances from ${src}:\n\n${val.map((d, v) => (pathTo(v) ? `- to **${v}**: ${d}  (${pathTo(v)})` : `- to **${v}**: ∞ — cannot be reached`)).join('\n')}\n\nThe **green edges** form the **shortest-path tree**: follow them from ${src} to get each route.`,
+        `\`round\` ${V}-এ পৌঁছাল, আর ${V} < ${V} মিথ্যা, তাই বাইরের লুপ থামে। সব ভার্টেক্স done। ${src} থেকে সবচেয়ে ছোট দূরত্ব:\n\n${val.map((d, v) => (pathTo(v) ? `- **${v}** পর্যন্ত: ${d}  (${pathTo(v)})` : `- **${v}** পর্যন্ত: ∞ — পৌঁছানো যায় না`)).join('\n')}\n\n**সবুজ এজগুলো** মিলে **শর্টেস্ট-পাথ ট্রি**: ${src} থেকে এগুলো ধরে গেলে প্রতিটা রাস্তা পাবে।`
       ),
       frame({ status: T(`dist = [${val.map(fmt).join(', ')}]`, `dist = [${val.map(fmt).join(', ')}]`) }),
-      'print'
+      'print',
+      null,
+      [roundLoop(V)]
     );
     push(
       T('What we learned', 'কী শিখলাম'),
@@ -589,11 +702,13 @@ function genGreedy(g, kind, src) {
     push(
       T(`MST finished: total cost ${total}`, `MST শেষ: মোট খরচ ${total}`),
       T(
-        `All ${V} vertices are in the tree. The MST uses **${V - 1} edges** (always V − 1):\n\n${mst.map((m) => `- ${m}`).join('\n')}\n\nTotal cost = **${total}**. No other set of edges connecting everything is cheaper.`,
-        `${V}টা ভার্টেক্সই ট্রিতে। MST-তে **${V - 1}টা এজ** (সবসময় V − 1):\n\n${mst.map((m) => `- ${m}`).join('\n')}\n\nমোট খরচ = **${total}**। সব জোড়া লাগায় এমন অন্য কোনো এজের সেট এর চেয়ে সস্তা নয়।`
+        `\`round\` reached ${V}, and ${V} < ${V} is false, so the outer loop stops. All ${V} vertices are in the tree. The MST uses **${V - 1} edges** (always V − 1):\n\n${mst.map((m) => `- ${m}`).join('\n')}\n\nTotal cost = **${total}**. No other set of edges connecting everything is cheaper.`,
+        `\`round\` ${V}-এ পৌঁছাল, আর ${V} < ${V} মিথ্যা, তাই বাইরের লুপ থামে। ${V}টা ভার্টেক্সই ট্রিতে। MST-তে **${V - 1}টা এজ** (সবসময় V − 1):\n\n${mst.map((m) => `- ${m}`).join('\n')}\n\nমোট খরচ = **${total}**। সব জোড়া লাগায় এমন অন্য কোনো এজের সেট এর চেয়ে সস্তা নয়।`
       ),
       frame({ status: T(`MST cost = ${total}`, `MST খরচ = ${total}`) }),
-      'print'
+      'print',
+      null,
+      [roundLoop(V)]
     );
     push(
       T('What we learned', 'কী শিখলাম'),
@@ -655,7 +770,21 @@ export function genKruskal(g) {
       status: statusText
     };
   };
-  const push = (title, explanation, scene, line, state) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, scene, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  const edgeRow = (k) => forLoop({
+    label: T('One loop over the sorted list, cheapest edge first. Each edge is either taken (✓) or skipped because it would close a cycle (crossed out).', 'সাজানো তালিকার ওপর একটাই লুপ, সস্তা এজ আগে। প্রতিটা এজ হয় নেওয়া হয় (✓), নয়তো সাইকেল বানাবে বলে বাদ যায় (কাটা দাগ)।'),
+    code: 'for (u, v, w) in sorted',
+    unit: T('edge', 'এজ'),
+    values: sorted.map((e) => `${e.u}–${e.v}`),
+    notes: Object.fromEntries(sorted.map((e, i) => [i, `w ${e.w}`])),
+    skip: sorted.map((_, i) => i).filter((i) => status.get(i) === 'reject'),
+    at: k,
+    now: k < sorted.length ? `u = ${sorted[k].u}, v = ${sorted[k].v}, w = ${sorted[k].w}` : undefined,
+    check: k < sorted.length ? eachCheck(sorted.length - 1 - k) : ENDED
+  });
+
 
   push(
     T('Step 0: the graph as a list of edges', 'ধাপ ০: এজের তালিকা হিসেবে গ্রাফ'),
@@ -687,6 +816,7 @@ export function genKruskal(g) {
   );
 
   sorted.forEach((e, k) => {
+    loopsNow = () => [edgeRow(k)];
     const fu = find(e.u);
     const fv = find(e.v);
     const pathTxt = (f) => (f.path.length > 1 ? f.path.join(' → ') : `${f.path[0]} (its own leader)`);
@@ -730,6 +860,7 @@ export function genKruskal(g) {
     }
   });
 
+  loopsNow = () => [edgeRow(sorted.length)];
   const taken = [...status.values()].filter((x) => x === 'tree').length;
   push(
     T(`MST finished: total cost ${total}`, `MST শেষ: মোট খরচ ${total}`),
@@ -778,7 +909,32 @@ export function genBellmanFord(g, src, negDemo) {
       status: statusText
     };
   };
-  const push = (title, explanation, scene, line, state) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, scene, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  const E = g.edges.length;
+  const passRow = (p) => forLoop({
+    label: T(`Outer loop: at most V − 1 = ${V - 1} passes. One pass = try to relax every edge once.`, `বাইরের লুপ: সর্বোচ্চ V − 1 = ${V - 1}টা পাস। এক পাস = প্রতিটা এজ একবার করে রিল্যাক্স করার চেষ্টা।`),
+    code: `for pass = 1 … ${V - 1}`,
+    unit: T('pass', 'পাস'),
+    values: Array.from({ length: V - 1 }, (_, i) => i + 1),
+    at: p - 1,
+    now: `pass = ${p}`,
+    check: T(`pass ≤ V − 1 → ${p} ≤ ${V - 1} ✓ run the body`, `pass ≤ V − 1 → ${p} ≤ ${V - 1} ✓ ভেতরের কাজ চলবে`)
+  });
+  const edgeRow = (k, label, code = 'for (u, v, w) in edges', depth = 1) => forLoop({
+    label,
+    code,
+    unit: T('edge', 'এজ'),
+    values: g.edges.map((e) => `${e.u}→${e.v}`),
+    notes: Object.fromEntries(g.edges.map((e, i) => [i, `w ${e.w}`])),
+    at: k,
+    now: k >= 0 && k < E ? `u = ${g.edges[k].u}, v = ${g.edges[k].v}, w = ${g.edges[k].w}` : undefined,
+    check: k >= 0 && k < E ? eachCheck(E - 1 - k) : k >= E ? ENDED : undefined,
+    depth
+  });
+  const BF_EDGES = T('Inner loop: every edge in the list, in the same order each pass.', 'ভেতরের লুপ: তালিকার প্রতিটা এজ, প্রতি পাসে একই ক্রমে।');
+
 
   push(
     neg ? T('Step 0: a graph with negative edges', 'ধাপ ০: নেগেটিভ এজসহ একটা গ্রাফ') : T('Step 0: a directed weighted graph', 'ধাপ ০: একটা ডিরেক্টেড ওয়েটেড গ্রাফ'),
@@ -803,6 +959,7 @@ export function genBellmanFord(g, src, negDemo) {
   let pass = 0;
   for (pass = 1; pass <= V - 1; pass++) {
     let changed = false;
+    loopsNow = () => [passRow(pass), edgeRow(-1, BF_EDGES)];
     push(
       T(`Pass ${pass} begins`, `পাস ${pass} শুরু`),
       T(
@@ -813,7 +970,8 @@ export function genBellmanFord(g, src, negDemo) {
       'pass',
       { pass }
     );
-    for (const e of g.edges) {
+    for (const [k, e] of g.edges.entries()) {
+      loopsNow = () => [passRow(pass), edgeRow(k, BF_EDGES)];
       const { u, v, w } = e;
       if (dist[u] === Infinity) {
         push(
@@ -857,6 +1015,7 @@ export function genBellmanFord(g, src, negDemo) {
         );
       }
     }
+    loopsNow = () => [passRow(pass), edgeRow(E, BF_EDGES)];
     push(
       changed ? T(`End of pass ${pass}: something changed`, `পাস ${pass} শেষ: কিছু বদলেছে`) : T(`End of pass ${pass}: nothing changed → stop`, `পাস ${pass} শেষ: কিছুই বদলায়নি → থামো`),
       changed
@@ -876,6 +1035,7 @@ export function genBellmanFord(g, src, negDemo) {
   }
 
   const bad = g.edges.find((e) => dist[e.u] !== Infinity && dist[e.u] + e.w < dist[e.v]);
+  loopsNow = () => [edgeRow(bad ? g.edges.indexOf(bad) : E, T('Check loop: one more look at every edge. If any edge can still make a distance shorter, there is a negative cycle.', 'যাচাইয়ের লুপ: আরেকবার প্রতিটা এজ দেখা। কোনো এজ এখনো দূরত্ব কমাতে পারলে নেগেটিভ সাইকেল আছে।'), 'for (u, v, w) in edges', 0)];
   if (!bad) {
     push(
       T('Final check: any negative cycle?', 'শেষ যাচাই: নেগেটিভ সাইকেল আছে?'),
@@ -898,6 +1058,7 @@ export function genBellmanFord(g, src, negDemo) {
     );
   }
 
+  loopsNow = () => null;
   // A tiny graph with a negative cycle: distances keep dropping forever.
   if (negDemo) {
     const ng = negDemo;
@@ -973,7 +1134,35 @@ export function genFloyd(g) {
       status: statusText
     };
   };
-  const push = (title, explanation, scene, line, state) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, scene, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  const kRow = (k) => forLoop({
+    label: T(`Outer loop: k = the vertex we now allow as a stop in the middle of a trip. ${V} rounds, one for each vertex.`, `বাইরের লুপ: k = যে ভার্টেক্সে এখন যাত্রার মাঝপথে থামা যায়। ${V}টা রাউন্ড, প্রতি ভার্টেক্সে একটা।`),
+    code: `for k = 0 … ${V - 1}`,
+    unit: T('round', 'রাউন্ড'),
+    values: [...Array(V).keys()],
+    at: k,
+    now: `k = ${Math.min(k, V)}`,
+    check: countCheck('k', k, V)
+  });
+  const iRow = (i) => forLoop({
+    label: T('Middle loop: i = where the trip starts (the row).', 'মাঝের লুপ: i = যাত্রা যেখানে শুরু (সারি)।'),
+    code: `for i = 0 … ${V - 1}`,
+    unit: T('row', 'সারি'),
+    values: [...Array(V).keys()],
+    at: i,
+    now: i >= 0 ? `i = ${i}` : undefined
+  });
+  const jRow = (j) => forLoop({
+    label: T(`Inner loop: j = where the trip ends (the column). All ${V} × ${V} = ${V * V} cells are tested each round; only the cells that get shorter are shown as steps.`, `ভেতরের লুপ: j = যাত্রা যেখানে শেষ (কলাম)। প্রতি রাউন্ডে ${V} × ${V} = ${V * V}টা ঘরই যাচাই হয়; শুধু যে ঘরগুলো ছোট হয় সেগুলো ধাপ হিসেবে দেখানো হয়।`),
+    code: `for j = 0 … ${V - 1}`,
+    unit: T('column', 'কলাম'),
+    values: [...Array(V).keys()],
+    at: j,
+    now: j >= 0 ? `j = ${j}` : undefined
+  });
+
 
   push(
     T('Step 0: start with the weight matrix', 'ধাপ ০: ওজনের ম্যাট্রিক্স দিয়ে শুরু'),
@@ -990,6 +1179,7 @@ export function genFloyd(g) {
     const changes = [];
     const before = D.map((r) => [...r]);
     for (let i = 0; i < V; i++) for (let j = 0; j < V; j++) if (before[i][k] + before[k][j] < D[i][j]) changes.push([i, j]);
+    loopsNow = () => [kRow(k), iRow(-1), jRow(-1)];
     push(
       T(`k = ${k}: allow stops at vertex ${k}`, `k = ${k}: ভার্টেক্স ${k}-এ থামার অনুমতি`),
       T(
@@ -1001,6 +1191,7 @@ export function genFloyd(g) {
       { k }
     );
     for (const [i, j] of changes) {
+      loopsNow = () => [kRow(k), iRow(i), jRow(j)];
       const a = D[i][k];
       const b = D[k][j];
       const old = D[i][j];
@@ -1018,6 +1209,7 @@ export function genFloyd(g) {
     }
   }
 
+  loopsNow = () => [kRow(V)];
   push(
     T('All-pairs shortest distances', 'সব জোড়ার সবচেয়ে ছোট দূরত্ব'),
     T(
@@ -1069,7 +1261,35 @@ export function genKahn(g, cycleDemo) {
       status: statusText
     };
   };
-  const push = (title, explanation, scene, line, state) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, scene, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  const whileRow = (cur, label, ended = false) => whileLoop({
+    label,
+    code: 'while (queue is not empty)',
+    unit: T('pass', 'পাস'),
+    pass: ended ? undefined : order.length,
+    items: [
+      ...order.filter((x) => x !== cur || ended).map((x) => ({ t: String(x), s: 'done' })),
+      ...(cur != null && !ended ? [{ t: String(cur), s: 'current' }] : []),
+      ...queue.map((x) => ({ t: String(x), s: 'todo', note: T('waiting', 'অপেক্ষায়') }))
+    ],
+    now: cur != null && !ended ? `u = ${cur}` : undefined,
+    check: ended
+      ? T('queue is empty ✗ the loop ends', 'queue খালি ✗ লুপ শেষ')
+      : T(`the queue was not empty ✓ so pass ${order.length} runs`, `queue খালি ছিল না ✓ তাই ${order.length} নম্বর পাস চলে`)
+  });
+  const KAHN_WHILE = T('Outer loop: runs while some free task waits in the queue. Each pass does the task at the front (u).', 'বাইরের লুপ: queue-তে কোনো মুক্ত কাজ অপেক্ষায় থাকলে চলে। প্রতি পাসে সামনের কাজটা (u) করা হয়।');
+  const nbrRow = (u, k) => forLoop({
+    label: T(`Inner loop: each arrow ${u} → v. Task v now waits for one task less.`, `ভেতরের লুপ: প্রতিটা তীর ${u} → v। কাজ v এখন একটা কাজ কম অপেক্ষা করে।`),
+    code: `for v in adj[${u}]`,
+    unit: T('arrow', 'তীর'),
+    values: adj[u].map((x) => x.v),
+    at: k,
+    now: k >= 0 && k < adj[u].length ? `v = ${adj[u][k].v}` : undefined,
+    check: k >= 0 && k < adj[u].length ? eachCheck(adj[u].length - 1 - k) : undefined
+  });
+
 
   push(
     T('Step 0: tasks with "before" arrows', 'ধাপ ০: "আগে" তীরসহ কাজ'),
@@ -1104,6 +1324,7 @@ export function genKahn(g, cycleDemo) {
   while (queue.length) {
     const u = queue.shift();
     order.push(u);
+    loopsNow = () => [whileRow(u, KAHN_WHILE), nbrRow(u, -1)];
     push(
       T(`Do task ${u}`, `কাজ ${u} করো`),
       T(
@@ -1114,7 +1335,8 @@ export function genKahn(g, cycleDemo) {
       ['whileCheck', 'pop'],
       { u }
     );
-    for (const { v } of adj[u]) {
+    for (const [k, { v }] of adj[u].entries()) {
+      loopsNow = () => [whileRow(u, KAHN_WHILE), nbrRow(u, k)];
       indeg[v]--;
       removed.add(ek(u, v));
       const zero = indeg[v] === 0;
@@ -1136,6 +1358,7 @@ export function genKahn(g, cycleDemo) {
       );
     }
   }
+  loopsNow = () => [whileRow(null, KAHN_WHILE, true)];
   if (order.length === V) {
     push(
       T('Done: a valid order', 'শেষ: একটা সঠিক ক্রম'),
@@ -1159,6 +1382,7 @@ export function genKahn(g, cycleDemo) {
       ['whileCheck', 'cycleCheck']
     );
   }
+  loopsNow = () => null;
 
   if (cycleDemo) {
     const cg = cycleDemo;
@@ -1242,7 +1466,43 @@ export function genTopoDFS(g) {
       status: statusText
     };
   };
-  const push = (title, explanation, scene, line, state) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}) });
+  // the loops running right now; every step records them for the loop tracker
+  let loopsNow = () => null;
+  const push = (title, explanation, scene, line, state, loops = loopsNow()) => steps.push({ title, explanation, scene, line, ...(state ? { state } : {}), ...(loops && loops.length ? { loops } : {}) });
+  // where each waiting dfs(x) call is inside its own `for v in adj[x]` loop
+  const pos = {};
+  const dfsRows = (calls, depth0 = 0) => calls.map((x, d) => {
+    const top = d === calls.length - 1;
+    const k = pos[x];
+    return {
+      ...forLoop({
+        label: top
+          ? T(`Running now: dfs(${x}) checks each neighbour of ${x}, left to right.`, `এখন চলছে: dfs(${x}) ${x}-এর প্রতিটা প্রতিবেশী বাম থেকে ডানে দেখে।`)
+          : T(`Paused at v = ${adj[x][k] ? adj[x][k].v : '?'}: dfs(${x}) waits for the call below it to return, then moves to its next neighbour.`, `v = ${adj[x][k] ? adj[x][k].v : '?'}-তে থেমে আছে: dfs(${x}) তার নিচের কলটা রিটার্ন করার অপেক্ষায়, তারপর পরের প্রতিবেশীতে যাবে।`),
+        code: `dfs(${x}): for v in adj[${x}]`,
+        unit: T('neighbour', 'প্রতিবেশী'),
+        values: adj[x].map((e) => e.v),
+        at: k,
+        now: top && k >= 0 && k < adj[x].length ? `v = ${adj[x][k].v}` : undefined,
+        check: top && k >= 0 && k < adj[x].length ? eachCheck(adj[x].length - 1 - k) : top && k >= adj[x].length ? ENDED : undefined,
+        depth: depth0 + d
+      }),
+      ...(top ? {} : { paused: true })
+    };
+  });
+  let top = -1;
+  const skipped = [];
+  const allRow = (at) => forLoop({
+    label: T('Main loop: tries every vertex as a starting point. Vertices already visited by an earlier dfs are skipped (crossed out).', 'মূল লুপ: প্রতিটা ভার্টেক্স শুরু হিসেবে চেষ্টা করে। আগের কোনো dfs-এ visited হলে বাদ (কাটা দাগ)।'),
+    code: `for u = 0 … ${V - 1}`,
+    unit: T('vertex', 'ভার্টেক্স'),
+    values: [...Array(V).keys()],
+    at,
+    skip: skipped,
+    now: at < V ? `u = ${at}` : undefined,
+    check: countCheck('u', at, V)
+  });
+
 
   push(
     T('Step 0: the same tasks, another method', 'ধাপ ০: একই কাজ, অন্য পদ্ধতি'),
@@ -1267,6 +1527,7 @@ export function genTopoDFS(g) {
   const dfs = (u, from) => {
     visited[u] = true;
     call.push(u);
+    pos[u] = -1;
     push(
       T(`Enter dfs(${u})`, `dfs(${u})-এ ঢোকা`),
       T(
@@ -1277,7 +1538,8 @@ export function genTopoDFS(g) {
       ['header', 'mark'],
       { u }
     );
-    for (const { v } of adj[u]) {
+    for (const [k, { v }] of adj[u].entries()) {
+      pos[u] = k;
       if (!visited[v]) {
         push(
           T(`${u} → ${v}: not visited → go deeper`, `${u} → ${v}: visited না → আরও গভীরে`),
@@ -1303,6 +1565,7 @@ export function genTopoDFS(g) {
         );
       }
     }
+    pos[u] = adj[u].length;
     call.pop();
     finished.push(u);
     push(
@@ -1317,8 +1580,11 @@ export function genTopoDFS(g) {
     );
   };
 
+  loopsNow = () => [allRow(top), ...dfsRows(call, 1)];
   for (let u = 0; u < V; u++) {
+    top = u;
     if (visited[u]) {
+      skipped.push(u);
       push(
         T(`Vertex ${u}: already visited`, `ভার্টেক্স ${u}: আগেই visited`),
         T(
@@ -1343,6 +1609,7 @@ export function genTopoDFS(g) {
       dfs(u, null);
     }
   }
+  top = V;
   const order = [...finished].reverse();
   const kahn = kahnOrder(g).join(' → ');
   push(
