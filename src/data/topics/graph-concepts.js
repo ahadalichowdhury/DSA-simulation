@@ -9,6 +9,7 @@
 import { G_INTRO, G_W, G_DAG, adjOf, edgeRows } from '../../visuals/graphData.js';
 import { program } from '../../visuals/codeTags.js';
 import { forLoop, countCheck, eachCheck } from '../../visuals/loops.js';
+import { konigsbergStory, anythingIsAGraph, konigsbergAnswer, matrixInput, listInput, storagePractice } from '../../visuals/deep/basicsDeep.js';
 
 // identical text is code (e.g. `dist[3]: ∞ → 6`), so it is stored once as a plain string
 const T = (en, bn) => (en === bn ? en : { en, bn });
@@ -129,6 +130,7 @@ const whatIsGraph = {
   code: introCode.code,
   lineMap: introCode.lineMap,
   steps: [
+    konigsbergStory(),
     step(
       T('Five cities and their roads', 'পাঁচটা শহর আর তাদের রাস্তা'),
       T(
@@ -184,6 +186,7 @@ const whatIsGraph = {
       'nbr'
     ),
     ...nbrTrace(G_INTRO, 1),
+    anythingIsAGraph(),
     step(
       T('Is every graph a tree? No!', 'প্রতিটা গ্রাফ কি ট্রি? না!'),
       T(
@@ -287,6 +290,7 @@ const termsSteps = (() => {
     scene(g, { nodeState: Object.fromEntries(odd.map((v) => [v, 'compare'])), subs: Object.fromEntries(deg.map((d, v) => [v, `deg ${d}`])), panels: [degPanel(Object.fromEntries(odd.map((v) => [v, 'compare'])))], status: T(`odd-degree vertices: ${odd.join(', ')}`, `বিজোড় ডিগ্রির ভার্টেক্স: ${odd.join(', ')}`) }),
     'check'
   ));
+  steps.push(konigsbergAnswer());
   steps.push(step(
     T('Path: a walk along edges', 'পাথ: এজ ধরে হাঁটা'),
     T(
@@ -652,6 +656,7 @@ const matrixSteps = (() => {
     scene(G_W, { panels: [{ type: 'matrix', label: T('M[u][v] = weight, ∞ = no edge', 'M[u][v] = ওজন, ∞ = এজ নেই'), rows: [0, 1, 2, 3, 4, 5], cols: [0, 1, 2, 3, 4, 5], corner: 'u \\ v', cells: WM, hl: { '0,1': 'relax', '1,0': 'relax' } }], status: T('M[0][1] = 4 = weight of edge 0–1', 'M[0][1] = 4 = এজ 0–1-এর ওজন') }),
     'set'
   ));
+  steps.push(...matrixInput(g));
   steps.push(step(
     T('What we learned', 'কী শিখলাম'),
     T(
@@ -821,6 +826,7 @@ const listSteps = (() => {
     scene(G_W, { panels: [{ type: 'adjlist', label: T('adj[u] = (neighbour, weight)', 'adj[u] = (প্রতিবেশী, ওজন)'), rows: adjOf(G_W).map((items, u) => ({ head: u, state: u === 0 ? 'current' : '', items: items.map((it) => ({ v: it.v, w: it.w })) })) }], nodeState: { 0: 'current' }, edgeState: { '0-1': 'compare', '0-2': 'compare' }, status: T('adj[0] = [(1, 4), (2, 3)]', 'adj[0] = [(1, 4), (2, 3)]') }),
     'add'
   ));
+  steps.push(listInput(g));
   steps.push(step(
     T('Common mistakes and summary', 'সাধারণ ভুল আর সারসংক্ষেপ'),
     T(
@@ -845,7 +851,7 @@ const adjList = {
   complexity: { time: 'O(deg(u)) neighbours', space: 'O(V + E)', note: { en: 'Memory grows with the real number of edges. Listing neighbours is as fast as possible; testing one edge means searching a list.', bn: 'মেমরি আসল এজের সংখ্যার সঙ্গে বাড়ে। প্রতিবেশী বের করা সবচেয়ে দ্রুত; একটা এজ যাচাই মানে তালিকায় খোঁজা।' } },
   code: listCode.code,
   lineMap: listCode.lineMap,
-  steps: listSteps
+  steps: [...listSteps, storagePractice(G_INTRO)]
 };
 
 /* ===================================================================== 6. Edge list & choosing */

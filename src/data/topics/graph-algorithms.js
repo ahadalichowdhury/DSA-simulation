@@ -9,6 +9,10 @@
 import { G_TRAV, G_W, G_BF, G_NEGCYCLE, G_FW, G_DAG } from '../../visuals/graphData.js';
 import { genBFS, genDFS, genDijkstra, genPrim, genKruskal, genBellmanFord, genFloyd, genKahn, genTopoDFS, weightMatrix } from '../../visuals/graphAlgos.js';
 import { primConcept, kruskalConcept, dijkstraConcept, bellmanConcept, floydConcept, bfsConcept, dfsConcept, kahnConcept, topoDfsConcept } from '../../visuals/algoConcepts.js';
+import { primHeapDeep, dsuDeep, kruskalDeep } from '../../visuals/deep/mstDeep.js';
+import { dijkstraDeep, bellmanDeep, floydDeep } from '../../visuals/deep/spDeep.js';
+import { kahnDeep, topoDfsDeep } from '../../visuals/deep/topoDeep.js';
+import { bfsStory, bfsDeep, dfsDeep } from '../../visuals/deep/traversalDeep.js';
 import { bfsProgram, dfsProgram, dijkstraProgram, primProgram, kruskalProgram, bellmanProgram, floydProgram, kahnProgram, topoDfsProgram } from '../../visuals/graphCode.js';
 
 const CYCLE3 = {
@@ -38,7 +42,7 @@ export const graphAlgorithmTopics = [
       }
     },
     bfsProgram(G_TRAV, 0),
-    [...bfsConcept(G_TRAV, 0), ...genBFS(G_TRAV, 0)]
+    [...bfsStory(G_TRAV, 0, 7), ...bfsConcept(G_TRAV, 0), ...genBFS(G_TRAV, 0), ...bfsDeep(G_TRAV, 0, 7)]
   ),
   lesson(
     {
@@ -56,7 +60,7 @@ export const graphAlgorithmTopics = [
       }
     },
     dfsProgram(G_TRAV, 0),
-    [...dfsConcept(G_TRAV, 0), ...genDFS(G_TRAV, 0)]
+    [...dfsConcept(G_TRAV, 0), ...genDFS(G_TRAV, 0), ...dfsDeep(G_TRAV, 0)]
   ),
   lesson(
     {
@@ -75,7 +79,7 @@ export const graphAlgorithmTopics = [
       }
     },
     primProgram(G_W),
-    [...primConcept(G_W), ...genPrim(G_W)]
+    [...primConcept(G_W), ...genPrim(G_W), ...primHeapDeep(G_W)]
   ),
   lesson(
     {
@@ -93,7 +97,7 @@ export const graphAlgorithmTopics = [
       }
     },
     kruskalProgram(G_W),
-    [...kruskalConcept(G_W), ...genKruskal(G_W)]
+    [...kruskalConcept(G_W), ...dsuDeep(G_W), ...genKruskal(G_W), ...kruskalDeep(G_W)]
   ),
   lesson(
     {
@@ -112,7 +116,7 @@ export const graphAlgorithmTopics = [
       }
     },
     dijkstraProgram(G_W, 0),
-    [...dijkstraConcept(G_W, 0), ...genDijkstra(G_W, 0)]
+    [...dijkstraConcept(G_W, 0), ...genDijkstra(G_W, 0), ...dijkstraDeep(G_W, 0, 5)]
   ),
   lesson(
     {
@@ -130,7 +134,7 @@ export const graphAlgorithmTopics = [
       }
     },
     bellmanProgram(G_BF, 0),
-    [...bellmanConcept(G_BF, 0), ...genBellmanFord(G_BF, 0, G_NEGCYCLE)]
+    [...bellmanConcept(G_BF, 0), ...genBellmanFord(G_BF, 0, G_NEGCYCLE), ...bellmanDeep(G_BF, 0, 6)]
   ),
   lesson(
     {
@@ -148,7 +152,7 @@ export const graphAlgorithmTopics = [
       }
     },
     floydProgram(G_FW, weightMatrix(G_FW)),
-    [...floydConcept(G_FW), ...genFloyd(G_FW)]
+    [...floydConcept(G_FW), ...genFloyd(G_FW), ...floydDeep(G_FW, 1, 0)]
   ),
   lesson(
     {
@@ -166,7 +170,7 @@ export const graphAlgorithmTopics = [
       }
     },
     kahnProgram(G_DAG),
-    [...kahnConcept(G_DAG), ...genKahn(G_DAG, CYCLE3)]
+    [...kahnConcept(G_DAG), ...genKahn(G_DAG, CYCLE3), ...kahnDeep(G_DAG)]
   ),
   lesson(
     {
@@ -184,6 +188,6 @@ export const graphAlgorithmTopics = [
       }
     },
     topoDfsProgram(G_DAG),
-    [...topoDfsConcept(G_DAG), ...genTopoDFS(G_DAG)]
+    [...topoDfsConcept(G_DAG), ...genTopoDFS(G_DAG), ...topoDfsDeep(G_DAG)]
   )
 ];

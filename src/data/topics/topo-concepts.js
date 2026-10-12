@@ -9,6 +9,7 @@
  * use which.
  * ------------------------------------------------------------------ */
 import { G_DAG, adjOf } from '../../visuals/graphData.js';
+import { topoStory } from '../../visuals/deep/topoDeep.js';
 
 const T = (en, bn) => (en === bn ? en : { en, bn });
 const scene = (g, extra = {}) => ({ kind: 'graphx', directed: g.directed, weighted: g.weighted, nodes: g.nodes, edges: g.edges, ...extra });
@@ -151,6 +152,7 @@ const topoIdeas = {
   icon: '🧭',
   complexity: { time: 'O(V + E)', space: 'O(V)', note: { en: 'Both Kahn and the DFS version look at every task once and every arrow once.', bn: 'কান আর DFS সংস্করণ দুটোই প্রতিটা কাজ একবার আর প্রতিটা তীর একবার দেখে।' } },
   steps: [
+    ...topoStory(),
     step(
       T('The problem: tasks that must wait', 'সমস্যা: যে কাজগুলোকে অপেক্ষা করতে হয়'),
       T(
